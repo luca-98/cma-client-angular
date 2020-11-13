@@ -1,0 +1,29 @@
+@import "../share-style.scss";
+.g-template-1 {
+  grid-column-gap: 20px;
+  grid-template-columns: auto auto auto;
+}
+
+.list-examination {
+  margin-top: 16px;
+
+  th,
+  td {
+      vertical-align: middle;
+      white-space: nowrap;
+  }
+
+  th {
+      padding: 10px 10px;
+  }
+
+  td {
+      padding: 2px 10px;
+  }
+}
+@media only screen and (min-width: 1920px) {
+  .set-media-query .table-content {
+    max-height: 490px !important;
+  }
+
+}

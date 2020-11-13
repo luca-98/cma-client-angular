@@ -1,0 +1,129 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" #snav opened [fixedInViewport]="true" class="side-nav">
+        <!-- logo -->
+        <div class="nav-area">
+            <h2 class="logo">CMA CLINIC</h2>
+        </div>
+
+        <!-- profile -->
+        <div class="profile-usertitle">
+            <div class="avatar">
+                <img src="../../assets/image/user.jpg" alt="User Image" class="avatar-img" width="100px" height="100px">
+            </div>
+            <div class="info">
+                <div class="sidebar-userpic-name">{{currentUserFullName}}</div>
+                <a href="javascript:undefined" class="profile-usertitle-job"
+                    (click)="changeRoom()">{{currentRoomName}}</a>
+            </div>
+        </div>
+
+        <!-- Left menu -->
+        <section class="left-menu-content">
+            <!-- Quản lý khám bệnh -->
+            <app-sm-medical-examination *ngIf="sidebarRightState == sidebarItem.MedicalExamination">
+            </app-sm-medical-examination>
+
+            <!-- Quản lý thuốc -->
+            <app-sm-medicine *ngIf="sidebarRightState == sidebarItem.Medicine"></app-sm-medicine>
+
+            <!-- Quản lý vật tư -->
+            <app-sm-materials *ngIf="sidebarRightState == sidebarItem.Materials"></app-sm-materials>
+
+            <!-- Quản lý dịch vụ -->
+            <app-sm-service *ngIf="sidebarRightState == sidebarItem.Service"></app-sm-service>
+
+            <!-- Quản lý tài chính -->
+            <app-sm-finance *ngIf="sidebarRightState == sidebarItem.Financial"></app-sm-finance>
+
+            <!-- Báo cáo -->
+            <app-sm-report *ngIf="sidebarRightState == sidebarItem.Report"></app-sm-report>
+
+            <!-- Thống kê -->
+            <app-sm-statistical *ngIf="sidebarRightState == sidebarItem.Statistical"></app-sm-statistical>
+
+            <!-- Quản lý chung -->
+            <app-sm-general-manage *ngIf="sidebarRightState == sidebarItem.GeneralManage"></app-sm-general-manage>
+
+        </section>
+
+        <!-- Version info-->
+        <div class="version">
+            CMA Version 1.0
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <mat-toolbar class="side-menu">
+            <button mat-icon-button aria-label="Menu" (click)="snav.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.MedicalExamination"
+                (click)="changeSidebarRightState(sidebarItem.MedicalExamination)" routerLink="/medical-examination">
+                Quản lý khám bệnh
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Medicine"
+                (click)="changeSidebarRightState(sidebarItem.Medicine)">
+                Quản lý thuốc
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Materials"
+                (click)="changeSidebarRightState(sidebarItem.Materials)">
+                Quản lý vật tư
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Service"
+                (click)="changeSidebarRightState(sidebarItem.Service)">
+                Quản lý dịch vụ
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Financial"
+                (click)="changeSidebarRightState(sidebarItem.Financial)">
+                Quản lý tài chính
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Report"
+                (click)="changeSidebarRightState(sidebarItem.Report)">
+                Báo cáo
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Statistical"
+                (click)="changeSidebarRightState(sidebarItem.Statistical)">
+                Thống kê
+            </button>
+            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.GeneralManage"
+                (click)="changeSidebarRightState(sidebarItem.GeneralManage)">
+                Quản lý chung
+            </button>
+
+            <span class="spacer"></span>
+
+            <div class="logo-user">
+                <span class="user-img"><img class="rounded-circle" src="../../assets/image/user.jpg" width="35px"
+                        height="35px" alt="User">
+                </span>
+                <div class="dropdown-menu" x-placement="bottom-start">
+                    <div class="user-header">
+                        <div class="avatar avatar-sm">
+                            <img src="../../assets/image/user.jpg" alt="User Image" class="avatar-img rounded-circle"
+                                width="50px" height="50px">
+                        </div>
+                        <div class="user-text">
+                            <h6>{{currentUserFullName}}</h6>
+                            <a href="javascript:undefined" class="text-muted mb-0"
+                                (click)="changeRoom()">{{currentRoomName}}</a>
+                        </div>
+                    </div>
+                    <a class="dropdown-item" (click)="changeRoom()">Đổi phòng làm việc</a>
+                    <a class="dropdown-item" routerLink="/">Quản lý tài khoản</a>
+                    <a class="dropdown-item" routerLink="/">Đổi mật khẩu</a>
+                    <a class="dropdown-item" (click)="logout()">Đăng xuất</a>
+                </div>
+            </div>
+
+        </mat-toolbar>
+        <div class="loader-area">
+            <div class="progress-area" *ngIf="!showLoader"></div>
+            <mat-progress-bar mode="indeterminate" *ngIf="showLoader"></mat-progress-bar>
+        </div>
+        <mat-sidenav-container class="sidenav-container">
+            <mat-sidenav-content class="main-content">
+                <router-outlet></router-outlet>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,41 @@
+.autocomplete {
+  padding: 10px;
+  overflow: hidden !important;
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #d4d4d4;
+  margin-top: 10px;
+  margin-left: -11px;
+  z-index: 9999;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 5px;
+
+  table {
+    overflow-y: auto;
+    border-collapse: collapse;
+    width: 100%;
+
+    thead {
+      th {
+        position: sticky;
+        top: 0;
+      }
+    }
+
+    td,
+    th {
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    tbody {
+      tr {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .selected {
+    background-color: #ececec;
+  }
+}

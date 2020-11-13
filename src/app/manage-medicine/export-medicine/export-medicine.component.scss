@@ -1,0 +1,7 @@
+@import "../manage-medicine.component.scss";
+
+@media only screen and (min-width: 1920px) {
+  .set-media-query .table-content {
+    max-height: 450px !important;
+  }
+}

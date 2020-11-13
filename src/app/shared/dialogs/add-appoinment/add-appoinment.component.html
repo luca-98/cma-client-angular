@@ -1,0 +1,104 @@
+<h2 mat-dialog-title>Đăng kí hẹn khám</h2>
+<mat-dialog-content>
+    <div class="dialog-content d-flex align-items-center">
+        <form [formGroup]="patientForm " style="width: 100%;">
+            <div class="row">
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Mã bệnh nhân</label>
+                    <mat-form-field appearance="outline" class="input-fixed" (dblclick)="doubleClick()" >
+                        <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
+                            (keyup)="generateAutoPatientByPatientCode($event)" placeholder="BNxxxxx" >
+                        <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                            [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)" [maxHeight]="150">
+                        </app-patient-autocomplete>
+                    </mat-form-field>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Tên bệnh nhân</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="patientName" autocomplete="off" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Số điện thoại</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="phone" autocomplete="off" maxlength="10" required>
+                    </mat-form-field>
+                </div>
+
+
+
+            </div>
+            <div class="row mt-1">
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Giới tính</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select formControlName="gender">
+                            <mat-option value="0">Nam</mat-option>
+                            <mat-option value="1">Nữ</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Ngày hẹn</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [matDatepicker]="picker3" formControlName="appointmentDate" required>
+                        <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                        <mat-datepicker #picker3 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+
+
+            </div>
+            <div class="row mt-1">
+                <div class="col-6  d-flex">
+                    <label class="label min-width-align">Ngày sinh</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                            (dateChange)="onDobChange()">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Giờ hẹn</label>
+
+                    <div class="input-fixed time-picker">
+                        <ngx-timepicker-field formControlName="appointmentTime"
+                            [defaultTime]="date.getHours()+':'+date.getMinutes()" [format]="24" [controlOnly]="true"
+                            required>
+                        </ngx-timepicker-field>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row mt-1">
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">địa chỉ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="address" autocomplete="off" maxlength="10">
+                    </mat-form-field>
+                </div>
+                <div class="col-6 d-flex">
+                    <label class="label min-width-align">Bác sĩ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select formControlName="staffId">
+                            <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id">
+                                {{ doctor.fullName }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
+    <button mat-button (click)="resetInput()" class="btn-orange">Nhập lại</button>
+    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
+</mat-dialog-actions>

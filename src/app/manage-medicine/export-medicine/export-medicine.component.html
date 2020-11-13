@@ -1,0 +1,135 @@
+<div class=" card-custom mb-0">
+    <div class="info">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="header m-0">Thông tin bệnh nhân</h2>
+        </div>
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Mã bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tên bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Bác sĩ khám</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tổng tiền</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Bằng chữ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button mat-raised-button class="btn-main-color">
+                    <i class="fas fa-save"></i>
+                    <span class="ml-1">
+                        Lưu
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-green ">
+                    <i class="fas fa-print"></i>
+                    <span class="ml-1">
+                        In hóa đơn
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-orange ">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="box-table">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="header m-0">Thông tin thuốc</h2>
+        </div>
+        <div class="table-custom mt-1 set-media-query">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-15 text-left">
+                    Tên thuốc
+                </li>
+                <li class="header-col width-15 text-left">
+                    Đơn vị tính
+                </li>
+                <li class="header-col width-15 text-left">
+                    Số lượng
+                </li>
+                <li class="header-col width-15 text-left">
+                    Số thực lấy
+                </li>
+                <li class="header-col width-15 text-left">
+                    Đơn giá
+                </li>
+                <li class="header-col width-auto text-left">
+                    Thành tiền
+                </li>
+
+            </ul>
+
+            <div class="table-content">
+                <!-- <ul class="content-row">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul> -->
+                <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                <ul class="content-row ">
+                    <li class="content-col stt text-center ">
+                        1
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        12123
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        123123
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        123123
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput>
+                        </mat-form-field>
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        1232131
+                    </li>
+
+                    <li class="content-col width-auto text-left ">
+                        123123
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+
+</div>

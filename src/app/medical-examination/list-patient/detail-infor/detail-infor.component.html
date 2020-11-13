@@ -1,0 +1,127 @@
+<div class="card-custom">
+    <div class="flex-container flex-content-between mb-2">
+        <h2 class="header">Lịch sử khám bệnh</h2>
+        <div>
+            <button mat-raised-button class="btn-green" (click)="moveToReceive()">Tiếp đón bệnh nhân này</button>
+            <button mat-raised-button class="ml-2 btn-orange" (click)="back()">
+                <i class="fas fa-undo"></i>
+                <span class="ml-1">
+                    Quay lại
+                </span>
+            </button>
+        </div>
+    </div>
+    <hr>
+    <form [formGroup]="detailForm">
+        <div class="grid-container grid-template-1 mb-2 mt-2">
+            <div class="flex-container">
+                <label class="label min-width-align">Mã bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="patientCode">
+                </mat-form-field>
+            </div>
+            <div></div>
+            <div>
+                <button class="btn btn-outline-secondary btn-sm ml-1 float-right" [disabled]="!isEdit"
+                    (click)="saveInfo()">
+                    <i class="fas fa-save"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm ml-1 float-right" [disabled]="isEdit"
+                    (click)="editInfo()">
+                    <i class="fas fa-pen"></i>
+                </button>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Tên bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="patientName">
+                </mat-form-field>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Số điện thoại</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="phone" maxlength="10" (input)="onPhoneInput()">
+                </mat-form-field>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Ngày sinh</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                        (dateChange)="onDobChange()">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Địa chỉ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="address">
+                </mat-form-field>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Giới tính</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select formControlName="gender">
+                        <mat-option value="0">Nam</mat-option>
+                        <mat-option value="1">Nữ</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="flex-container">
+                <label class="label min-width-align">Công nợ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="debt">
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex justify-content-end mb-3 mt-3">
+        <button mat-raised-button class="btn-main-color">
+            Lập phiếu thu nợ
+        </button>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th class="minimum-width">#</th>
+                <th class="minimum-width">Số phiếu</th>
+                <th class="minimum-width">Chỉ định/thuốc</th>
+                <th class="minimum-width">Số lượng</th>
+                <th>Chẩn đoán</th>
+                <th>Bệnh chính</th>
+                <th>Bệnh phụ</th>
+                <th>Bác sĩ</th>
+                <th class="minimum-width"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="9">Không có dữ liệu</td>
+            </tr>
+            <ng-container *ngFor="let h of history">
+                <tr>
+                    <td><i class="fas fa-chevron-down"></i></td>
+                    <td colspan="9">
+                        <b>Ngày {{ h.date }}</b>
+                    </td>
+                </tr>
+                <tr *ngFor="let e of h.data">
+                    <td></td>
+                    <td>{{e.code}}</td>
+                    <td>{{e.service}}</td>
+                    <td>{{e.quanity}}</td>
+                    <td>{{e.summary}}</td>
+                    <td>{{e.mainDisease}}</td>
+                    <td>{{e.extraDisease}}</td>
+                    <td>{{e.staffName}}</td>
+                    <td>
+                        <!-- e.id, e.type -->
+                        <button class="btn btn-outline-secondary btn-sm">
+                            Xem phiếu
+                        </button>
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>

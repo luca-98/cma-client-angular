@@ -1,0 +1,29 @@
+<mat-nav-list class="list-sb">
+    <a [class.item-active]="currentItem === 1.1" mat-list-item routerLink="/medical-examination/list-patient">
+        Danh sách bệnh nhân
+    </a>
+    <mat-divider></mat-divider>
+    <a [class.item-active]="currentItem === 1.2" mat-list-item routerLink="/medical-examination/receive-patient">
+        Tiếp đón bệnh nhân
+    </a>
+    <a [class.item-active]="currentItem === 1.3" mat-list-item routerLink="/medical-examination/clinical-examination">
+        Lập phiếu khám
+    </a>
+    <a [class.item-active]="currentItem === 1.4" mat-list-item routerLink="/medical-examination/manage-clinical-examination">
+        Quản lý phiếu khám
+    </a>
+    <mat-divider></mat-divider>
+    <a [class.item-active]="currentItem === 1.5" mat-list-item routerLink="/medical-examination/subclinical-examination">
+        Lập phiếu cận lâm sàng
+    </a>
+    <a [class.item-active]="currentItem === 1.6" mat-list-item routerLink="/medical-examination/manage-subclinical-examination">
+        Quản lý phiếu cận lâm sàng
+    </a>
+    <mat-divider></mat-divider>
+    <!-- <a [class.item-active]="currentItem === 1.7" mat-list-item routerLink="/medical-examination/appointment">
+        Đăng ký hẹn khám
+    </a> -->
+    <a [class.item-active]="currentItem === 1.8" mat-list-item routerLink="/medical-examination/manage-appointment">
+        Hẹn khám
+    </a>
+</mat-nav-list>

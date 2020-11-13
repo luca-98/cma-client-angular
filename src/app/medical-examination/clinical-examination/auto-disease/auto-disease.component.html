@@ -1,0 +1,23 @@
+<div class="autocomplete" *ngIf="isDisplay">
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã bệnh</th>
+                <th>Tên bệnh</th>
+            </tr>
+        </thead>
+        <tbody #tableBody>
+            <!-- <tr>
+                <td colspan="5">
+                    <app-loading></app-loading>
+                </td>
+            </tr> -->
+            <tr *ngFor="let data of listData; let i = index" (click)="selectRow(data.id)"
+                [className]="i == indexSelect ? 'selected' : ''">
+                <td [innerHtml]="data.icd10Code"></td>
+                <td [innerHtml]="data.diseaseName"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

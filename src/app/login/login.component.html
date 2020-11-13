@@ -1,0 +1,25 @@
+<div class="login-container">
+    <mat-card class="login-card">
+        <div class="d-flex justify-content-center">
+            <h2 class="header">Quản lý phòng khám</h2>
+        </div>
+        <mat-progress-bar mode="indeterminate" [ngClass]="!isLoading ? 'hide' : ''"></mat-progress-bar>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <mat-card-content class="content">
+                <mat-form-field class="full-width">
+                    <input matInput placeholder="Tên đăng nhập" formControlName="username">
+                </mat-form-field>
+                <mat-form-field class="full-width">
+                    <input matInput placeholder="Mật khẩu" type="password" formControlName="password">
+                </mat-form-field>
+                <mat-checkbox name="rememberMe" formControlName="rememberMe">Nhớ đăng nhập</mat-checkbox>
+            </mat-card-content>
+            <p class="error-message">{{errorMessage}}</p>
+            <mat-card-actions>
+                <button type="submit" class="full-width login-button" mat-raised-button>
+                    Đăng nhập
+                </button>
+            </mat-card-actions>
+        </form>
+    </mat-card>
+</div>

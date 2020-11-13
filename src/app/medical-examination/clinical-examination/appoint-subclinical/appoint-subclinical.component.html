@@ -1,0 +1,234 @@
+<div class="card-custom">
+    <div class="d-flex">
+        <div class="left-box">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="header m-0">Thông tin bệnh nhân</h2>
+                </div>
+                <form [formGroup]="patientForm">
+                    <div class="row mb-1">
+                        <div class="col-6 d-flex">
+                            <label class="label min-width-align">Mã bệnh nhân</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="patientCode" autocomplete="off">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-6 d-flex">
+                            <label class="label min-width-align">Tên bệnh nhân</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="patientName" autocomplete="off">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 d-flex">
+                            <label class="label min-width-align">Số điện thoại</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="phone" autocomplete="off" maxlength="10">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-6 d-flex">
+                            <label class="label min-width-align">Ngày sinh</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 d-flex">
+                            <label class="label min-width-align">Giới tính</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <mat-select formControlName="gender">
+                                    <mat-option value="0">Nam</mat-option>
+                                    <mat-option value="1">Nữ</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-12 d-flex">
+                            <label class="label min-width-align">Địa chỉ</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="address">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="d-flex justify-content-end action">
+                <button mat-raised-button class="btn-green" (click)="back()">
+                    <i class="fas fa-undo"></i>
+                    <span class="ml-1">
+                        Quay lại
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-main-color">
+                    <i class="fas fa-print"></i>
+                    <span class="ml-1">
+                        In phiếu chỉ định
+                    </span>
+                </button>
+                <button mat-raised-button class="btn-main-color ml-2">
+                    <i class="fas fa-save"></i> <span class="ml-1">
+                        Lưu
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="right-box">
+            <div class="row mb-2">
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Nhóm dịch vụ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select [(ngModel)]="selectedGroupServiceCode" (selectionChange)="groupServiceChange()">
+                            <mat-option value="-1" disabled>
+                                --
+                            </mat-option>
+                            <mat-option value="0">
+                                Tất cả
+                            </mat-option>
+                            <mat-option *ngFor="let i of listGroupService" [value]="i.groupServiceCode" (click)="groupServiceChange()">
+                                {{i.groupServiceName}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Tìm kiếm</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [(ngModel)]="searchGroupServiceName" (keyup)="findService()">
+                    </mat-form-field>
+                    <button mat-icon-button (click)="findService()">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-custom mt-3">
+                <ul class="table-header">
+                    <li class="header-col stt text-center">
+                        #
+                    </li>
+                    <li class="header-col width-auto text-left">
+                        Tên dịch vụ
+                    </li>
+                    <li class="header-col width-20 text-left">
+                        Đơn giá
+                    </li>
+                </ul>
+                <div class="table-content">
+                    <ul class="content-row" *ngIf="listService.length ==0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <ng-container *ngFor="let i of listService">
+                        <ul class="content-row"
+                            *ngIf="i.isSearchResult || selectedGroupServiceCode == '0' || i.groupServiceCode == selectedGroupServiceCode">
+                            <li class="content-col stt text-center">
+                                <mat-checkbox [(ngModel)]="i.checkBox" (click)="handleSelectService(i)"></mat-checkbox>
+                            </li>
+                            <li class="content-col width-auto text-left ">
+                                {{i.serviceName}}
+                            </li>
+                            <li class="content-col width-20 text-left">
+                                {{i.price}}
+                            </li>
+                        </ul>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="full-width">
+        <div class="table-custom mt-3 set-media-query">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-auto text-left">
+                    Tên dịch vụ
+                </li>
+                <li class="header-col width-10 text-left">
+                    Đơn giá
+                </li>
+                <li class="header-col width-15 text-left">
+                    Bác sĩ
+                </li>
+                <li class="header-col width-15 text-left">
+                    Phòng khám
+                </li>
+                <li class="header-col width-10 text-left">
+                    Trạng thái
+                </li>
+                <li class="header-col width-10 text-right">
+                    Hành động
+                </li>
+            </ul>
+
+            <div class="table-content">
+                <ul class="content-row" *ngIf="listServiceSelected.length == 0">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul>
+                <ng-container *ngFor="let service of listServiceSelected; let i = index">
+                    <ul class="content-row">
+                        <li class="content-col stt text-center text-truncate">
+                            {{i+1}}
+                        </li>
+                        <li class="content-col width-auto text-left ">
+                            {{service.serviceName}}
+                        </li>
+                        <li class="content-col width-10 text-left">
+                            {{service.price}}
+                        </li>
+                        <li class="content-col width-15 text-left ">
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <mat-select [(value)]="service.doctorSelected" (selectionChange)="onChangeDoctor(service)">
+                                    <ng-container *ngFor="let doctor of listDoctor">
+                                        <mat-option [value]="doctor.id"
+                                            *ngIf="doctor.groupServiceCode == service.groupServiceCode">
+                                            {{ doctor.fullName }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </li>
+                        <li class="content-col width-15 text-left ">
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <mat-select [(value)]="service.roomSelected" (selectionChange)="onChangeRoom(service)">
+                                    <ng-container *ngFor="let room of listRoom">
+                                        <mat-option [value]="room.id"
+                                            *ngIf="room.groupServiceCode == service.groupServiceCode">
+                                            {{ room.roomName }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </li>
+                        <li class="content-col width-10 text-left ">
+                            {{service.status}}
+                        </li>
+                        <li class="content-col width-10 text-right ">
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-outline-secondary btn-sm" title="xxxx"><i
+                                        class="fas fa-file"></i></button>
+                                <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa dịch vụ"
+                                    (click)="removeService(service)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </ng-container>
+            </div>
+
+        </div>
+
+    </div>
+</div>

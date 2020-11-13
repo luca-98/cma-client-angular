@@ -1,0 +1,34 @@
+<mat-nav-list class="list-sb">
+    <a [class.item-active]="currentItem === 2.1" mat-list-item routerLink="/manage-medicine/import-medicine">
+        Nhập thuốc vật tư
+    </a>
+    <a mat-list-item routerLink="/" disabled>
+        Quản lý nhập thuốc
+    </a>
+    <mat-divider></mat-divider>
+    <a [class.item-active]="currentItem === 2.3" mat-list-item routerLink="/manage-medicine/export-medicine">
+        Xuất bán thuốc
+    </a>
+    <a [class.item-active]="currentItem === 2.4" mat-list-item routerLink="/manage-medicine/manage-export-medicine">
+        Quản lý xuất bán thuốc
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/" disabled>
+        Xuất hủy thuốc
+    </a>
+    <a mat-list-item routerLink="/" disabled>
+        Quản lý xuất hủy thuốc
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/" disabled>
+        Đổi trả thuốc
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/" disabled>
+        Thống kê tồn kho thuốc
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/" disabled>
+        Công nợ nhà công cấp
+    </a>
+</mat-nav-list>

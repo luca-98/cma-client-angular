@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Thay đổi phòng làm việc hiện tại</h1>
+<div mat-dialog-content>
+    <form [formGroup]="formGroup">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="room">
+                <mat-option *ngFor="let room of roomService" [value]="room.id">
+                    {{ room.roomName }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button class="btn-close-dialog" [mat-dialog-close]="false" mat-raised-button color="primary" mat-dialog-close
+        cdkFocusInitial>Hủy bỏ</button>
+    <button class="btn-close-dialog" mat-raised-button color="warn" mat-dialog-close (click)="changeRoom()" cdkFocusInitial
+        cdkFocusInitial>Xác nhận</button>
+</div>

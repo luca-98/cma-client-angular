@@ -1,0 +1,171 @@
+<div class="card-custom">
+    <div class="flex-container flex-content-between mb-2">
+        <h2 class="header">Tìm kiếm bệnh nhân</h2>
+        <div>
+            <input #excelInput hidden="true" type="file" onclick="this.value=null" (change)="excelInputChange($event)"
+                accept=".xlsx" />
+            <button mat-raised-button class="btn-green" (click)="excelInput.click()">Nhập từ excel</button>
+            <button mat-raised-button class="btn-orange ml-1" (click)="exportExcel()">Xuất excel</button>
+            <button mat-raised-button class="btn-main-color ml-1" (click)="downloadTemplate()">Tải mẫu</button>
+        </div>
+    </div>
+    <hr>
+    <div class="grid-container grid-template-1 mt-2 mb-2">
+        <div class="flex-container">
+            <label class="label min-width-align">Mã bệnh nhân</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput [(ngModel)]="searchData.patientCode" (keyup)="generateAutoPatientByCode($event)"
+                    [matAutocomplete]="autoPatientCode">
+                <mat-autocomplete autoActiveFirstOption #autoPatientCode="matAutocomplete">
+                    <mat-option *ngFor="let d of autoByPatientCode" [value]="d.value" [innerHTML]="d.valueDisplay">
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div></div>
+        <div></div>
+        <div class="flex-container">
+            <label class="label min-width-align">Tên bệnh nhân</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput [(ngModel)]="searchData.patientNameSearch" (keyup)="generateAutoPatientByName($event)"
+                    [matAutocomplete]="autoPatientName">
+                <mat-autocomplete autoActiveFirstOption #autoPatientName="matAutocomplete">
+                    <mat-option *ngFor="let d of autoByName" [value]="d.value" [innerHTML]="d.valueDisplay">
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="flex-container">
+            <label class="label min-width-align">Số điện thoại</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput [(ngModel)]="searchData.phone" (keyup)="generateAutoPatientByPhone($event)"
+                    [matAutocomplete]="autoPatientPhone">
+                <mat-autocomplete autoActiveFirstOption #autoPatientPhone="matAutocomplete">
+                    <mat-option *ngFor="let d of autoByPhone" [value]="d.value" [innerHTML]="d.valueDisplay">
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="flex-container">
+            <label class="label min-width-align">Năm sinh</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput [(ngModel)]="searchData.yearOfBirth">
+            </mat-form-field>
+        </div>
+        <div class="flex-container flex-span-2">
+            <label class="label min-width-align">Địa chỉ</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput [(ngModel)]="searchData.addressSearch" (keyup)="generateAutoPatientByAddress($event)"
+                    [matAutocomplete]="autoPatientAddress">
+                <mat-autocomplete autoActiveFirstOption #autoPatientAddress="matAutocomplete">
+                    <mat-option *ngFor="let d of autoByAddress" [value]="d.value" [innerHTML]="d.valueDisplay">
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="flex-container">
+            <label class="label min-width-align">Giới tính</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <mat-select [(ngModel)]="searchData.gender">
+                    <mat-option value="0">Nam</mat-option>
+                    <mat-option value="1">Nữ</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="flex-container flex-content-right mt-2">
+        <button mat-raised-button class="btn-main-color" (click)="searchPatient()">
+            <i class="fas fa-search"></i> <span class="ml-1"> Tìm kiếm</span>
+        </button>
+        <button mat-raised-button class="ml-2 btn-orange " (click)="reset()">
+            <i class="fas fa-sync-alt"></i> <span class="ml-1"> Nhập lại</span>
+        </button>
+    </div>
+    <div class="mt-3 ">
+        <div class="table-custom set-media-query">
+            <ul class="table-header">
+                <li class="header-col stt">
+                    #
+                </li>
+                <li class="header-col width-10 text-left">
+                    Mã BN
+                </li>
+                <li class="header-col width-auto text-left">
+                    Tên bệnh nhân
+                </li>
+                <li class="header-col width-15 text-left">
+                    Địa chỉ
+                </li>
+                <li class="header-col width-10 text-left">
+                    Ngày sinh
+                </li>
+                <li class="header-col width-10 text-left">
+                    Giới tính
+                </li>
+                <li class="header-col width-15 text-left">
+                    Điện thoại
+                </li>
+                <li class="header-col width-10 text-left">
+                    Công nợ
+                </li>
+                <li class="header-col width-10 text-right">
+                    Hành động
+                </li>
+            </ul>
+            <div class="table-content">
+                <ul class="content-row" *ngIf="patientList.length == 0">
+                    <li class="content-col no-data">
+                        no data
+                    </li>
+                </ul>
+                <app-loading *ngIf="isLoading"></app-loading>
+                <div *ngIf="!isLoading">
+                    <ul class="content-row " *ngFor="let item of patientList; let i = index">
+                        <li class="content-col stt text-left ">
+                            {{i+1+pageIndex*pageSize}}
+                        </li>
+                        <li class="content-col width-10 text-left ">
+                            {{item.patientCode}}
+                        </li>
+                        <li class="content-col width-auto text-left ">
+                            {{item.patientName}}
+                        </li>
+                        <li class="content-col width-15 text-left ">
+                            {{item.address}}
+                        </li>
+                        <li class="content-col width-10 text-left">
+                            {{item.dateOfBirth | date: 'dd/MM/yyyy'}}
+                        </li>
+                        <li class="content-col width-10 text-left ">
+                            {{item.gender == 0 ? 'Nam' : 'Nữ'}}
+                        </li>
+                        <li class="content-col width-15 text-left ">
+                            {{item.phone}}
+                        </li>
+                        <li class="content-col width-10 text-left ">
+                            {{item.debt}}
+                        </li>
+                        <li class="content-col width-10 text-right">
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-outline-secondary btn-sm" (click)="moveToDetail(item.id)" title="Xem lịch sử khám bệnh">
+                                    <i class="fas fa-file"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editPatient(item)"
+                                    title="Sửa thông tin bệnh nhân"><i class="fas fa-pen"></i></button>
+                                <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deletePatient(item.id)"
+                                    title="Xóa bệnh nhân">
+                                    <i class="fas fa-trash"></i></button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+
+    </div>
+
+</div>

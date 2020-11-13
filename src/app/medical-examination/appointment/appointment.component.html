@@ -1,0 +1,189 @@
+<div class="card-custom">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="header m-0">Đăng kí hẹn khám</h2>
+            </div>
+            <form [formGroup]="patientForm">
+                <div class="row mb-1">
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Tên bệnh nhân</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
+                                autocomplete="off" #inputName>
+                            <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
+                                [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                            </app-patient-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Số điện thoại</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="phone" autocomplete="off" #inputPhone
+                                (keyup)="generateAutoPatientByPhone($event)" maxlength="10">
+                            <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
+                                [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
+                            </app-patient-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Loại khám</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <mat-select>
+                                <mat-option>Hẹn khám</mat-option>
+                                <mat-option>Khám lại</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Bác sĩ</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <mat-select (selectionChange)="doctorChange($event)" formControlName="doctorId">
+                                <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id">
+                                    {{ doctor.fullName }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Ngày hẹn</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput [matDatepicker]="picker2" formControlName="appointmentDate">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4 d-flex">
+                        <label class="label min-width-align">Giờ hẹn</label>
+                        <div class="input-fixed time-picker">
+                            <ngx-timepicker-field [controlOnly]="true" formControlName="appointmentHour">
+                            </ngx-timepicker-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 d-flex align-items-center">
+                        <label class="label min-width-align">Lý do khám</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <textarea matInput rows="2" formControlName="examinationReason"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end action">
+                        <button mat-raised-button class="btn-main-color ml-2">
+                            <i class="fas fa-save"></i> <span class="ml-1">
+                                Lưu
+                            </span>
+                        </button>
+                        <button mat-raised-button class="ml-2 btn-orange " (click)="resetInput()">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="ml-1">
+                                Nhập lại
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class=" table-custom mt-3 set-media-query">
+                <ul class="table-header">
+                    <li class="header-col stt text-center">
+                        #
+                    </li>
+                    <li class="header-col width-10 text-left">
+                        Giờ hẹn
+                    </li>
+                    <li class="header-col width-15 text-left">
+                        Tên bệnh nhân
+                    </li>
+                    <li class="header-col width-15 text-left">
+                        Số điện thoại
+                    </li>
+                    <li class="header-col width-15 text-left">
+                        Bác sĩ
+                    </li>
+                    <li class="header-col width-auto text-left">
+                        Lí do khám
+                    </li>
+                    <li class="header-col width-15 text-right">
+                        Trạng thái
+                    </li>
+                </ul>
+    
+                <div class="table-content ">
+                    <ul class="content-row" *ngIf="listAppointment.length ==0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                    <ul class="list-by-date" *ngFor="let item of listAppointment">
+                        <li class="date" (click)="item.isShow = !item.isShow">
+                            <i class="fas  mr-1"
+                                [ngClass]="{'fa-chevron-down': !item.isShow,'fa-chevron-right': item.isShow}"></i> Ngày
+                            20/11
+                        </li>
+                        <li class="list-data" [ngClass]="{'hide': item.isShow}">
+                            <ul class="content-row ">
+                                <li class="content-col stt text-center">
+                                    #
+                                </li>
+                                <li class="content-col width-10 text-left">
+                                    Giờ hẹn
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Số điện thoại
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Bác sĩ
+                                </li>
+                                <li class="content-col width-auto text-left">
+                                    Lí do
+                                </li>
+                                <li class="content-col width-15 text-right">
+                                   Trạng thái
+                                </li>
+                            </ul>
+                            <ul class="content-row ">
+                                <li class="content-col stt text-center">
+                                    #
+                                </li>
+                                <li class="content-col width-10 text-left">
+                                    Giờ hẹn
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân Tên bệnh nhân
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Số điện thoại
+                                </li>
+                                <li class="content-col width-15 text-left">
+                                    Bác sĩ
+                                </li>
+                                <li class="content-col width-auto text-left">
+                                    Lí do
+                                </li>
+                                <li class="content-col width-15 text-right">
+                                   Trạng thái
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+    
+                </div>
+    
+            </div>
+            <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        </div>
+    </div>
+</div>

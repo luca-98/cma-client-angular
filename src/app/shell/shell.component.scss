@@ -1,0 +1,190 @@
+@import "../../main-theme.scss";
+
+
+.sidenav-container {
+  .light-colors {
+    background-color: mat-color($primary, default);
+    color: mat-contrast($primary, 500);
+  }
+
+  .side-nav {
+    width: 250px;
+    box-shadow: 0 8px 10px 0 rgba(183, 192, 206, .2);
+
+    @media (max-width: 1212px) {
+      width: 200px;
+    }
+
+    @media (max-width: 1160px) {
+      width: 180px;
+    }
+
+
+
+    .list-sb {
+      padding-top: 0;
+    }
+  }
+
+  .side-nav-right {
+    margin-top: 64px;
+  }
+
+  .progress-area {
+    height: 4px;
+    width: 100%;
+    clear: both;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .main-content {
+    padding: 10px 5px;
+    padding-bottom: 0;
+    background-color: $cma-background;
+    margin-top: 60px;
+    overflow: auto;
+    max-height: calc(100vh - 64px)!important;
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 10px;
+    }
+  }
+
+  .nav-area {
+    height: 64px;
+
+    .logo {
+      padding-top: 15px;
+      text-align: center;
+      color: $main-color;
+      font-size: 25px;
+    }
+  }
+
+  .side-menu {
+    background: $side-menu-background;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+    height: 64px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+
+    mat-toolbar {
+      a {
+        text-decoration: none !important;
+      }
+    }
+
+    button {
+      &:hover {
+        color: $main-color;
+      }
+    }
+
+    .mat-flat-button {
+      background-color: $main-color;
+      color: white;
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+
+  .logo-user {
+    position: fixed;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+
+    .dropdown-menu {
+      position: absolute;
+      display: block;
+      top: 50px;
+      left: 50px;
+      transform: translateX(-100%);
+      padding-top: 0;
+      overflow: hidden;
+      visibility: hidden;
+      transition: visibility 0.3s, opacity 0s linear;
+
+      .user-header {
+        background-color: rgba($gray, 0.2);
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+
+        .user-text {
+          margin-left: 10px;
+        }
+
+        .user-text h6 {
+          margin-bottom: 2px;
+        }
+      }
+
+    }
+
+    &:hover {
+      .dropdown-menu {
+        visibility: visible;
+      }
+    }
+  }
+
+  .profile-usertitle {
+    padding: 16px 0px;
+
+    .avatar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0px 20px 0px;
+
+      img {
+        border: 4px solid white;
+        border-radius: 10px;
+        box-shadow: 0px 5px 25px 10px rgba($gray, 0.5);
+      }
+    }
+
+    .info {
+      text-align: center;
+
+      .sidebar-userpic-name {
+        font-size: 18px;
+      }
+
+      .profile-usertitle-job {
+        font-weight: 300;
+
+      }
+    }
+  }
+
+  .left-menu-content {
+    overflow: auto;
+    max-height: calc(100% - 306px);
+    border:1px solid $gray;
+  }
+
+  .version {
+    position: fixed;
+    bottom: 0;
+    width: 249px;
+    text-align: center;
+    padding: 10px;
+  }
+
+
+  .loader-area {
+    position: fixed;
+    top: 64px;
+    z-index: 99;
+    width: 100%;
+  }
+}

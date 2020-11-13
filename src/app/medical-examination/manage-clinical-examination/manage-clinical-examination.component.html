@@ -1,0 +1,194 @@
+<div class="full-width card-custom">
+    <div class="mb-2">
+        <form [formGroup]="searchForm">
+            <div class="flex-container flex-content-between">
+                <h2 class="header">Tìm kiếm phiếu khám</h2>
+                <h3 style="font-weight: bold;">Số thứ tự khám mới tiếp theo: {{nextOrdinalNumber}}</h3>
+            </div>
+            <div class="grid-container g-template-1">
+                <div class="flex-container">
+                    <label class="label min-width-align">Từ ngày</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [matDatepicker]="picker1" [max]="today" formControlName="fromDate"
+                            (dateChange)="onFromDateChange()">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Đến ngày</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [matDatepicker]="picker2" [min]="this.searchForm.get('fromDate').value"
+                            [max]="today" formControlName="toDate" (dateChange)="onToDateChange()">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div></div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Phòng khám</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select (selectionChange)="roomChange($event)" formControlName="roomId">
+                            <mat-option *ngFor="let room of roomList" [value]="room.id">{{ room.roomName }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Bác sĩ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select (selectionChange)="doctorChange($event)" formControlName="doctorId">
+                            <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id">
+                                {{ doctor.fullName }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Trạng thái</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select formControlName="status" (selectionChange)="statusChange()">
+                            <mat-option value="-1">Tất cả</mat-option>
+                            <mat-option value="1">Chưa khám</mat-option>
+                            <mat-option value="2">Đang khám</mat-option>
+                            <mat-option value="3">Chờ lấy kết quả CLS</mat-option>
+                            <mat-option value="4">Đã lấy kết quả CLS</mat-option>
+                            <mat-option value="5">Đã khám xong</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Số hồ sơ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="clinicalExamCode" (keyup)="generateAutoExamCode($event)"
+                            [matAutocomplete]="autoClinicalExamCode">
+                        <mat-autocomplete autoActiveFirstOption #autoClinicalExamCode="matAutocomplete">
+                            <mat-option *ngFor="let d of autoExamCode" [value]="d.value" [innerHTML]="d.valueDisplay">
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Mã bệnh nhân</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="patientCode" (keyup)="generateAutoPatientCode($event)"
+                            [matAutocomplete]="autoByPatientCode">
+                        <mat-autocomplete autoActiveFirstOption #autoByPatientCode="matAutocomplete">
+                            <mat-option *ngFor="let d of autoPatientCode" [value]="d.value"
+                                [innerHTML]="d.valueDisplay">
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <label class="label min-width-align">Số điện thoại</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="phone" (keyup)="generateAutoPhone($event)"
+                            [matAutocomplete]="autoByPhone">
+                        <mat-autocomplete autoActiveFirstOption #autoByPhone="matAutocomplete">
+                            <mat-option *ngFor="let d of autoPhone" [value]="d.value" [innerHTML]="d.valueDisplay">
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="flex-container flex-content-right action mt-3">
+        <button mat-raised-button class="btn-main-color" (click)="search()">
+            <i class="fas fa-search"></i>
+            <span class="ml-1">
+                Tìm kiếm
+            </span>   
+        </button>
+        <button mat-raised-button class="ml-2 btn-orange" (click)="resetInput()">
+            <i class="fas fa-sync-alt"></i>
+            <span class="ml-1">
+                Nhập lại
+            </span>  
+        </button>
+    </div>
+    <div class="table-custom mt-3 set-media-query">
+        <mat-paginator [length]="totalRecord" [pageSize]="pageSize" [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        <ul class="table-header">
+            <li class="header-col stt text-center">
+                #
+            </li>
+            <li class="header-col width-15 text-left">
+                Ngày khám
+            </li>
+            <li class="header-col width-10 text-left">
+                Số hồ sơ
+            </li>
+            <li class="header-col width-10 text-left">
+                Mã BN
+            </li>
+            <li class="header-col width-auto text-left">
+                Tên bệnh nhân
+            </li>
+            <li class="header-col width-10 text-left">
+                Địa chỉ
+            </li>
+            <li class="header-col width-10 text-left">
+                Điện thoại
+            </li>
+            <li class="header-col width-15 text-left">
+                Trạng thái
+            </li>
+            <li class="header-col width-10 text-right">
+                Hành động
+            </li>
+        </ul>
+        <div class="table-content">
+            <ul class="content-row" *ngIf="clinicalExamList.length == 0">
+                <li class="content-col no-data">
+                    Không có dữ liệu
+                </li>
+            </ul>
+            <ul class="content-row" *ngFor="let m of clinicalExamList, let i = index">
+                <li class="content-col stt text-center ">
+                    {{i+1+pageIndex*pageSize}}
+                </li>
+                <li class="content-col width-15 text-left">
+                    {{m.dayOfExam | date: 'dd/MM/yyyy HH:mm'}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{m.medicalExaminationCode}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{m.patientCode}}
+                </li>
+                <li class="content-col width-auto text-left ">
+                    {{m.patientName}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{m.address}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{m.phone}}
+                </li>
+                <li class="content-col width-15 text-left ">
+                    {{m.status == '1' ? 'Chưa khám' : 
+                        (m.status == '2' ? 'Đang khám' : 
+                            (m.status == '3' ? 'Chờ lấy kết quả CLS' : 
+                                (m.status == '4' ? 'Đã lấy kết quả CLS' : 'Đã khám xong')
+                            )
+                        )
+                    }}
+                </li>
+                <li class="content-col width-10 text-left">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="moveToClinicalExam(m.id)" title="Chuyển đến lập phiếu khám">
+                            <i class="fas fa-file"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm ml-1" title="Sửa thông tin bệnh nhân" title="Xem thông tin phiếu khám">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

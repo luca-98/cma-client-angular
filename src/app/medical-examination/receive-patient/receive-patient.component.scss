@@ -1,0 +1,27 @@
+@import "../../../main-theme.scss";
+
+.card-custom {
+  width: 100%;
+}
+
+.action {
+  margin-top: 10px;
+
+  button {
+    min-width: 140px;
+  }
+}
+
+.box-receive-left {
+  flex: 1;
+}
+
+.box-receive-right {
+  width: 320px;
+ 
+}
+@media only screen and (min-width: 1920px) {
+  .set-media-query .table-content {
+    max-height: 490px !important;
+  }
+}

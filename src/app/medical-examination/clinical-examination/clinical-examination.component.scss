@@ -1,0 +1,37 @@
+.g-template-1 {
+    grid-column-gap: 20px;
+    grid-template-columns: auto auto auto;
+}
+
+.g-template-2 {
+    grid-column-gap: 20px;
+    grid-template-columns: auto auto auto auto;
+}
+
+.g-template-3 {
+    grid-column-gap: 20px;
+    grid-template-columns: auto auto auto auto auto auto;
+}
+
+.disease-code {
+    width: 15%;
+}
+
+// .left-box {
+//     padding-right: 10px;
+// }
+
+.right-box {
+    width: 260px;
+    .card-custom {
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+    }
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+

@@ -1,0 +1,358 @@
+<div class="mb-1">
+    <div class="d-flex w-100">
+        <div class=" pl-0 pr-0 box-receive-left" id="top">
+            <div class="card-custom h-100 mb-0">
+                <form [formGroup]="receiveForm " >
+                    <div class="administrative-info">
+                        <div class="mb-2">
+                            <h2 class="header">Thông tin hành chính</h2>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Mã bệnh nhân</label>
+                                <mat-form-field appearance="outline" class="input-fixed" (dblclick)="doubleClick()">
+                                    <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
+                                        (keyup)="generateAutoPatientByPatientCode($event)" (blur)="onBlurPatientCode()">
+                                    <app-patient-autocomplete [autocomplete]="inputPatientCode"
+                                        [patients]="autoByPatientCode" [keySearch]="'patientCode'"
+                                        (selectedRow)="autoSelected($event)">
+                                    </app-patient-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Tên bệnh nhân</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="patientName"
+                                        (keyup)="generateAutoPatientByName($event)" autocomplete="off" #inputName>
+                                    <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
+                                        [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                                    </app-patient-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Số điện thoại</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="phone" autocomplete="off" #inputPhone
+                                        (keyup)="generateAutoPatientByPhone($event)" maxlength="10" (input)="onPhoneInput()">
+                                    <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
+                                        [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
+                                    </app-patient-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 d-flex align-items-center">
+                                <label class="label min-width-align">Ngày sinh</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth"
+                                        [max]="today" (dateChange)="onDobChange()">
+                                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-8 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Địa chỉ</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="address" [matAutocomplete]="autoByAddress" (keyup)="generateAutoAddress($event)">
+                                    <mat-autocomplete autoActiveFirstOption #autoByAddress="matAutocomplete">
+                                        <mat-option *ngFor="let d of autoAddress" [value]="d.value"
+                                            [innerHTML]="d.valueDisplay">
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4  d-flex align-items-center">
+                                <label class="label min-width-align">Giới tính</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <mat-select formControlName="gender">
+                                        <mat-option value="0">Nam</mat-option>
+                                        <mat-option value="1">Nữ</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <hr>
+                    <div class="exam-info">
+                        <div class="mb-2">
+                            <h2 class="header">Thông tin khám</h2>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Ngày</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput [value]="time | date:'dd/MM/yyyy HH:mm'" disabled>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Số thứ tự</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="ordinalNumber" disabled>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 d-flex align-items-center">
+                                <label class="label min-width-align">Tiền khám</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="clinicalExamPrice" disabled>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Phòng khám</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <mat-select (selectionChange)="roomChange($event)" formControlName="roomId"
+                                        [disabled]="isEditReceive">
+                                        <mat-option *ngFor="let room of roomList" [value]="room.id">{{ room.roomName }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4 pr-0 d-flex align-items-center">
+                                <label class="label min-width-align">Bác sĩ</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <mat-select (selectionChange)="doctorChange($event)" formControlName="doctorId"
+                                        [disabled]="isEditReceive">
+                                        <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id">
+                                            {{ doctor.fullName }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4  d-flex align-items-center">
+                                <label class="label min-width-align">Tổng nợ</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <input matInput formControlName="debt" disabled>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12 d-flex align-items-center">
+                                <label class="label min-width-align">Lý do khám</label>
+                                <mat-form-field appearance="outline" class="input-fixed">
+                                    <textarea matInput rows="2" formControlName="examinationReason"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="d-flex justify-content-end flex-wrap action">
+                        <button mat-raised-button class="mt-1 btn-main-color" (click)="save()" type="submit">
+                            <i class="fas fa-save "></i>
+                            <span class="ml-1">
+                                {{isEditReceive ? 'Cập nhật': 'Lưu'}}
+                            </span>
+                        </button>
+                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive">
+                            <i class="fas fa-print "></i>
+                            <span class="ml-1">In số thứ tự</span>
+                        </button>
+                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive">
+                            <i class="fas fa-receipt"></i>
+                            <span class="ml-1"> Chuyển thanh toán</span>
+                        </button>
+                        <button mat-raised-button class="ml-2 mt-1 btn-orange" (click)="resetInput()">
+                            <i class="fas fa-sync-alt "></i>
+                            <span class="ml-1">Nhập lại</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class=" pl-0 pr-0 box-receive-right">
+            <div class="card-custom h-100 mb-0 pl-0">
+                <div>
+                    <h2 class="header">Thông tin phòng khám</h2>
+                </div>
+                <div class="table-custom">
+                    <ul class="table-header">
+                        <li class="header-col col-6 ">
+                            Phòng khám
+                        </li>
+                        <li class="header-col col-3 pl-0">
+                            Tiếp đón
+                        </li>
+                        <li class="header-col col-3 pl-0">
+                            Đã khám
+                        </li>
+                    </ul>
+                    <div class="table-content">
+                        <ul class="content-row" *ngIf="roomList.length == 0">
+                            <li class="content-col no-data">
+                                Không có dữ liệu
+                            </li>
+                        </ul>
+                        <ul class="content-row" *ngFor="let r of roomList">
+                            <li class="content-col col-6 ">
+                                {{r.roomName}}
+                            </li>
+                            <li class="content-col col-3 pl-0">
+                                {{r.totalReceive}}
+                            </li>
+                            <li class="content-col col-3 pl-0">
+                                {{r.totalDone}}
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="table-footer">
+                        <li class="footer-col col-6 ">
+                            Tổng cộng
+                        </li>
+                        <li class="footer-col col-3 pl-0">
+                            {{totalReceive()}}
+                        </li>
+                        <li class="footer-col col-3 pl-0">
+                            {{totalDone()}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="list-receive card-custom">
+    <div class="flex-container flex-content-between">
+        <h2 class="header">Danh sách tiếp đón</h2>
+        <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <div class="table-custom mt-3 set-media-query">
+        <ul class="table-header">
+            <li class="header-col text-center stt">
+                #
+            </li>
+            <li class="header-col width-10 text-left">
+                Ngày khám
+            </li>
+            <li class="header-col width-10 text-left">
+                Phòng khám
+            </li>
+            <li class="header-col width-10 text-left">
+                Mã BN
+            </li>
+            <li class="header-col width-auto text-left">
+                Tên bệnh nhân
+            </li>
+            <li class="header-col width-10 text-left">
+                Điện thoại
+            </li>
+            <li class="header-col width-15 text-left">
+                Bác sĩ
+            </li>
+            <li class="header-col width-15 text-left">
+                Trạng thái
+            </li>
+            <li class="header-col width-10 text-right">
+                Hành động
+            </li>
+        </ul>
+
+        <ul class="table-header-search">
+            <li class="header-col text-center stt">
+                <i class="fas fa-search"></i>
+            </li>
+            <li class="header-col width-10 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [matDatepicker]="pickerTable">
+                    <!-- <mat-datepicker-toggle matSuffix [for]="pickerTable"></mat-datepicker-toggle> -->
+                    <mat-datepicker #pickerTable color="primary"></mat-datepicker>
+                </mat-form-field>
+            </li>
+            <li class="header-col width-10 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput value="">
+                </mat-form-field>
+            </li>
+            <li class="header-col width-10 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput value="">
+                </mat-form-field>
+            </li>
+            <li class="header-col width-auto text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput value="">
+                </mat-form-field>
+            </li>
+            <li class="header-col width-10 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput value="">
+                </mat-form-field>
+            </li>
+            <li class="header-col width-15 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput value="">
+                </mat-form-field>
+            </li>
+            <li class="header-col width-15 text-left text-truncate">
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select>
+                        <mat-option value="option1">Chưa khám</mat-option>
+                        <mat-option value="option2">Chờ lấy kết quả CLS</mat-option>
+                        <mat-option value="option3">Đã lấy kết quả CLS</mat-option>
+                        <mat-option value="option3">Đã khám xong</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </li>
+            <li class="header-col width-10 text-right">
+            </li>
+        </ul>
+
+        <div class="table-content ">
+            <ul class="content-row" *ngIf="receiveList.length == 0">
+                <li class="content-col no-data">
+                    Không có dữ liệu
+                </li>
+            </ul>
+            <app-loading *ngIf="isLoading"></app-loading>
+            <ul class="content-row " *ngFor="let e of receiveList; let i = index">
+                <li class="content-col  text-center stt ">
+                    {{i+1+pageIndex*pageSize}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{e.createdAt | date: 'dd/MM/yyyy'}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{e.roomService.roomName}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{e.patient.patientCode}}
+                </li>
+                <li class="content-col width-auto text-left ">
+                    {{e.patient.patientName}}
+                </li>
+                <li class="content-col width-10 text-left ">
+                    {{e.patient.phone}}
+                </li>
+
+                <li class="content-col width-15 text-left ">
+                    {{e.staff.fullName}}
+                </li>
+                <li class="content-col width-15 text-left ">
+                    {{e.status == 0 ? 'Đã hủy' : (e.status == 1 ? 'Chưa khám' : (e.status == 2 ? 'Đang khám' : 'Đã khám xong'))}}
+                </li>
+                <li class="content-col width-10 text-left">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editInfo(e)"
+                            [disabled]="e.status == 0 || e.status == 5 || ((e.createdAt | date:'yMMdd') != (time | date:'yMMdd'))" title="Sửa thông tin bệnh nhân">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm ml-1" (click)="cancelReceive(e)"
+                            [disabled]="e.status != 1" title="Hủy tiếp đón bệnh nhân">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>

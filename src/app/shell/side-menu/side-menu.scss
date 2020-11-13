@@ -1,0 +1,32 @@
+@import "../../../main-theme.scss";
+.side-menu-icon {
+  font-size: 20px !important;
+  margin-top: 2px;
+  padding: 0 4px 0 0 !important;
+  text-align: center;
+}
+
+
+
+
+.list-sb {
+  a[mat-list-item] {
+    transition: 0.2s all;
+
+    &:hover {
+      color: $main-color;
+    }
+  }
+
+  .item-active {
+    color: #fff;
+    background-color: $main-color;
+
+    &:hover {
+      color: #fff!important;
+      background-color: $main-color!important;
+    }
+  }
+
+
+}

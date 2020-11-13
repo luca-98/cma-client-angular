@@ -1,0 +1,18 @@
+@import "~@angular/material/_theming.scss";
+
+$cma-background: #ffffff;
+$primary: mat-palette($mat-indigo);
+$accent: mat-palette($mat-pink, A200, A100, A400);
+$warn: mat-palette($mat-red);
+$main-color : #009688;
+$orange: #ff5722;
+$blue:#2196f3;
+$green:#4caf50;
+$gray: #eaeef3;
+$side-menu-background: #ffffff;
+
+$theme: mat-light-theme((color: (primary: $primary,
+      accent: $accent,
+      warn: $warn,
+    ),
+  ));

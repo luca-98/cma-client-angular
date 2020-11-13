@@ -1,0 +1,265 @@
+<form [formGroup]="examForm">
+    <div class="d-flex">
+        <div class="left-box">
+            <div class="card-custom h-100 mb-0">
+                <div class="mb-2">
+                    <div class="flex-container flex-content-between">
+                        <h2 class="header">Thông tin hành chính</h2>
+                        <h3 style="color: red; font-weight: bold;">
+                            {{this.examForm.get('payingStatus').value == 0 ? 'Chưa thanh toán' : 'Đã thanh toán'}}</h3>
+                    </div>
+
+                    <div class="grid-container g-template-1 ">
+                        <div class="flex-container">
+                            <label class="label min-width-align">Mã bệnh nhân</label>
+                            <mat-form-field appearance="outline" class="input-fixed" (dblclick)="doubleClick()">
+                                <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
+                                    (keyup)="generateAutoPatientByPatientCode($event)" (blur)="onBlurPatientCode()">
+                                <app-patient-autocomplete [autocomplete]="inputPatientCode"
+                                    [patients]="autoByPatientCode" [keySearch]="'patientCode'"
+                                    (selectedRow)="autoSelected($event)">
+                                </app-patient-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Tên bệnh nhân</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="patientName"
+                                    (keyup)="generateAutoPatientByName($event)" autocomplete="off" #inputName>
+                                <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
+                                    [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                                </app-patient-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Ngày sinh</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                                    (dateChange)="onDobChange()">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Địa chỉ</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="address" [matAutocomplete]="autoByAddress"
+                                    (keyup)="generateAutoAddress($event)">
+                                <mat-autocomplete autoActiveFirstOption #autoByAddress="matAutocomplete">
+                                    <mat-option *ngFor="let d of autoAddress" [value]="d.value"
+                                        [innerHTML]="d.valueDisplay">
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Số điện thoại</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="phone" autocomplete="off" #inputPhone maxlength="10"
+                                    (keyup)="generateAutoPatientByPhone($event)" (input)="onPhoneInput()">
+                                <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
+                                    [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
+                                </app-patient-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Giới tính</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <mat-select formControlName="gender">
+                                    <mat-option value="0">Nam</mat-option>
+                                    <mat-option value="1">Nữ</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-2">
+                    <div>
+                        <h2 class="header">Thông tin khám</h2>
+                    </div>
+                    <div class="grid-container g-template-1 ">
+                        <div class="flex-container flex-span-2">
+                            <label class="label min-width-align">Ngày</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput
+                                    [value]="this.examForm.get('createdAt').value | date: 'dd/MM/yyyy HH:mm'" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Tiền khám</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="clinicalExamPrice" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Phòng khám</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="room" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Bác sĩ</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="doctor" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label min-width-align">Tổng nợ</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="debt" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container flex-span-3">
+                            <label class="label min-width-align">Lý do khám</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <textarea matInput rows="2" formControlName="examinationReason"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-2">
+                    <div>
+                        <h2 class="header">Khám lâm sàng</h2>
+                    </div>
+                    <div class="grid-container g-template-3 ">
+                        <div class="flex-container">
+                            <label class="label min-width-align">Mạch</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="bloodVessel">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label no-wrap">Huyết áp</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="bloodPressure">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label no-wrap">Nhịp thở</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="breathing">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label no-wrap">Nhiệt độ</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="temperature">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label no-wrap">Chiều cao</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="height">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex-container">
+                            <label class="label no-wrap">Cân nặng</label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="weight">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="flex-container">
+                        <label class="label min-width-align">Triệu chứng</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <textarea matInput rows="2" formControlName="symptom"></textarea>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-container">
+                        <label class="label min-width-align">Bệnh chính</label>
+                        <mat-form-field appearance="outline" class="input-fixed disease-code">
+                            <input matInput formControlName="mainDiseaseCode" autocomplete="off" #inputMainDiseaseCode
+                                (keyup)="generateAutoDiseaseByCode($event, 1)">
+                            <app-auto-disease [autocomplete]="inputMainDiseaseCode" [datas]="autoIcd10CodeMain"
+                                [keySearch]="'icd10Code'" (selectedRow)="autoSelectedDisease($event, 1)">
+                            </app-auto-disease>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="mainDisease" autocomplete="off" #inputMainDiseaseName
+                                (keyup)="generateAutoDiseaseByName($event, 1)">
+                            <app-auto-disease [autocomplete]="inputMainDiseaseName" [datas]="autoDiseaseNameMain"
+                                [keySearch]="'diseaseName'" (selectedRow)="autoSelectedDisease($event, 1)">
+                            </app-auto-disease>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-container">
+                        <label class="label min-width-align">Bệnh phụ</label>
+                        <mat-form-field appearance="outline" class="input-fixed disease-code">
+                            <input matInput formControlName="extraDiseaseCode" autocomplete="off" #inputExtraDiseaseCode
+                                (keyup)="generateAutoDiseaseByCode($event, 2)">
+                            <app-auto-disease [autocomplete]="inputExtraDiseaseCode" [datas]="autoIcd10CodeExtra"
+                                [keySearch]="'icd10Code'" (selectedRow)="autoSelectedDisease($event, 2)">
+                            </app-auto-disease>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="extraDisease" autocomplete="off" #inputExtraDiseaseName
+                                (keyup)="generateAutoDiseaseByName($event, 2)">
+                            <app-auto-disease [autocomplete]="inputExtraDiseaseName" [datas]="autoDiseaseNameExtra"
+                                [keySearch]="'diseaseName'" (selectedRow)="autoSelectedDisease($event, 2)">
+                            </app-auto-disease>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-container">
+                        <label class="label min-width-align">Kết luận</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <textarea matInput rows="2" formControlName="summary"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-box">
+            <div class="card-custom h-100 mb-0 ">
+                <div>
+                    <button mat-raised-button class="btn-main-color"
+                        routerLink="/medical-examination/clinical-examination/appoint-subclinical" (click)="moveToAppoint()" [disabled]="!enableFuncBtn">
+                        Chỉ định dịch vụ cận lâm sàng
+                    </button>
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn">Xem kết quả cận lâm
+                        sàng</button>
+                    <button mat-raised-button class="btn-main-color"
+                        routerLink="/medical-examination/clinical-examination/prescriptions" (click)="moveToPrescriptions()"
+                        [disabled]="!enableFuncBtn">Kê đơn thuốc</button>
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn">
+                        <i class="fas fa-print"></i>
+                        <span class="ml-1">In phiếu khám bệnh</span>
+                    </button>
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn">
+                        <i class="fas fa-receipt"></i>
+                        <span class="ml-1">Chuyển thanh toán</span>
+                    </button>
+
+                    <button mat-raised-button class="btn-orange" (click)="resetInput()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="ml-1">Nhập lại</span>
+                    </button>
+                </div>
+
+                <div>
+                    <button mat-raised-button class="btn-orange" [disabled]="!enableFuncBtn"
+                        (click)="cancelMedicalExam()">Hủy khám</button>
+                    <button mat-raised-button class="btn-main-color" (click)="save(true)" type="submit">
+                        <i class="fas fa-save"></i>
+                        <span class="ml-1">Lưu</span>
+                    </button>
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn"
+                        (click)="medicalExamDone()">Kết thúc khám</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</form>

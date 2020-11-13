@@ -1,0 +1,108 @@
+<div class=" card-custom mb-0">
+    <div class="info">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="header m-0">Thông tin xuất thuốc</h2>
+        </div>
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Khoảng ngày</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate placeholder="Ngày bắt đầu">
+                        <input matEndDate placeholder="Ngày kết thúc">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Số toa</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tên người xuất</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button mat-raised-button class="btn-main-color">
+                    <i class="fas fa-search"></i>
+                    <span class="ml-1">
+                        Tìm
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-orange ">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="box-table">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="header m-0">Danh sách xuất thuốc</h2>
+            <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        </div>
+
+        <div class="table-custom mt-3 set-media-query">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-20 text-left">
+                    Số toa
+                </li>
+                <li class="header-col width-20 text-left">
+                    Ngày
+                </li>
+                <li class="header-col width-auto text-left">
+                    Tên người xuất
+                </li>
+                <li class="header-col width-10 text-left">
+                    Xem chi tiết
+                </li>
+            </ul>
+
+            <div class="table-content">
+                <!-- <ul class="content-row">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul> -->
+                <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                <ul class="content-row ">
+                    <li class="content-col stt text-center text-truncate">
+                        1
+                    </li>
+                    <li class="content-col width-20 text-left text-truncate">
+                        123
+                    </li>
+                    <li class="content-col width-20 text-left text-truncate">
+                        10/05/1998
+                    </li>
+                    <li class="content-col width-auto text-left text-truncate">
+                        Nguyễn đứuc thiện
+                    </li>
+                    <li class="content-col width-10 text-center text-truncate">
+                        <button class="btn btn-outline-secondary btn-sm" title="Xem chi tiết"
+                           >
+                            <i class="fas fa-file"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>

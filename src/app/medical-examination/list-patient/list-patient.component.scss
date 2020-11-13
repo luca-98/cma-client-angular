@@ -1,0 +1,16 @@
+.grid-template-1 {
+  grid-column-gap: 20px;
+  grid-template-columns: auto auto auto;
+}
+
+.table-container {
+  margin-top: 20px;
+  padding: 0;
+}
+
+@media only screen and (min-width: 1920px) {
+  .set-media-query .table-content {
+    max-height: 490px !important;
+  }
+
+}

@@ -1,0 +1,29 @@
+<div class="autocomplete" *ngIf="isDisplay">
+
+    <table class="table table-bordered table-hover" [style.max-height.px]="maxHeight">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã bệnh nhân</th>
+                <th>Tên bệnh nhân</th>
+                <th>Ngày sinh</th>
+                <th>Địa chỉ</th>
+                <th>Số điện thoại</th>
+            </tr>
+        </thead>
+        <tbody #tableBody>
+            <!-- <tr>
+                <td colspan="5">
+                    <app-loading></app-loading>
+                </td>
+            </tr> -->
+            <tr *ngFor="let patient of listPatient; let i = index" (click)="selectRow(patient.id)"
+                [className]="i == indexSelect ? 'selected' : ''">
+                <td [innerHtml]="patient.patientCode"></td>
+                <td [innerHtml]="patient.patientName"></td>
+                <td>{{ patient.dateOfBirth | date:'dd/MM/yyyy' }}</td>
+                <td [innerHtml]="patient.address"></td>
+                <td [innerHtml]="patient.phone"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
