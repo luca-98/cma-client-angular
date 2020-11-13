@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // apiUrl: 'http://localhost:8080',
-  apiUrl: 'http://117.1.234.205/api',
+  apiUrl: 'http://171.245.8.87/api',
   brokerURL: 'ws://localhost:8080/ws',
 };
 

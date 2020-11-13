@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class MedicineService {
 
     private medicineUrl = environment.apiUrl + '/medicine/';
+    private prescriptionUrl = environment.apiUrl + '/prescription/';
 
     constructor(
         private http: HttpClient
@@ -20,12 +21,22 @@ export class MedicineService {
         return this.http.get(url, { params });
     }
 
-    searchMedicineByName(name){
+    searchMedicineByName(name) {
         const url = this.medicineUrl + 'search-medicine-by-name';
         const params = new HttpParams().set('medicineName', name);
         return this.http.get(url, { params });
     }
 
+    getPrescriptionByMedicalexamId(medicalExamId) {
+        const url = this.prescriptionUrl + 'get-prescription-by-medicalexamId';
+        const params = new HttpParams().set('medicalExamId', medicalExamId);
+        return this.http.get(url, { params });
+    }
+
+    updatepPrescription(postData) {
+        const url = this.prescriptionUrl + 'update-prescription';
+        return this.http.post(url, postData);
+    }
 
 
 

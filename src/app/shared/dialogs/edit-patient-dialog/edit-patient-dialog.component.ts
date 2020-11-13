@@ -75,6 +75,9 @@ export class EditPatientDialogComponent implements OnInit {
       this.openNotifyDialog('Lỗi', 'Địa chỉ không được để trống');
       return;
     }
+    if (!this.onDobChange()) {
+      return;
+    }
 
 
     this.patientService.editPatient(patient)
@@ -140,13 +143,23 @@ export class EditPatientDialogComponent implements OnInit {
   }
 
   onDobChange() {
-    if (this.patientForm.get('dateOfBirth').value.isAfter(this.today)) {
+    const dob = this.patientForm.get('dateOfBirth').value;
+    if (dob === null) {
       this.patientForm.patchValue({
         dateOfBirth: this.today
       });
+      return false;
     }
-    else {
-      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng.');
+    const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return false;
+    }
+    if (dob.isAfter(this.today)) {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng hoặc vượt quá ngày hiện tại.');
+      return false;
     }
   }
 

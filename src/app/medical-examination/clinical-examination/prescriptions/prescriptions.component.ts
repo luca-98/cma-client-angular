@@ -20,18 +20,17 @@ import { buildHighlightString, propValToString, removeSignAndLowerCase } from 's
 })
 export class PrescriptionsComponent implements OnInit {
   patientForm: FormGroup;
-  autoByPatientCode = [];
-  autoByName = [];
-  autoByPhone = [];
-  autoAddress = [];
   time = new Date();
   today = moment(new Date());
   timer;
   patientCode: any;
   medicalExamId: any;
+  prescriptionId: any;
   listGroupMedicine = [];
   listMedicine = [];
   searchMedicineName = '';
+  selectedGroupMedicine = '0';
+  listUserMedicine = [];
   constructor(
     private titleService: Title,
     private dialog: MatDialog,
@@ -47,6 +46,8 @@ export class PrescriptionsComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Kê đơn thuốc');
     this.patientForm = this.formBuilder.group({
+      id: [''],
+      note: [''],
       patientName: ['', [Validators.required]],
       patientCode: [''],
       dateOfBirth: ['', [Validators.required]],
@@ -54,10 +55,14 @@ export class PrescriptionsComponent implements OnInit {
       address: ['', [Validators.required]],
       phone: ['', [Validators.required, Validators.minLength(10)]],
     }, { validator: this.phoneValidator });
-    this.getPatientInfo(this.route.queryParams._value.patientCode);
+    this.patientForm.get('patientCode').disable();
+    this.route.queryParams.subscribe(params => {
+      this.patientCode = params.patientCode;
+      this.medicalExamId = params.medicalExamId;
+    });
     this.getListGroupMedicine();
     this.searchByName('');
-    this.medicalExamId = this.route.queryParams._value.medicalExamId;
+    this.getPrescriptionByMedicalexamId(this.medicalExamId);
   }
 
   getPatientInfo(patientCode) {
@@ -114,10 +119,10 @@ export class PrescriptionsComponent implements OnInit {
   }
 
   autoSelected(event: any) {
-    this.resetInput();
     const date = moment(new Date(event.dateOfBirth));
     event = propValToString(event);
     this.patientForm.patchValue({
+      id: event.id ? event.id : '',
       patientName: event.patientName,
       patientCode: event.patientCode,
       dateOfBirth: date,
@@ -127,110 +132,11 @@ export class PrescriptionsComponent implements OnInit {
     });
   }
 
-  generateAutoPatientByName(event: any): void {
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      const keyCode = event.keyCode;
-      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
-        return;
-      }
-
-      if (this.patientForm.get('patientName').value.length === 0) {
-        return;
-      }
-      this.commonService.searchByName(removeSignAndLowerCase(this.patientForm.get('patientName').value))
-        .subscribe(
-          (data: any) => {
-            this.autoByName = data.message;
-          },
-          () => {
-            console.error('search auto failed');
-          }
-        );
-    }, 300);
-  }
-
-  generateAutoPatientByPatientCode(event: any): void {
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      const keyCode = event.keyCode;
-      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
-        return;
-      }
-
-      if (this.patientForm.get('patientCode').value.length === 0) {
-        return;
-      }
-      this.commonService.searchByPatientCode(this.patientForm.get('patientCode').value.toUpperCase())
-        .subscribe(
-          (data: any) => {
-            this.autoByPatientCode = data.message;
-          },
-          () => {
-            console.error('search auto failed');
-          }
-        );
-    }, 300);
-  }
-
-  generateAutoPatientByPhone(event: any): void {
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      const keyCode = event.keyCode;
-      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
-        return;
-      }
-      if (this.patientForm.get('phone').value.length === 0) {
-        return;
-      }
-      this.commonService.searchByPhone(this.patientForm.get('phone').value)
-        .subscribe(
-          (data: any) => {
-            this.autoByPhone = data.message;
-          },
-          () => {
-            console.error('search auto failed');
-          }
-        );
-    }, 300);
-  }
-
-  generateAutoAddress(event: any): void {
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      const keyCode = event.keyCode;
-      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
-        return;
-      }
-      const value = this.patientForm.get('address').value.trim();
-      if (value === 0) {
-        return;
-      }
-      this.commonService.searchByAddress(value)
-        .subscribe(
-          (data: any) => {
-            this.autoAddress = data.message;
-            this.autoAddress = [];
-            for (const d of data.message) {
-              const resultHighlight = buildHighlightString(value, d);
-              this.autoAddress.push({
-                value: d,
-                valueDisplay: resultHighlight
-              });
-            }
-          },
-          () => {
-            console.error('search auto failed');
-          }
-        );
-    }, 300);
-  }
-
   resetInput() {
-    this.autoByName = [];
-    this.autoByPatientCode = [];
-    this.autoByPhone = [];
     this.patientForm.reset();
+    this.patientForm.patchValue({
+      patientCode: this.patientCode
+    });
   }
 
   getListGroupMedicine() {
@@ -282,6 +188,7 @@ export class PrescriptionsComponent implements OnInit {
 
   findAllMedicine() {
     clearTimeout(this.timer);
+    this.selectedGroupMedicine = '0';
     this.timer = setTimeout(() => {
       this.medicineService.searchMedicineByName(this.searchMedicineName)
         .subscribe(
@@ -296,5 +203,175 @@ export class PrescriptionsComponent implements OnInit {
     }, 300);
   }
 
+  getPrescriptionByMedicalexamId(medicalExamId) {
+    if (medicalExamId) {
+      this.medicineService.getPrescriptionByMedicalexamId(medicalExamId)
+        .subscribe(
+          (data: any) => {
+            if (data.message) {
+              this.prescriptionId = data.message.id;
+              this.autoSelected(data.message.medicalExaminationByMedicalExaminationId.patient);
+              this.patientForm.patchValue({
+                note: data.message.note
+              });
+              for (const iterator of data.message.lstPrescriptionDetailDTO) {
+                const dataPush = {
+                  id: iterator.id,
+                  medicineId: iterator.medicineByMedicineId.id,
+                  medicineName: iterator.medicineByMedicineId.medicineName,
+                  maxQuantity: iterator.medicineByMedicineId.quantity,
+                  unitName: iterator.medicineByMedicineId.unitName,
+                  quantity: iterator.quantity,
+                  noteDetail: iterator.noteDetail
+                };
+                this.listUserMedicine.push(dataPush);
+              }
+            }
+          },
+          () => {
+            this.getPatientInfo(this.patientCode);
+          }
+        );
+    }
+  }
+
+  deleteMedicine(id) {
+    const i = this.listUserMedicine.findIndex(x => x.medicineId === id);
+    this.listUserMedicine.splice(i, 1);
+  }
+
+  hanldeSelectMedicine(item, event) {
+    if (event.target.childNodes[0].nodeName === 'INPUT') {
+      if (event.target.childNodes[0].checked === false) {
+        item.maxQuantity = item.quantity;
+        item.quantity = 0;
+        item.noteDetail = '';
+        item.medicineId = item.id;
+        item.id = null;
+        this.listUserMedicine.push(item);
+      } else {
+        this.deleteMedicine(item.id);
+      }
+    }
+
+  }
+
+  validateQuantity(item) {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      if (item.quantity > item.maxQuantity) {
+        item.quantity = item.maxQuantity;
+        this.openNotifyDialog('Thông báo', '"' + item.medicineName + '"' + ' hiện chỉ còn ' + item.maxQuantity + ' ' + item.unitName + ' trong kho thuốc.');
+      }
+    }, 500);
+  }
+
+  onDobChange() {
+    const dob = this.patientForm.get('dateOfBirth').value;
+    if (dob === null) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return false;
+    }
+    const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return false;
+    }
+    if (dob.isAfter(this.today)) {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng hoặc vượt quá ngày hiện tại.');
+      return false;
+    }
+    return true;
+  }
+
+  convertDateToNormal(d: any): string {
+    if (!d) {
+      return d;
+    }
+    const date = d._d.getDate();
+    const month = d._d.getMonth() + 1;
+    const year = d._d.getFullYear();
+    return date + '/' + month + '/' + year;
+
+  }
+
+  saveData() {
+    const patient = {
+      id: this.patientForm.get('id').value,
+      patientName: this.patientForm.get('patientName').value.trim(),
+      dateOfBirth: this.convertDateToNormal(this.patientForm.get('dateOfBirth').value),
+      gender: this.patientForm.get('gender').value,
+      address: this.patientForm.get('address').value.trim(),
+      phone: this.patientForm.get('phone').value.trim(),
+      patientCode: this.patientForm.get('patientCode').value.trim(),
+      note: this.patientForm.get('note').value.trim(),
+    };
+
+    if (patient.patientName === '') {
+      this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
+      return;
+    }
+    if (patient.phone.length !== 10 || !(/^\d+$/.test(patient.phone))) {
+      this.openNotifyDialog('Lỗi', 'Số điện thoại không đúng');
+      return;
+    }
+
+    if (patient.dateOfBirth === '') {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không được để trống');
+      return;
+    }
+
+    if (patient.gender === '') {
+      this.openNotifyDialog('Lỗi', 'Giới tính không được để trống');
+      return;
+    }
+
+    if (patient.address === '') {
+      this.openNotifyDialog('Lỗi', 'Địa chỉ không được để trống');
+      return;
+    }
+    if (!this.onDobChange()) {
+      return;
+    }
+    const list = [];
+    for (const iterator of this.listUserMedicine) {
+      const item = {
+        id: iterator.id,
+        medicineId: iterator.medicineId,
+        quantity: iterator.quantity,
+        noteDetail: iterator.noteDetail,
+      };
+      list.push(item);
+    }
+
+    const dataPost = {
+      medicalExamId: this.medicalExamId,
+      patientId: patient.id,
+      prescriptionId: this.prescriptionId ? this.prescriptionId : null,
+      patientName: patient.patientName,
+      phone: patient.phone,
+      dateOfBirth: patient.dateOfBirth,
+      gender: patient.gender,
+      patientCode: patient.patientCode,
+      address: patient.address,
+      note: patient.note,
+      lstMedicineDetail: list
+    };
+    this.medicineService.updatepPrescription(dataPost)
+      .subscribe(
+        (data: any) => {
+          if (data.message) {
+            this.openNotifyDialog('Thông báo', 'Lưu thông tin đơn thuốc thành công.');
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lưu thông tin đơn thuốc thất bại.');
+        }
+      );
+  }
 
 }

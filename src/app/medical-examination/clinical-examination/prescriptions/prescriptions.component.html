@@ -15,11 +15,7 @@
                     <div class="col-6 d-flex">
                         <label class="label min-width-align">Mã bệnh nhân</label>
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
-                                (keyup)="generateAutoPatientByPatientCode($event)">
-                            <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
-                                [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
-                            </app-patient-autocomplete>
+                            <input matInput formControlName="patientCode" autocomplete="off">
                         </mat-form-field>
                     </div>
                 </div>
@@ -27,21 +23,13 @@
                     <div class="col-6 d-flex">
                         <label class="label min-width-align">Tên bệnh nhân</label>
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
-                                autocomplete="off" #inputName>
-                            <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
-                                [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
-                            </app-patient-autocomplete>
+                            <input matInput formControlName="patientName">
                         </mat-form-field>
                     </div>
                     <div class="col-6 d-flex">
                         <label class="label min-width-align">Số điện thoại</label>
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput formControlName="phone" autocomplete="off" #inputPhone
-                                (keyup)="generateAutoPatientByPhone($event)" maxlength="10">
-                            <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
-                                [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
-                            </app-patient-autocomplete>
+                            <input matInput formControlName="phone" maxlength="10">
                         </mat-form-field>
                     </div>
                 </div>
@@ -49,7 +37,8 @@
                     <div class="col-6 d-flex">
                         <label class="label min-width-align">Năm sinh</label>
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth">
+                            <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                                (dateChange)="onDobChange()">
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                             <mat-datepicker #picker2 color="primary"></mat-datepicker>
                         </mat-form-field>
@@ -80,7 +69,7 @@
                     <div class="col-12 d-flex align-items-center">
                         <label class="label min-width-align">Lời dặn</label>
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <textarea matInput rows="2"></textarea>
+                            <textarea matInput rows="2" formControlName="note"></textarea>
                         </mat-form-field>
                     </div>
                 </div>
@@ -92,8 +81,8 @@
                 <div class="col-12 d-flex">
                     <label class="label min-width-align">Nhóm Thuốc</label>
                     <mat-form-field appearance="outline" class="input-fixed">
-                        <mat-select>
-                            <mat-option [value]="0" (click)="getListMedicine(0)">
+                        <mat-select [(ngModel)]="selectedGroupMedicine">
+                            <mat-option value="0" (click)="getListMedicine(0)">
                                 All
                             </mat-option>
                             <mat-option *ngFor="let item of listGroupMedicine" [value]="item.id"
@@ -134,22 +123,20 @@
                     </ul>
                     <ul class="content-row" *ngFor="let item of listMedicine">
                         <li class="content-col stt text-center">
-                            <mat-checkbox></mat-checkbox>
+                            <mat-checkbox (click)="hanldeSelectMedicine(item,$event)"></mat-checkbox>
                         </li>
                         <li class="content-col width-auto text-left ">
-                           {{item.medicineName}}
+                            {{item.medicineName}}
                         </li>
                         <li class="content-col width-25 text-left">
                             {{item.unitName}}
                         </li>
                     </ul>
-
-
                 </div>
             </div>
             <div class="row mt-1">
                 <div class="col-12 d-flex justify-content-end mt-2 ">
-                    <button mat-raised-button class="btn-main-color">
+                    <button mat-raised-button class="btn-main-color" (click)="saveData()">
                         <i class="fas fa-save"></i>
                         <span class="ml-1">
                             Lưu
@@ -174,10 +161,10 @@
                 <li class="header-col stt text-center">
                     #
                 </li>
-                <li class="header-col width-15 text-left">
+                <li class="header-col width-20 text-left">
                     Tên thuốc
                 </li>
-                <li class="header-col width-15 text-left">
+                <li class="header-col width-10 text-left">
                     Đơn vị tính
                 </li>
                 <li class="header-col width-15 text-left">
@@ -186,32 +173,44 @@
                 <li class="header-col width-auto text-left">
                     Ghi chú
                 </li>
+                <li class="header-col width-5 text-left">
+                </li>
             </ul>
 
             <div class="table-content">
-                <!-- <ul class="content-row">
+                <ul class="content-row" *ngIf="listUserMedicine.length ===0">
                     <li class="content-col no-data">
                         Không có dữ liệu
                     </li>
-                </ul> -->
+                </ul>
                 <!-- <app-loading *ngIf="isLoading"></app-loading> -->
-                <ul class="content-row ">
+                <ul class="content-row " *ngFor="let item of listUserMedicine;let i = index">
                     <li class="content-col stt text-center ">
-                        1
+                        {{i+1}}
+                    </li>
+                    <li class="content-col width-20 text-left ">
+                        {{item.medicineName}}
+                    </li>
+                    <li class="content-col width-10 text-left ">
+                        {{item.unitName}}
                     </li>
                     <li class="content-col width-15 text-left ">
-                        12123
-                    </li>
-                    <li class="content-col width-15 text-left ">
-                        123123
-                    </li>
-                    <li class="content-col width-15 text-left ">
-                        123123
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput [(ngModel)]="item.quantity" min="0" max="{{item.maxQuantity}}" type="number"
+                                (keyup)="validateQuantity(item)">
+                        </mat-form-field>
                     </li>
                     <li class="content-col width-auto text-left ">
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput>
+                            <input matInput [(ngModel)]="item.noteDetail">
                         </mat-form-field>
+                    </li>
+                    <li class="header-col width-5 text-left">
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa thuốc này"  (click)="deleteMedicine(id)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </li>
                 </ul>
             </div>
