@@ -8,11 +8,29 @@ import { GroupServiceService } from 'src/app/core/service/group-service.service'
 import { RoomService } from 'src/app/core/service/room.service';
 import { StaffService } from 'src/app/core/service/staff.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { buildHighlightString, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { buildHighlightString, convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubclinicalService } from 'src/app/core/service/subclinical.service';
+
+const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
+  let phone = formGroup.get('phone').value;
+  if (!phone) {
+    return {
+      phoneError: true
+    };
+  } else {
+    phone = phone.trim();
+  }
+  if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+    return {
+      phoneError: true
+    };
+  } else {
+    return null;
+  }
+};
 
 @Component({
   selector: 'app-appoint-subclinical',
@@ -21,6 +39,7 @@ import { SubclinicalService } from 'src/app/core/service/subclinical.service';
 })
 export class AppointSubclinicalComponent implements OnInit {
 
+  medicalExamId = null;
   patientForm: FormGroup;
   listGroupService = [];
   listService = [];
@@ -33,6 +52,8 @@ export class AppointSubclinicalComponent implements OnInit {
 
   checkboxesArray = [];
 
+  today = moment(new Date());
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
@@ -44,8 +65,13 @@ export class AppointSubclinicalComponent implements OnInit {
     private staff: StaffService,
     private room: RoomService,
     private router: Router,
-    private subclinicalService: SubclinicalService
-  ) { }
+    private subclinicalService: SubclinicalService,
+    private route: ActivatedRoute,
+  ) {
+    this.route.queryParams.subscribe(params => {
+      this.medicalExamId = params.medicalExamId;
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Chỉ định dịch vụ cận lâm sàng');
@@ -57,9 +83,8 @@ export class AppointSubclinicalComponent implements OnInit {
       address: ['', [Validators.required]],
       phone: ['', [Validators.required, Validators.minLength(10)]]
     });
+    this.patientForm.get('patientCode').disable();
     this.getAllGroupServiceAndService();
-
-    // TODO get thông tin khởi tạo màn hình
   }
 
   openNotifyDialog(title: string, content: string) {
@@ -72,6 +97,51 @@ export class AppointSubclinicalComponent implements OnInit {
         content
       },
     });
+  }
+
+  getInitInfo() {
+    this.subclinicalService.getInitInfoAppoint(this.medicalExamId)
+      .subscribe(
+        (data: any) => {
+          if (data.message.patientCode === null) {
+            this.router.navigate(['/medical-examination/clinical-examination']);
+          }
+
+          const date = moment(new Date(data.message.dateOfBirth));
+          data.message = propValToString(data.message);
+          this.patientForm.patchValue({
+            patientCode: data.message.patientCode,
+            patientName: data.message.patientName,
+            dateOfBirth: date,
+            gender: data.message.gender,
+            address: data.message.address,
+            phone: data.message.phone
+          });
+
+          const listServiceAppoint = data.message.listAppoint;
+          for (const e of listServiceAppoint) {
+            for (const s of this.listService) {
+              if (e.serviceId === s.id) {
+                s.checkBox = true;
+              }
+            }
+            const service = this.listService.find(x => x.id === e.serviceId);
+            service.doctorSelected = e.staffId;
+            for (const room of this.listRoom) {
+              for (const staffId of room.staffIdList) {
+                if (staffId === e.staffId) {
+                  service.roomSelected = room.id;
+                }
+              }
+            }
+            service.status = e.status;
+            this.listServiceSelected.push(service);
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải thông tin');
+        }
+      );
   }
 
   getAllGroupServiceAndService() {
@@ -89,6 +159,7 @@ export class AppointSubclinicalComponent implements OnInit {
             this.appendListDoctoc(e.groupServiceCode);
             this.appendListRoom(e.groupServiceCode);
           }
+          this.getInitInfo();
         },
         () => {
           this.openNotifyDialog('Lỗi', 'Lỗi khi tải danh sách nhóm dịch vụ');
@@ -105,7 +176,7 @@ export class AppointSubclinicalComponent implements OnInit {
             e.isSearchResult = false;
             e.doctorSelected = '';
             e.roomSelected = '';
-            e.status = 'Chưa khám';
+            e.status = '1';
             e.groupServiceCode = groupServiceCode;
           }
           this.listService = [
@@ -153,6 +224,14 @@ export class AppointSubclinicalComponent implements OnInit {
           this.openNotifyDialog('Lỗi', 'Lỗi khi tải danh sách dịch vụ');
         }
       );
+  }
+
+  checkDisableService(service: any) {
+    const appointService = this.listServiceSelected.find(x => x.id === service.id);
+    if (appointService && appointService.status !== '1' && appointService.status !== '2') {
+      return true;
+    }
+    return false;
   }
 
   handleSelectService(service: any) {
@@ -237,43 +316,112 @@ export class AppointSubclinicalComponent implements OnInit {
     this.router.navigate(['/medical-examination/clinical-examination']);
   }
 
-  // hanldeSelectPatientService(service, event) {
-  //   console.log(this.listPatientService);
-  //   if (event.target.childNodes[0].nodeName === 'INPUT') {
-  //     if (event.target.childNodes[0].checked === false) {
-  //       service.code = this.selectedGroupServiceCode;
-  //       service.doctor = this.listDoctor;
-  //       service.room = this.listRoom;
-  //       this.listPatientService.push(service);
-  //     } else {
-  //       const i = this.listPatientService.findIndex(x => x.id === service.id);
-  //       this.listPatientService.splice(i, 1);
-  //     }
-  //   }
-  // }
+  save() {
+    const patientName = this.patientForm.get('patientName').value.trim();
+    const phone = this.patientForm.get('phone').value.trim();
+    const dateOfBirth = convertDateToNormal(this.patientForm.get('dateOfBirth').value);
+    const gender = this.patientForm.get('gender').value;
+    const address = this.patientForm.get('address').value.trim();
 
-  // hanldeSelectDoctor(item, doctor) {
-  //   for (const iterator of doctor.roomServicesId) {
-  //     for (const iterator2 of this.listRoom) {
-  //       if (iterator === iterator2.id) {
-  //         item.roomSelected = iterator2.id;
-  //         return;
-  //       }
-  //     }
-  //   }
-  // }
+    if (patientName === '') {
+      this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
+      return;
+    }
 
-  // hanldeSelectRoom(item, room) {
-  //   console.log(room);
-  //   console.log(this.listDoctor);
-  //   for (const iterator of room.staffIdList) {
-  //     for (const iterator2 of this.listDoctor) {
-  //       if (iterator === iterator2.id) {
-  //         item.doctorSelected = iterator2.id;
-  //         return;
-  //       }
-  //     }
-  //   }
-  // }
+    if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+      this.openNotifyDialog('Lỗi', 'Số điện thoại không đúng');
+      return;
+    }
 
+    if (dateOfBirth === '') {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không được để trống');
+      return;
+    }
+
+    if (gender === '') {
+      this.openNotifyDialog('Lỗi', 'Giới tính không được để trống');
+      return;
+    }
+
+    if (address === '') {
+      this.openNotifyDialog('Lỗi', 'Địa chỉ không được để trống');
+      return;
+    }
+
+    const listAppoint = [];
+
+    for (const e of this.listServiceSelected) {
+      if (e.checkBox) {
+        if (e.doctorSelected === '') {
+          this.openNotifyDialog('Lỗi', `Dịch vụ '${e.serviceName}' chưa được chỉ định bác sỹ`);
+          return;
+        }
+        if (e.roomSelected === '') {
+          this.openNotifyDialog('Lỗi', `Dịch vụ '${e.serviceName}' chưa được chỉ định phòng thực hiện`);
+          return;
+        }
+        listAppoint.push({
+          serviceReportId: null,
+          serviceId: e.id,
+          staffId: e.doctorSelected,
+          status: null
+        });
+      }
+    }
+
+    const objSave: any = {
+      medicalExamId: this.medicalExamId,
+      patientCode: null,
+      patientName,
+      phone,
+      dateOfBirth: null,
+      dateOfBirthStr: dateOfBirth,
+      gender,
+      address,
+      listAppoint
+    };
+    this.subclinicalService.saveAppointSubclinical(objSave)
+      .subscribe(
+        (data: any) => {
+          if (data.message) {
+            this.openNotifyDialog('Thông báo', 'Lưu thông tin chỉ định thành công');
+          } else {
+            this.openNotifyDialog('Lỗi', 'Đã xảy ra lỗi khi lưu');
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Đã xảy ra lỗi khi lưu');
+        }
+      );
+  }
+
+  onDobChange() {
+    const dob = this.patientForm.get('dateOfBirth').value;
+    if (dob === null) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return;
+    }
+    const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return;
+    }
+    if (dob.isAfter(this.today)) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+    }
+  }
+
+  onPhoneInput() {
+    if (this.patientForm.hasError('phoneError')) {
+      this.patientForm.get('phone').setErrors([{ incorrect: true }]);
+    } else {
+      this.patientForm.get('phone').setErrors(null);
+    }
+  }
 }

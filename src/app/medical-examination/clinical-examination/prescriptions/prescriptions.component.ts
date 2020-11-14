@@ -10,6 +10,7 @@ import { GroupMedicineService } from 'src/app/core/service/group-medicine.servic
 import { MedicineService } from 'src/app/core/service/medicine.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { WebsocketService } from 'src/app/core/service/websocket.service';
+import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { buildHighlightString, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 
@@ -18,6 +19,7 @@ import { buildHighlightString, propValToString, removeSignAndLowerCase } from 's
   templateUrl: './prescriptions.component.html',
   styleUrls: ['./prescriptions.component.scss']
 })
+
 export class PrescriptionsComponent implements OnInit {
   patientForm: FormGroup;
   time = new Date();
@@ -61,7 +63,7 @@ export class PrescriptionsComponent implements OnInit {
       this.medicalExamId = params.medicalExamId;
     });
     this.getListGroupMedicine();
-    this.searchByName('');
+    this.findAllMedicine();
     this.getPrescriptionByMedicalexamId(this.medicalExamId);
   }
 
@@ -153,15 +155,33 @@ export class PrescriptionsComponent implements OnInit {
       );
   }
 
-  getListMedicine(id) {
-    if (id === 0) {
-      this.searchByName(this.searchMedicineName);
+  initCheckbox() {
+    for (const iterator of this.listMedicine) {
+      iterator.checked = false;
+      iterator.medicineId = iterator.id;
+      delete iterator.id;
+    }
+    if (this.listUserMedicine.length !== 0) {
+      for (const iterator of this.listUserMedicine) {
+        const index = this.listMedicine.findIndex(e => e.medicineId === iterator.medicineId);
+        if (index !== -1) {
+          this.listMedicine[index].checked = true;
+        }
+      }
+    }
+  }
+
+  getListMedicine(groupId) {
+    if (groupId === 0) {
+      this.findAllMedicine();
     } else {
-      this.medicineService.getAllMedicineByGroupMedicine(id)
+      this.medicineService.getAllMedicineByGroupMedicine(groupId)
         .subscribe(
           (data: any) => {
             if (data.message.length !== 0) {
+              this.listMedicine = [];
               this.listMedicine = data.message;
+              this.initCheckbox();
             }
           },
           () => {
@@ -169,21 +189,6 @@ export class PrescriptionsComponent implements OnInit {
           }
         );
     }
-  }
-
-  searchByName(name) {
-    this.medicineService.searchMedicineByName(name)
-      .subscribe(
-        (data: any) => {
-          if (data.message.length !== 0) {
-            this.listMedicine = [];
-            this.listMedicine = data.message;
-          }
-        },
-        () => {
-          this.openNotifyDialog('Lỗi', 'Tải danh sách thuốc thất bại.');
-        }
-      );
   }
 
   findAllMedicine() {
@@ -195,6 +200,7 @@ export class PrescriptionsComponent implements OnInit {
           (data: any) => {
             this.listMedicine = [];
             this.listMedicine = data.message;
+            this.initCheckbox();
           },
           () => {
             this.openNotifyDialog('Lỗi', 'Lỗi khi tìm kiếm thuốc.');
@@ -235,22 +241,78 @@ export class PrescriptionsComponent implements OnInit {
     }
   }
 
-  deleteMedicine(id) {
-    const i = this.listUserMedicine.findIndex(x => x.medicineId === id);
-    this.listUserMedicine.splice(i, 1);
+  openConfirmDialog(title: string, content: string) {
+    return this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title,
+        content
+      },
+    });
   }
 
-  hanldeSelectMedicine(item, event) {
+  deleteMedicine(medicineId, isClickDeleteButton?) {
+    let indexListUserMedicine = this.listUserMedicine.findIndex(x => x.medicineId === medicineId);
+    const prescriptionDetailId = this.listUserMedicine[indexListUserMedicine].id;
+    const hanldeCheckbox = () => {
+      if (indexListUserMedicine !== -1) {
+        this.listUserMedicine.splice(indexListUserMedicine, 1);
+      }
+      if (isClickDeleteButton) {
+        const index = this.listMedicine.findIndex(x => x.medicineId === medicineId);
+        if (index !== -1) {
+          this.listMedicine[index].checked = false;
+        };
+      }
+    }
+    if (prescriptionDetailId) {
+      const dialogRef = this.openConfirmDialog(
+        'Thông báo',
+        'Thuốc này đã được lưu, bạn có muốn xóa thuốc này khỏi phiếu kê đơn thuốc không?'
+      );
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.medicineService.deletePrescription(prescriptionDetailId)
+            .subscribe(
+              (data: any) => {
+                if (data.message) {
+                  hanldeCheckbox();
+                }
+              },
+              (error) => {
+                console.log(error);
+                this.openNotifyDialog('Thông báo', 'Xóa thuốc thất bại.');
+              }
+            );
+        }
+        else {
+          const index = this.listMedicine.findIndex(x => x.medicineId === medicineId);
+          if (index !== -1) {
+            this.listMedicine[index].checked = true;
+          };
+        }
+      });
+    } else {
+      hanldeCheckbox();
+    }
+  }
+
+  hanldeSelectMedicine({ ...item }, event) {
     if (event.target.childNodes[0].nodeName === 'INPUT') {
-      if (event.target.childNodes[0].checked === false) {
+      if (!item.checked) {
         item.maxQuantity = item.quantity;
-        item.quantity = 0;
+        item.quantity = 1;
         item.noteDetail = '';
-        item.medicineId = item.id;
         item.id = null;
         this.listUserMedicine.push(item);
+        const boxTable = document.querySelector('.box-table .table-content');
+        setTimeout(() => {
+          boxTable.scrollTop = boxTable.scrollHeight;
+        }, 50);
       } else {
-        this.deleteMedicine(item.id);
+        this.deleteMedicine(item.medicineId);
       }
     }
 
@@ -259,10 +321,14 @@ export class PrescriptionsComponent implements OnInit {
   validateQuantity(item) {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      if (item.quantity > item.maxQuantity) {
-        item.quantity = item.maxQuantity;
-        this.openNotifyDialog('Thông báo', '"' + item.medicineName + '"' + ' hiện chỉ còn ' + item.maxQuantity + ' ' + item.unitName + ' trong kho thuốc.');
+      if (item.quantity < 1) {
+        item.quantity = 1;
+        this.openNotifyDialog('Thông báo', '"' + item.medicineName + '"' + ' phải được kê tối thiểu là 1 ' + item.unitName + '.');
       }
+      // if (item.quantity > item.maxQuantity) {
+      //   item.quantity = item.maxQuantity;
+      //   this.openNotifyDialog('Thông báo', '"' + item.medicineName + '"' + ' hiện chỉ còn ' + item.maxQuantity + ' ' + item.unitName + ' trong kho thuốc.');
+      // }
     }, 500);
   }
 
@@ -361,7 +427,7 @@ export class PrescriptionsComponent implements OnInit {
       note: patient.note,
       lstMedicineDetail: list
     };
-    this.medicineService.updatepPrescription(dataPost)
+    this.medicineService.updatePrescription(dataPost)
       .subscribe(
         (data: any) => {
           if (data.message) {

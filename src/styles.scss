@@ -147,6 +147,17 @@ select:-webkit-autofill:focus {
     }
   }
 
+  @keyframes anim {
+    0% {
+      opacity: 0.5;
+      margin-bottom: 10px;
+    }
+
+    100% {
+      opacity: 1;
+      margin-bottom: 0px;
+    }
+  }
 
   .table-content {
     max-height: 190px;
@@ -155,6 +166,7 @@ select:-webkit-autofill:focus {
     position: relative;
 
     .content-row {
+      animation: anim 0.6s ease-out;
       background-color: unset;
       margin: 0;
       border-top: none;

@@ -41,6 +41,10 @@ export class ShellComponent implements OnInit {
     this.getInfoShell();
   }
 
+  goHome() {
+    this.router.navigate(['']);
+  }
+
   getInfoShell() {
     this.currentUserFullName = this.credentialsService.credentials.fullName;
     this.currentRoomName = this.credentialsService.credentials.roomName;

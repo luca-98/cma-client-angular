@@ -10,6 +10,7 @@ export class MedicineService {
 
     private medicineUrl = environment.apiUrl + '/medicine/';
     private prescriptionUrl = environment.apiUrl + '/prescription/';
+    private prescriptionDetailUrl = environment.apiUrl + '/prescription-detail/';
 
     constructor(
         private http: HttpClient
@@ -33,10 +34,17 @@ export class MedicineService {
         return this.http.get(url, { params });
     }
 
-    updatepPrescription(postData) {
+    updatePrescription(postData) {
         const url = this.prescriptionUrl + 'update-prescription';
         return this.http.post(url, postData);
     }
+
+    deletePrescription(prescriptionDetailId) {
+        const url = this.prescriptionDetailUrl + 'delete-prescription';
+        const params = new HttpParams().set('prescriptionDetailId', prescriptionDetailId);
+        return this.http.delete(url, { params });
+    }
+
 
 
 

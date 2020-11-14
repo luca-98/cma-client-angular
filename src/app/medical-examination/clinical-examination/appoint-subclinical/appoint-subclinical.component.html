@@ -24,7 +24,8 @@
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Số điện thoại</label>
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <input matInput formControlName="phone" autocomplete="off" maxlength="10">
+                                <input matInput formControlName="phone" autocomplete="off" maxlength="10"
+                                    (input)="onPhoneInput()">
                             </mat-form-field>
                         </div>
                     </div>
@@ -32,7 +33,8 @@
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Ngày sinh</label>
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth">
+                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                                    (dateChange)="onDobChange()">
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2 color="primary"></mat-datepicker>
                             </mat-form-field>
@@ -70,7 +72,7 @@
                         In phiếu chỉ định
                     </span>
                 </button>
-                <button mat-raised-button class="btn-main-color ml-2">
+                <button mat-raised-button class="btn-main-color ml-2" (click)="save()">
                     <i class="fas fa-save"></i> <span class="ml-1">
                         Lưu
                     </span>
@@ -89,7 +91,8 @@
                             <mat-option value="0">
                                 Tất cả
                             </mat-option>
-                            <mat-option *ngFor="let i of listGroupService" [value]="i.groupServiceCode" (click)="groupServiceChange()">
+                            <mat-option *ngFor="let i of listGroupService" [value]="i.groupServiceCode"
+                                (click)="groupServiceChange()">
                                 {{i.groupServiceName}}
                             </mat-option>
                         </mat-select>
@@ -130,7 +133,8 @@
                         <ul class="content-row"
                             *ngIf="i.isSearchResult || selectedGroupServiceCode == '0' || i.groupServiceCode == selectedGroupServiceCode">
                             <li class="content-col stt text-center">
-                                <mat-checkbox [(ngModel)]="i.checkBox" (click)="handleSelectService(i)"></mat-checkbox>
+                                <mat-checkbox [(ngModel)]="i.checkBox" (click)="handleSelectService(i)"
+                                    [disabled]="checkDisableService(i)"></mat-checkbox>
                             </li>
                             <li class="content-col width-auto text-left ">
                                 {{i.serviceName}}
@@ -189,7 +193,8 @@
                         </li>
                         <li class="content-col width-15 text-left ">
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <mat-select [(value)]="service.doctorSelected" (selectionChange)="onChangeDoctor(service)">
+                                <mat-select [(value)]="service.doctorSelected" [disabled]="service.status != 1"
+                                    (selectionChange)="onChangeDoctor(service)">
                                     <ng-container *ngFor="let doctor of listDoctor">
                                         <mat-option [value]="doctor.id"
                                             *ngIf="doctor.groupServiceCode == service.groupServiceCode">
@@ -201,7 +206,8 @@
                         </li>
                         <li class="content-col width-15 text-left ">
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <mat-select [(value)]="service.roomSelected" (selectionChange)="onChangeRoom(service)">
+                                <mat-select [(value)]="service.roomSelected" (selectionChange)="onChangeRoom(service)"
+                                    [disabled]="service.status != 1">
                                     <ng-container *ngFor="let room of listRoom">
                                         <mat-option [value]="room.id"
                                             *ngIf="room.groupServiceCode == service.groupServiceCode">
@@ -212,13 +218,14 @@
                             </mat-form-field>
                         </li>
                         <li class="content-col width-10 text-left ">
-                            {{service.status}}
+                            {{service.status == 1 ? 'Chưa khám' : (service.status == 2 ? 'Đang thanh toán' : (service.status == 3 ? 'Đang khám' : 'Đã khám xong'))}}
                         </li>
                         <li class="content-col width-10 text-right ">
                             <div style="display: flex; justify-content: flex-end;">
                                 <button class="btn btn-outline-secondary btn-sm" title="xxxx"><i
                                         class="fas fa-file"></i></button>
                                 <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa dịch vụ"
+                                    [disabled]="service.status != 1 && service.status != 2"
                                     (click)="removeService(service)">
                                     <i class="fas fa-trash"></i>
                                 </button>

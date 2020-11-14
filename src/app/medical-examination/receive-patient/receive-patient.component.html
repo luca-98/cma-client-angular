@@ -2,7 +2,7 @@
     <div class="d-flex w-100">
         <div class=" pl-0 pr-0 box-receive-left" id="top">
             <div class="card-custom h-100 mb-0">
-                <form [formGroup]="receiveForm " >
+                <form [formGroup]="receiveForm" (keydown.enter)="$event.preventDefault()">
                     <div class="administrative-info">
                         <div class="mb-2">
                             <h2 class="header">Thông tin hành chính</h2>
@@ -35,7 +35,8 @@
                                 <label class="label min-width-align">Số điện thoại</label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <input matInput formControlName="phone" autocomplete="off" #inputPhone
-                                        (keyup)="generateAutoPatientByPhone($event)" maxlength="10" (input)="onPhoneInput()">
+                                        (keyup)="generateAutoPatientByPhone($event)" maxlength="10"
+                                        (input)="onPhoneInput()">
                                     <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
                                         [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
                                     </app-patient-autocomplete>
@@ -55,7 +56,8 @@
                             <div class="col-8 pr-0 d-flex align-items-center">
                                 <label class="label min-width-align">Địa chỉ</label>
                                 <mat-form-field appearance="outline" class="input-fixed">
-                                    <input matInput formControlName="address" [matAutocomplete]="autoByAddress" (keyup)="generateAutoAddress($event)">
+                                    <input matInput formControlName="address" [matAutocomplete]="autoByAddress"
+                                        (keyup)="generateAutoAddress($event)">
                                     <mat-autocomplete autoActiveFirstOption #autoByAddress="matAutocomplete">
                                         <mat-option *ngFor="let d of autoAddress" [value]="d.value"
                                             [innerHTML]="d.valueDisplay">
@@ -340,7 +342,8 @@
                 <li class="content-col width-10 text-left">
                     <div style="display: flex; justify-content: flex-end;">
                         <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editInfo(e)"
-                            [disabled]="e.status == 0 || e.status == 5 || ((e.createdAt | date:'yMMdd') != (time | date:'yMMdd'))" title="Sửa thông tin bệnh nhân">
+                            [disabled]="e.status == 0 || e.status == 5 || ((e.createdAt | date:'yMMdd') != (time | date:'yMMdd'))"
+                            title="Sửa thông tin bệnh nhân">
                             <i class="fas fa-pen"></i>
                         </button>
                         <button class="btn btn-outline-secondary btn-sm ml-1" (click)="cancelReceive(e)"

@@ -123,7 +123,8 @@
                     </ul>
                     <ul class="content-row" *ngFor="let item of listMedicine">
                         <li class="content-col stt text-center">
-                            <mat-checkbox (click)="hanldeSelectMedicine(item,$event)"></mat-checkbox>
+                            <mat-checkbox [(ngModel)]="item.checked" (click)="hanldeSelectMedicine(item,$event)">
+                            </mat-checkbox>
                         </li>
                         <li class="content-col width-auto text-left ">
                             {{item.medicineName}}
@@ -196,7 +197,7 @@
                     </li>
                     <li class="content-col width-15 text-left ">
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput [(ngModel)]="item.quantity" min="0" max="{{item.maxQuantity}}" type="number"
+                            <input matInput [(ngModel)]="item.quantity" min="1" type="number"
                                 (keyup)="validateQuantity(item)">
                         </mat-form-field>
                     </li>
@@ -207,7 +208,8 @@
                     </li>
                     <li class="header-col width-5 text-left">
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa thuốc này"  (click)="deleteMedicine(id)">
+                            <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa thuốc này"
+                                (click)="deleteMedicine(item.medicineId,true)">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

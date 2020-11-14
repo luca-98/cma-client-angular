@@ -1,4 +1,4 @@
-<form [formGroup]="examForm">
+<form [formGroup]="examForm" (keydown.enter)="$event.preventDefault()">
     <div class="d-flex">
         <div class="left-box">
             <div class="card-custom h-100 mb-0">

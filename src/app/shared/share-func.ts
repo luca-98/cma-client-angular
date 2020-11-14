@@ -25,7 +25,7 @@ export function propValToString(obj: any): any {
       obj[property] = propValToString(obj[property]);
       break;
     }
-    if (!(typeof obj[property] === 'string' || obj[property] instanceof String)) {
+    if (!(typeof obj[property] === 'string' || obj[property] instanceof String) && obj[property] !== null) {
       obj[property] = obj[property].toString();
     }
   }
