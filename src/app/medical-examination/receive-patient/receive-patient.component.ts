@@ -645,6 +645,7 @@ export class ReceivePatientComponent implements OnInit {
                     patientCode: data.message.patient.patientCode,
                     ordinalNumber: data.message.ordinalNumber.ordinalNumber
                   });
+                  this.getListReceive(this.pageSize, this.pageIndex);
                   this.openNotifyDialog('Thông báo', 'Thêm bệnh nhân vào danh sách tiếp đón thành công');
                 }
               },
