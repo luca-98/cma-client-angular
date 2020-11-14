@@ -22,6 +22,7 @@ export class AddAppoinmentComponent implements OnInit {
   timer;
   today = moment(new Date());
   date = new Date();
+  selectedDoctor: any;
   constructor(
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
@@ -126,17 +127,43 @@ export class AddAppoinmentComponent implements OnInit {
       this.openNotifyDialog('Lỗi', 'Giờ hẹn không được để trống');
       return;
     }
+
     this.appoinmentService.addPatientAppointment(appointmentData)
       .subscribe(
         (data: any) => {
-          this.openNotifyDialog('Thông báo', 'Thêm thông tin hẹn khám thành công');
+          if (!data.message.timeExist) {
+            this.openNotifyDialog('Thông báo', 'Thêm thông tin hẹn khám thành công');
+            this.dialogRef.close();
 
+          } else {
+            this.openNotifyDialog('Lỗi', 'Bạn không thể đặt lịch hẹn khám cho bác sĩ "' + this.selectedDoctor.fullName + '" vì đang có lịch hẹn khám khác vào khoảng thời gian này ngày ' + appointmentData.appointmentDate + '. Hệ thống sẽ tự động tăng thời gian thêm 15 phút, vui lòng kiểm tra và lưu thông tin lại.');
+            const time = appointmentData.appointmentTime.split(':');
+            let hour = parseInt(time[0]);
+            let minute = parseInt(time[1]);
+            minute += 15;
+            if (minute >= 60) {
+              hour++;
+              minute -= 60;
+            }
+            if (hour > 23) {
+              hour = 0;
+              this.patientForm.patchValue({
+                appointmentDate: this.patientForm.get('appointmentDate').value.add(1, 'day')
+              });
+            }
+            this.patientForm.patchValue({
+              appointmentTime: hour + ':' + minute
+            });
+          }
         },
         () => {
           this.openNotifyDialog('Lỗi', 'Thêm thông tin hẹn khám thất bại');
         }
       );
-    this.dialogRef.close();
+  }
+
+  selectDoctor(doctor) {
+    this.selectedDoctor = doctor;
   }
 
   generateAutoPatientByPatientCode(event: any): void {

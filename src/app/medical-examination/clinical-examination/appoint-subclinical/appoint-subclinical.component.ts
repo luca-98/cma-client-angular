@@ -228,14 +228,15 @@ export class AppointSubclinicalComponent implements OnInit {
 
   checkDisableService(service: any) {
     const appointService = this.listServiceSelected.find(x => x.id === service.id);
-    if (appointService && appointService.status !== '1' && appointService.status !== '2') {
+    // tslint:disable-next-line: triple-equals
+    if (appointService && appointService.status != 1 && appointService.status != 2) {
       return true;
     }
     return false;
   }
 
-  handleSelectService(service: any) {
-    if (!service.checkBox) {
+  handleSelectService(event: any, service: any) {
+    if (event.checked) {
       this.subclinicalService.getStaffMinByService(service.id)
         .subscribe(
           (data: any) => {

@@ -31,6 +31,7 @@ export class ManageClinicalExaminationComponent implements OnInit {
   autoExamCode = [];
   autoPatientCode = [];
   autoPhone = [];
+  isLoading = false;
 
   constructor(
     private titleService: Title,
@@ -103,6 +104,8 @@ export class ManageClinicalExaminationComponent implements OnInit {
   }
 
   getClinicalExamList(pageSize: number, pageIndex: number) {
+    this.isLoading = true;
+
     const fromDate = convertDateToNormal(this.searchForm.get('fromDate').value);
     const toDate = convertDateToNormal(this.searchForm.get('toDate').value);
     const roomId = this.searchForm.get('roomId').value;
@@ -116,12 +119,14 @@ export class ManageClinicalExaminationComponent implements OnInit {
       doctorId, status, clinicalExamCode, patientCode, phone, pageIndex, pageSize)
       .subscribe(
         (data: any) => {
+          this.isLoading = false;
           this.pageIndex = data.message.pageIndex;
           this.pageSize = data.message.pageSize;
           this.totalRecord = data.message.totalRecord;
           this.clinicalExamList = data.message.listData;
         },
         () => {
+          this.isLoading = false;
           console.error('error call api');
         }
       );

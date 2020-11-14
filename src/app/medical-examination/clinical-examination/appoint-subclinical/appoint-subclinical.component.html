@@ -133,7 +133,7 @@
                         <ul class="content-row"
                             *ngIf="i.isSearchResult || selectedGroupServiceCode == '0' || i.groupServiceCode == selectedGroupServiceCode">
                             <li class="content-col stt text-center">
-                                <mat-checkbox [(ngModel)]="i.checkBox" (click)="handleSelectService(i)"
+                                <mat-checkbox [(ngModel)]="i.checkBox" (change)="handleSelectService($event, i)"
                                     [disabled]="checkDisableService(i)"></mat-checkbox>
                             </li>
                             <li class="content-col width-auto text-left ">

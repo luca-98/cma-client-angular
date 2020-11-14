@@ -119,46 +119,45 @@
                     </li>
                 </ul>
                 <app-loading *ngIf="isLoading"></app-loading>
-                <div *ngIf="!isLoading">
-                    <ul class="content-row " *ngFor="let item of patientList; let i = index">
-                        <li class="content-col stt text-left ">
-                            {{i+1+pageIndex*pageSize}}
-                        </li>
-                        <li class="content-col width-10 text-left ">
-                            {{item.patientCode}}
-                        </li>
-                        <li class="content-col width-auto text-left ">
-                            {{item.patientName}}
-                        </li>
-                        <li class="content-col width-15 text-left ">
-                            {{item.address}}
-                        </li>
-                        <li class="content-col width-10 text-left">
-                            {{item.dateOfBirth | date: 'dd/MM/yyyy'}}
-                        </li>
-                        <li class="content-col width-10 text-left ">
-                            {{item.gender == 0 ? 'Nam' : 'Nữ'}}
-                        </li>
-                        <li class="content-col width-15 text-left ">
-                            {{item.phone}}
-                        </li>
-                        <li class="content-col width-10 text-left ">
-                            {{item.debt}}
-                        </li>
-                        <li class="content-col width-10 text-right">
-                            <div class="d-flex justify-content-end">
-                                <button class="btn btn-outline-secondary btn-sm" (click)="moveToDetail(item.id)" title="Xem lịch sử khám bệnh">
-                                    <i class="fas fa-file"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editPatient(item)"
-                                    title="Sửa thông tin bệnh nhân"><i class="fas fa-pen"></i></button>
-                                <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deletePatient(item.id)"
-                                    title="Xóa bệnh nhân">
-                                    <i class="fas fa-trash"></i></button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="content-row " *ngFor="let item of patientList; let i = index">
+                    <li class="content-col stt text-left ">
+                        {{i+1+pageIndex*pageSize}}
+                    </li>
+                    <li class="content-col width-10 text-left ">
+                        {{item.patientCode}}
+                    </li>
+                    <li class="content-col width-auto text-left ">
+                        {{item.patientName}}
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        {{item.address}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.dateOfBirth | date: 'dd/MM/yyyy'}}
+                    </li>
+                    <li class="content-col width-10 text-left ">
+                        {{item.gender == 0 ? 'Nam' : 'Nữ'}}
+                    </li>
+                    <li class="content-col width-15 text-left ">
+                        {{item.phone}}
+                    </li>
+                    <li class="content-col width-10 text-left ">
+                        {{item.debt}}
+                    </li>
+                    <li class="content-col width-10 text-right">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-outline-secondary btn-sm" (click)="moveToDetail(item.id)"
+                                title="Xem lịch sử khám bệnh">
+                                <i class="fas fa-file"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editPatient(item)"
+                                title="Sửa thông tin bệnh nhân"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deletePatient(item.id)"
+                                title="Xóa bệnh nhân">
+                                <i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
         </div>

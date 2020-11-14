@@ -152,6 +152,8 @@
                     Không có dữ liệu
                 </li>
             </ul>
+            <app-loading *ngIf="isLoading"></app-loading>
+
             <ul class="content-row" *ngFor="let m of clinicalExamList, let i = index">
                 <li class="content-col stt text-center ">
                     {{i+1+pageIndex*pageSize}}

@@ -35,6 +35,8 @@ export class ManageAppointmentComponent implements OnInit {
     endDate: '',
     status: ''
   };
+  isLoading = false;
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
@@ -176,15 +178,18 @@ export class ManageAppointmentComponent implements OnInit {
   }
 
   getListAppointment() {
+    this.isLoading = true;
     this.appointmentService.getAllAppointment(this.pageSize, this.pageIndex)
       .subscribe(
         (data: any) => {
+          this.isLoading = false;
           this.tableBottomLength = data.message.totalRecord;
           this.pageSize = data.message.pageSize;
           this.pageIndex = data.message.pageIndex;
           this.buildListAppointment(data.message.appointmentList);
         },
         () => {
+          this.isLoading = false;
           this.openNotifyDialog('Lỗi', 'Tải danh sách hẹn khám thất bại.');
         }
       );
@@ -202,6 +207,7 @@ export class ManageAppointmentComponent implements OnInit {
   }
 
   searchAppointment() {
+    this.isLoading = true;
     const dataAppontment = { ...this.searchData };
     dataAppontment.startDate = this.convertDateToNormal(dataAppontment.startDate);
     dataAppontment.endDate = this.convertDateToNormal(dataAppontment.endDate);
@@ -211,12 +217,14 @@ export class ManageAppointmentComponent implements OnInit {
     this.appointmentService.searchAllAppointment(dataAppontment, this.pageSize, this.pageIndex)
       .subscribe(
         (data: any) => {
+          this.isLoading = false;
           this.tableBottomLength = data.message.totalRecord;
           this.pageSize = data.message.pageSize;
           this.pageIndex = data.message.pageIndex;
           this.buildListAppointment(data.message.appointmentList);
         },
         () => {
+          this.isLoading = false;
           this.openNotifyDialog('Lỗi', 'Tải danh sách hẹn khám thất bại.');
         }
       );

@@ -17,7 +17,7 @@ import { buildHighlightString, convertDateToNormal, propValToString, removeSignA
   styleUrls: ['./manage-subclinical-examination.component.scss']
 })
 export class ManageSubclinicalExaminationComponent implements OnInit {
- 
+
   searchForm: FormGroup;
   doctorList = [];
   roomList = [];
@@ -29,6 +29,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
   pageSize = 25;
   pageSizeOptions: number[] = [25, 50, 100, 200];
   today = moment(new Date());
+  isLoading = false;
 
   autoExamCode = [];
   autoPatientCode = [];
@@ -46,7 +47,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý phiếu khám cận lâm sàng');
     this.sideMenuService.changeItem(1.6);
-   
+
     this.searchForm = this.formBuilder.group({
       fromDate: [moment(new Date())],
       toDate: [moment(new Date())],
@@ -103,6 +104,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
   }
 
   getClinicalExamList(pageSize: number, pageIndex: number) {
+    this.isLoading = true;
     const fromDate = convertDateToNormal(this.searchForm.get('fromDate').value);
     const toDate = convertDateToNormal(this.searchForm.get('toDate').value);
     const roomId = this.searchForm.get('roomId').value;
@@ -116,12 +118,14 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
       doctorId, status, clinicalExamCode, patientCode, phone, pageIndex, pageSize)
       .subscribe(
         (data: any) => {
+          this.isLoading = false;
           this.pageIndex = data.message.pageIndex;
           this.pageSize = data.message.pageSize;
           this.totalRecord = data.message.totalRecord;
           this.clinicalExamList = data.message.listData;
         },
         () => {
+          this.isLoading = false;
           console.error('error call api');
         }
       );

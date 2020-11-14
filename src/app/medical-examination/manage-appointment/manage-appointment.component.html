@@ -125,7 +125,7 @@
                         Không có dữ liệu
                     </li>
                 </ul>
-                <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                <app-loading *ngIf="isLoading"></app-loading>
                 <ul class="list-by-date" *ngFor="let item of listAppointment">
                     <li class="date" (click)="item.isShow = !item.isShow">
                         <i class="fas  mr-1"

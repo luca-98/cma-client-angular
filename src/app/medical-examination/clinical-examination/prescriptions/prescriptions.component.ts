@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
 import { GroupMedicineService } from 'src/app/core/service/group-medicine.service';
@@ -39,7 +39,8 @@ export class PrescriptionsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
     private groupMedicineService: GroupMedicineService,
     private medicineService: MedicineService
 
@@ -58,7 +59,7 @@ export class PrescriptionsComponent implements OnInit {
       phone: ['', [Validators.required, Validators.minLength(10)]],
     }, { validator: this.phoneValidator });
     this.patientForm.get('patientCode').disable();
-    this.route.queryParams.subscribe(params => {
+    this.activatedRoute.queryParams.subscribe(params => {
       this.patientCode = params.patientCode;
       this.medicalExamId = params.medicalExamId;
     });
@@ -80,6 +81,11 @@ export class PrescriptionsComponent implements OnInit {
           }
         );
     }
+  }
+
+  back() {
+    const url = '/medical-examination/clinical-examination';
+    this.router.navigate([url], { queryParams: { medicalExamId: this.medicalExamId } });
   }
 
   phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {

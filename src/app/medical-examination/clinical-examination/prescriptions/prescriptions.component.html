@@ -4,12 +4,7 @@
             <form [formGroup]="patientForm">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="header m-0">Thông tin bệnh nhân</h2>
-                    <button mat-raised-button class="ml-2 btn-orange " (click)="resetInput()">
-                        <i class="fas fa-sync-alt"></i>
-                        <span class="ml-1">
-                            Nhập lại
-                        </span>
-                    </button>
+
                 </div>
                 <div class="row mb-1">
                     <div class="col-6 d-flex">
@@ -103,7 +98,7 @@
                     </button>
                 </div>
             </div>
-            <div class="table-custom mt-3">
+            <div class="table-custom mt-2">
                 <ul class="table-header">
                     <li class="header-col stt text-center">
                         #
@@ -135,22 +130,36 @@
                     </ul>
                 </div>
             </div>
-            <div class="row mt-1">
-                <div class="col-12 d-flex justify-content-end mt-2 ">
-                    <button mat-raised-button class="btn-main-color" (click)="saveData()">
-                        <i class="fas fa-save"></i>
-                        <span class="ml-1">
-                            Lưu
-                        </span>
-                    </button>
-                    <button mat-raised-button class="ml-2 btn-green ">
-                        <i class="fas fa-print"></i>
-                        <span class="ml-1">
-                            In hóa đơn
-                        </span>
-                    </button>
-                </div>
-            </div>
+           
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col-12 d-flex justify-content-end mt-2 ">
+            <button mat-raised-button class="btn-green " (click)="back()">
+                <i class="fas fa-undo"></i>
+                <span class="ml-1">
+                    Quay lại
+                </span>
+            </button>
+            <button mat-raised-button class="ml-2 btn-orange " (click)="resetInput()">
+                <i class="fas fa-sync-alt"></i>
+                <span class="ml-1">
+                    Nhập lại
+                </span>
+            </button>
+
+            <button mat-raised-button class="ml-2 btn-green ">
+                <i class="fas fa-print"></i>
+                <span class="ml-1">
+                    In hóa đơn
+                </span>
+            </button>
+            <button mat-raised-button class="btn-main-color ml-2" (click)="saveData()">
+                <i class="fas fa-save"></i>
+                <span class="ml-1">
+                    Lưu
+                </span>
+            </button>
         </div>
     </div>
     <div class="box-table">
