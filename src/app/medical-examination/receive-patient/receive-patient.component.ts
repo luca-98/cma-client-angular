@@ -31,6 +31,8 @@ const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | n
   }
 };
 
+declare var $: any;
+
 @Component({
   selector: 'app-receive-patient',
   templateUrl: './receive-patient.component.html',
@@ -100,11 +102,12 @@ export class ReceivePatientComponent implements OnInit {
     this.receiveForm.get('debt').disable();
     this.receiveForm.get('clinicalExamPrice').disable();
     this.receiveForm.get('ordinalNumber').disable();
-    if (!this.isEditReceive) {
-      setInterval(() => {
+
+    setInterval(() => {
+      if (!this.isEditReceive) {
         this.time = new Date();
-      }, 1000);
-    }
+      }
+    }, 1000);
     this.getClinicalExaminationPrice();
     this.getDoctorList();
     this.getRoomList();
@@ -710,6 +713,7 @@ export class ReceivePatientComponent implements OnInit {
     this.autoByName = [];
     this.autoByPatientCode = [];
     this.autoByPhone = [];
+    this.time = new Date(e.createdAt);
     this.receiveForm.patchValue({
       patientName: e.patient.patientName,
       patientCode: e.patient.patientCode,
@@ -747,5 +751,62 @@ export class ReceivePatientComponent implements OnInit {
         dateOfBirth: this.today
       });
     }
+  }
+
+  print() {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'ORDINAL') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const printTemplateHtml = data2.message.templateHTML;
+                    const roomServiceId = this.receiveForm.get('roomId').value;
+                    const roomName = this.roomList.find(x => x.id === roomServiceId).roomName;
+                    const staffId = this.receiveForm.get('doctorId').value;
+                    const staffName = this.doctorList.find(x => x.id === staffId).fullName;
+                    const objPrint = {
+                      ordinalNumber: this.receiveForm.get('ordinalNumber').value,
+                      date: this.datePipe.transform(this.time, 'dd/MM/yyyy HH:mm'),
+                      roomName,
+                      staffName,
+                      patientCode: this.receiveForm.get('patientCode').value,
+                      patientName: this.receiveForm.get('patientName').value,
+                      phone: this.receiveForm.get('phone').value
+                    };
+                    this.processDataPrint(objPrint, printTemplateHtml);
+                  },
+                  () => {
+                    this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+        }
+      );
+  }
+
+  processDataPrint(objectPrint: any, htmlTemplate: string) {
+    const printDoc = document.implementation.createHTMLDocument('no-title');
+    const wrapper = printDoc.createElement('div');
+    wrapper.style.padding = '10px';
+    printDoc.body.appendChild(wrapper);
+    wrapper.innerHTML = htmlTemplate;
+
+    const keySet = Object.keys(objectPrint);
+    for (const key of keySet) {
+      const ele = printDoc.getElementById(key);
+      if (ele !== null) {
+        ele.innerHTML = objectPrint[key];
+      }
+    }
+
+    $(wrapper).printThis({ importCSS: false });
   }
 }

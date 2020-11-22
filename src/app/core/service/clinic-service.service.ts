@@ -31,4 +31,47 @@ export class ClinicServiceService {
         const url = this.clinicServiceUrl + 'get-all-service';
         return this.http.get(url);
     }
+
+    autoSearchNameService(serviceName) {
+        const url = this.clinicServiceUrl + 'auto-search-name-service';
+        const params = new HttpParams()
+            .set('serviceName', serviceName);
+        return this.http.get(url, { params });
+    }
+
+    getAllServicePagging(pageSize, pageIndex) {
+        const url = this.clinicServiceUrl + 'get-all-service-pagging';
+        const params = new HttpParams()
+            .set('pageSize', pageSize)
+            .set('pageIndex', pageIndex);
+        return this.http.get(url, { params });
+    }
+
+
+    searchAllServicePagging(dataSearch, pageSize, pageIndex) {
+        const url = this.clinicServiceUrl + 'search-all-service-pagging';
+        const params = new HttpParams()
+            .set('pageSize', pageSize)
+            .set('serviceName', dataSearch.serviceName)
+            .set('groupServiceId', dataSearch.groupServiceId)
+            .set('pageIndex', pageIndex);
+        return this.http.get(url, { params });
+    }
+
+    deleteService(id) {
+        const url = this.clinicServiceUrl + 'delete-service';
+        const formData = new FormData();
+        formData.append('id', id);
+        return this.http.put(url, formData);
+    }
+
+    addNewService(dataPost) {
+        const url = this.clinicServiceUrl + 'add-new-service';
+        return this.http.post(url, dataPost);
+    }
+
+    updateService(dataPost){
+        const url = this.clinicServiceUrl + 'edit-a-service';
+        return this.http.post(url, dataPost);
+    }
 }

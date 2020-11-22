@@ -11,6 +11,7 @@ import * as moment from 'moment';
 import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { MedicalExaminationService } from 'src/app/core/service/medical-examination.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -30,6 +31,7 @@ const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | n
   }
 };
 
+declare var $: any;
 
 @Component({
   selector: 'app-clinical-examination',
@@ -48,6 +50,7 @@ export class ClinicalExaminationComponent implements OnInit {
   examForm: FormGroup;
   medicalExamId = null;
   enableFuncBtn = false;
+  medicalExaminationCode = null;
 
   room = {
     name: '',
@@ -70,7 +73,8 @@ export class ClinicalExaminationComponent implements OnInit {
     private credentialsService: CredentialsService,
     private medicalExaminationService: MedicalExaminationService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private datePipe: DatePipe,
   ) {
     this.route.queryParams.subscribe(params => {
       this.medicalExamId = params.medicalExamId;
@@ -315,6 +319,7 @@ export class ClinicalExaminationComponent implements OnInit {
     this.autoIcd10CodeExtra = [];
     this.autoDiseaseNameExtra = [];
     this.medicalExamId = null;
+    this.medicalExaminationCode = null;
     this.enableFuncBtn = false;
     this.examForm.reset();
     this.room = {
@@ -418,6 +423,7 @@ export class ClinicalExaminationComponent implements OnInit {
       debt: data.message.patient.debt
     });
     if (data.message.id !== null) {
+      this.medicalExaminationCode = data.message.medicalExaminationCode;
       this.medicalExamId = data.message.id;
       this.room = {
         name: data.message.roomService.roomName,
@@ -608,6 +614,7 @@ export class ClinicalExaminationComponent implements OnInit {
               patientCode: data.message.patient.patientCode
             });
             this.medicalExamId = data.message.id;
+            this.medicalExaminationCode = data.message.medicalExaminationCode;
             this.enableFuncBtn = true;
           },
           () => {
@@ -629,6 +636,7 @@ export class ClinicalExaminationComponent implements OnInit {
                   patientCode: data.message.patient.patientCode
                 });
                 this.medicalExamId = data.message.id;
+                this.medicalExaminationCode = data.message.medicalExaminationCode;
                 this.enableFuncBtn = true;
                 this.openNotifyDialog('Thông báo', 'Lưu phiếu khám thành công');
               },
@@ -706,5 +714,91 @@ export class ClinicalExaminationComponent implements OnInit {
         }
       }
     );
+  }
+
+  print() {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'MEDICAL_EXAM') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const printTemplateHtml = data2.message.templateHTML;
+                    const medicalExaminationCode = this.medicalExaminationCode;
+                    const patientCode = this.examForm.get('patientCode').value.trim();
+                    const patientName = this.examForm.get('patientName').value.trim();
+                    const gender = this.examForm.get('gender').value == 0 ? 'Nam' : 'Nữ';
+                    const phone = this.examForm.get('phone').value.trim();
+                    const dateOfBirth = this.datePipe.transform(this.examForm.get('dateOfBirth').value, 'dd/MM/yyyy');
+                    const address = this.examForm.get('address').value.trim();
+                    const bloodVessel = this.examForm.get('bloodVessel').value.trim();
+                    const bloodPressure = this.examForm.get('bloodPressure').value.trim();
+                    const breathing = this.examForm.get('breathing').value.trim();
+                    const temperature = this.examForm.get('temperature').value.trim();
+                    const height = this.examForm.get('height').value.trim();
+                    const weight = this.examForm.get('weight').value.trim();
+                    const symptom = this.examForm.get('symptom').value.trim();
+                    const mainDisease = this.examForm.get('mainDisease').value.trim();
+                    const extraDisease = this.examForm.get('extraDisease').value.trim();
+                    const summary = this.examForm.get('summary').value.trim();
+                    const day = this.datePipe.transform(this.examForm.get('createdAt').value, 'dd');
+                    const month = this.datePipe.transform(this.examForm.get('createdAt').value, 'MM');
+                    const year = this.datePipe.transform(this.examForm.get('createdAt').value, 'yyyy');
+                    const objPrint = {
+                      medicalExaminationCode,
+                      patientCode,
+                      patientName,
+                      gender,
+                      phone,
+                      dateOfBirth,
+                      address,
+                      bloodVessel,
+                      bloodPressure,
+                      breathing,
+                      temperature,
+                      height,
+                      weight,
+                      symptom,
+                      mainDisease,
+                      extraDisease,
+                      summary,
+                      day,
+                      month,
+                      year
+                    };
+                    this.processDataPrint(objPrint, printTemplateHtml);
+                  },
+                  () => {
+                    this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+        }
+      );
+  }
+
+  processDataPrint(objectPrint: any, htmlTemplate: string) {
+    const printDoc = document.implementation.createHTMLDocument('no-title');
+    const wrapper = printDoc.createElement('div');
+    wrapper.setAttribute('class', 'editor');
+    printDoc.body.appendChild(wrapper);
+    wrapper.innerHTML = htmlTemplate;
+
+    const keySet = Object.keys(objectPrint);
+    for (const key of keySet) {
+      const ele = printDoc.getElementById(key);
+      if (ele !== null) {
+        ele.innerHTML = objectPrint[key];
+      }
+    }
+
+    $(wrapper).printThis({ importCSS: false });
   }
 }

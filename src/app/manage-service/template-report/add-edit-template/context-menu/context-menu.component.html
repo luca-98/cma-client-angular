@@ -1,0 +1,9 @@
+<div style="visibility: hidden; position: fixed" [style.left.px]="menuPosition.positionX"
+    [style.top.px]="menuPosition.positionY" [matMenuTriggerFor]="contextMenu">
+</div>
+
+<mat-menu #contextMenu="matMenu">
+    <ng-template matMenuContent let-target="target">
+        <button mat-menu-item (click)="deleteTarget(target)">Xóa mục này</button>
+    </ng-template>
+</mat-menu>

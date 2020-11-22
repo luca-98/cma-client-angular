@@ -19,13 +19,19 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/mat
 import { DATE_PICKER_FORMATS } from '../core/date-picker-formats';
 import { AddAppoinmentComponent } from './dialogs/add-appoinment/add-appoinment.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { SupplierAutocompleteComponent } from './supplier-autocomplete/supplier-autocomplete.component';
+import { EditAppointmentComponent } from './dialogs/edit-appointment/edit-appointment.component';
+import { AddServiceComponent } from './dialogs/add-service/add-service.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { AddGroupServiceComponent } from './dialogs/add-group-service/add-group-service.component';
 
 
 @NgModule({
   declarations: [
     ToastComponent, NotifyDialogComponent,
     ConfirmDialogComponent, PatientAutocompleteComponent,
-    LoadingComponent, EditPatientDialogComponent, AddAppoinmentComponent],
+    LoadingComponent, EditPatientDialogComponent,
+    AddAppoinmentComponent, SupplierAutocompleteComponent, EditAppointmentComponent, AddServiceComponent, AddGroupServiceComponent],
   imports: [
     CommonModule,
     MatSnackBarModule,
@@ -37,7 +43,9 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     FormsModule,
     MatSelectModule,
     MatDatepickerModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    MatCheckboxModule,
+
 
   ],
   providers: [
@@ -49,6 +57,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     },
     { provide: MAT_DATE_FORMATS, useValue: DATE_PICKER_FORMATS }
   ],
-  exports: [PatientAutocompleteComponent, LoadingComponent]
+  exports: [PatientAutocompleteComponent, LoadingComponent, SupplierAutocompleteComponent, EditAppointmentComponent, AddServiceComponent,
+    AddGroupServiceComponent]
 })
 export class SharedModule { }

@@ -4,6 +4,7 @@
     "codelyzer"
   ],
   "rules": {
+    "only-arrow-functions": false,
     "forin": false,
     "class-name": false,
     "align": {
@@ -15,9 +16,8 @@
     "array-type": false,
     "arrow-return-shorthand": true,
     "curly": true,
-    "deprecation": {
-      "severity": "warning"
-    },
+    "deprecation": false,
+    "triple-equals": false,
     "eofline": true,
     "import-blacklist": [
       true,
@@ -75,15 +75,7 @@
         "always"
       ]
     },
-    "space-before-function-paren": {
-      "options": {
-        "anonymous": "never",
-        "asyncArrow": "always",
-        "constructor": "never",
-        "method": "never",
-        "named": "never"
-      }
-    },
+    "space-before-function-paren": false,
     "typedef": [
       false,
       "call-signature"

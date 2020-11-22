@@ -16,8 +16,13 @@ export class RoomService {
     getRoomByGroupServiceCode(groupServiceCode) {
         const url = this.roomUrl + 'get-list-room-service-by-group-service';
         const params = new HttpParams()
-            .set('groupServiceCode', groupServiceCode)
+            .set('groupServiceCode', groupServiceCode);
         return this.http.get(url, { params });
+    }
+
+    getListRoomService() {
+        const url = this.roomUrl + 'get-list-room-service';
+        return this.http.get(url);
     }
 
 }

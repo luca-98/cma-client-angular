@@ -69,6 +69,9 @@ export class ManageClinicalExaminationComponent implements OnInit {
   }
 
   resetInput() {
+    this.autoExamCode = [];
+    this.autoPatientCode = [];
+    this.autoPhone = [];
     this.searchForm.patchValue({
       fromDate: moment(new Date()),
       toDate: moment(new Date()),

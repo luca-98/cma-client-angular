@@ -13,6 +13,23 @@ const routes: Routes = [
     {
       path: 'manage-medicine',
       loadChildren: () => import('./manage-medicine/manage-medicine.module').then(m => m.ManageMedicineModule)
+    },
+    {
+      path: 'general-manage',
+      loadChildren: () => import('./general-manage/general-manage.module').then(m => m.GeneralManageModule)
+    },
+    {
+      path: 'manage-service',
+      loadChildren: () => import('./manage-service/manage-service.module').then(m => m.ManageServiceModule)
+    },
+    {
+      path: 'manage-material',
+      loadChildren: () => import('./manage-material/manage-material.module').then(m => m.ManageMaterialModule)
+    }
+    ,
+    {
+      path: 'manage-finance',
+      loadChildren: () => import('./manage-finance/manage-finance.module').then(m => m.ManageFinanceModule)
     }
   ]),
 

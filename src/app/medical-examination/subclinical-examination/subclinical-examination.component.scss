@@ -16,11 +16,12 @@
   }
 }
 
-@media only screen and (min-width: 1400px) {
-  .set-media-query .table-content {
-    max-height: 370px !important;
+@media only screen and (min-height: 700px) {
+  .caculate-height {
+    max-height: calc(100vh - 530px);
   }
+
   .right-box {
-    width: 700px;
+    width: 550px;
   }
 }

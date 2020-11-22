@@ -1,6 +1,5 @@
 @import "../../main-theme.scss";
 
-
 .sidenav-container {
   .light-colors {
     background-color: mat-color($primary, default);
@@ -8,8 +7,8 @@
   }
 
   .side-nav {
-    width: 250px;
-    box-shadow: 0 8px 10px 0 rgba(183, 192, 206, .2);
+    width: 230px;
+    box-shadow: 0 8px 10px 0 rgba(183, 192, 206, 0.2);
 
     @media (max-width: 1212px) {
       width: 200px;
@@ -19,15 +18,13 @@
       width: 180px;
     }
 
-
-
     .list-sb {
       padding-top: 0;
     }
   }
 
   .side-nav-right {
-    margin-top: 64px;
+    margin-top: 50px;
   }
 
   .progress-area {
@@ -41,12 +38,12 @@
   }
 
   .main-content {
-    padding: 10px 5px;
+    padding: 5px;
     padding-bottom: 0;
     background-color: $cma-background;
-    margin-top: 60px;
+    margin-top: 50px;
     overflow: auto;
-    max-height: calc(100vh - 64px)!important;
+    max-height: calc(100vh - 50px)!important;
     &::-webkit-scrollbar {
       width: 8px;
       height: 10px;
@@ -54,7 +51,7 @@
   }
 
   .nav-area {
-    height: 64px;
+    height: 50px;
 
     .logo {
       padding-top: 15px;
@@ -65,12 +62,12 @@
     }
   }
 
-  .side-menu {
+  .top-menu {
     background: $side-menu-background;
     position: fixed;
     top: 0;
     z-index: 99;
-    height: 64px;
+    height: 50px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 
     mat-toolbar {
@@ -127,7 +124,6 @@
           margin-bottom: 2px;
         }
       }
-
     }
 
     &:hover {
@@ -138,7 +134,7 @@
   }
 
   .profile-usertitle {
-    padding: 16px 0px;
+    padding: 15px 0 16px 0;
 
     .avatar {
       display: flex;
@@ -162,7 +158,6 @@
 
       .profile-usertitle-job {
         font-weight: 300;
-
       }
     }
   }
@@ -170,21 +165,20 @@
   .left-menu-content {
     overflow: auto;
     max-height: calc(100% - 306px);
-    border:1px solid $gray;
+    border: 1px solid $gray;
   }
 
   .version {
     position: fixed;
     bottom: 0;
-    width: 249px;
+    width: 230px;
     text-align: center;
     padding: 10px;
   }
 
-
   .loader-area {
     position: fixed;
-    top: 64px;
+    top: 50px;
     z-index: 99;
     width: 100%;
   }

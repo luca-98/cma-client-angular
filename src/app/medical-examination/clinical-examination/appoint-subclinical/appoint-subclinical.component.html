@@ -5,7 +5,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="header m-0">Thông tin bệnh nhân</h2>
                 </div>
-                <form [formGroup]="patientForm">
+                <form *ngIf="patientForm" [formGroup]="patientForm">
                     <div class="row mb-1">
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Mã bệnh nhân</label>
@@ -66,7 +66,7 @@
                         Quay lại
                     </span>
                 </button>
-                <button mat-raised-button class="ml-2 btn-main-color">
+                <button mat-raised-button class="ml-2 btn-main-color" (click)="print()">
                     <i class="fas fa-print"></i>
                     <span class="ml-1">
                         In phiếu chỉ định
@@ -149,7 +149,7 @@
         </div>
     </div>
     <div class="full-width">
-        <div class="table-custom mt-3 set-media-query">
+        <div class="table-custom mt-3">
             <ul class="table-header">
                 <li class="header-col stt text-center">
                     #
@@ -174,7 +174,7 @@
                 </li>
             </ul>
 
-            <div class="table-content">
+            <div class="table-content caculate-height">
                 <ul class="content-row" *ngIf="listServiceSelected.length == 0">
                     <li class="content-col no-data">
                         Không có dữ liệu
@@ -218,7 +218,7 @@
                             </mat-form-field>
                         </li>
                         <li class="content-col width-10 text-left ">
-                            {{service.status == 1 ? 'Chưa khám' : (service.status == 2 ? 'Đang thanh toán' : (service.status == 3 ? 'Đang khám' : 'Đã khám xong'))}}
+                            {{service.status == 1 ? 'Chưa khám' : (service.status == 2 ? 'Đang khám' : 'Đã khám xong')}}
                         </li>
                         <li class="content-col width-10 text-right ">
                             <div style="display: flex; justify-content: flex-end;">

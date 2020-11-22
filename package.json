@@ -26,7 +26,6 @@
     "@fortawesome/fontawesome-free": "^5.15.0",
     "@stomp/ng2-stompjs": "^8.0.0",
     "bootstrap": "^4.5.2",
-    "colresizable": "^1.6.0",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "ngx-material-timepicker": "^5.5.3",

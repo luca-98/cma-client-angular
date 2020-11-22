@@ -69,9 +69,7 @@ input:disabled {
   color: #000;
 }
 
-@media only screen and (min-width: 1400px) {
-  .set-media-query .table-content {
-    max-height: 490px !important;
-  }
+@media only screen and (min-height: 700px) {
+  
   
 }

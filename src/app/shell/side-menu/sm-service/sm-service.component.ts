@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { SideMenuService } from 'src/app/core/service/side-menu.service';
 
 @Component({
   selector: 'app-sm-service',
@@ -6,8 +7,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./sm-service.component.scss', '../side-menu.scss']
 })
 export class SmServiceComponent implements OnInit {
+  currentItem: number;
 
-  constructor() { }
+  constructor(
+    private sideMenuService: SideMenuService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {
+    this.sideMenuService.changeItemSubject.subscribe((value: number) => {
+      this.currentItem = value;
+      changeDetectorRef.detectChanges();
+    });
+  }
 
   ngOnInit(): void {
   }

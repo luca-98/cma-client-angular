@@ -1,6 +1,6 @@
 <div class="full-width card-custom">
     <div class="mb-2">
-        <form [formGroup]="searchForm">
+        <form *ngIf="searchForm" [formGroup]="searchForm">
             <div class="flex-container flex-content-between">
                 <h2 class="header">Tìm kiếm phiếu khám</h2>
                 <h3 style="font-weight: bold;">Số thứ tự khám mới tiếp theo: {{nextOrdinalNumber}}</h3>
@@ -109,7 +109,7 @@
             </span>  
         </button>
     </div>
-    <div class="table-custom mt-3 set-media-query">
+    <div class="table-custom mt-3">
         <mat-paginator [length]="totalRecord" [pageSize]="pageSize" [pageIndex]="pageIndex"
             [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
         <ul class="table-header">
@@ -141,7 +141,7 @@
                 Hành động
             </li>
         </ul>
-        <div class="table-content">
+        <div class="table-content caculate-height">
             <ul class="content-row" *ngIf="clinicalExamList.length == 0">
                 <li class="content-col no-data">
                     Không có dữ liệu

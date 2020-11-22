@@ -78,4 +78,14 @@ export class AppointmentService {
         return this.http.get(url, { params });
     }
 
+    editAppointmentCreated(appointmentData) {
+        const url = this.appointmentUrl + 'edit-appointment-created';
+        const formData = new FormData();
+        formData.append('appointmentDate', appointmentData.appointmentDate);
+        formData.append('appointmentTime', appointmentData.appointmentTime);
+        formData.append('staffId', appointmentData.staffId);
+        formData.append('appointmentId', appointmentData.appointmentId);
+        return this.http.put(url, formData);
+    }
+
 }

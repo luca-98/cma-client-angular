@@ -13,6 +13,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DATE_PICKER_FORMATS } from 'src/app/core/date-picker-formats';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -28,6 +31,11 @@ import { DATE_PICKER_FORMATS } from 'src/app/core/date-picker-formats';
     MatCheckboxModule,
     MatPaginatorModule,
     MatDatepickerModule,
+    SharedModule,
+    MatAutocompleteModule,
+    FormsModule,
+    ReactiveFormsModule,
+
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },

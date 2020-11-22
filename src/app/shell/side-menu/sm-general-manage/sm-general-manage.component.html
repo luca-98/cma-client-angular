@@ -1,12 +1,12 @@
 <mat-nav-list class="list-sb">
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 8.1" mat-list-item routerLink="/">
         Quản lý người dùng
     </a>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 8.2" mat-list-item routerLink="/">
         Quản lý nhóm người dùng
     </a>
     <mat-divider></mat-divider>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 8.3" mat-list-item routerLink="/general-manage/manage-template-report">
         Quản lý phiếu in
     </a>
 </mat-nav-list>

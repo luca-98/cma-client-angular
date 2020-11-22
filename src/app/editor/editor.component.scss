@@ -1,0 +1,199 @@
+@font-face {
+  font-family: "editor";
+  src: url("../../assets/fonts/editor.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "editor" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-forward:before {
+  content: "\e900";
+}
+.icon-backward:before {
+  content: "\e901";
+}
+.icon-no-border:before {
+  content: "\e902";
+}
+.icon-right-alignment:before {
+  content: "\e904";
+}
+.icon-left-alignment:before {
+  content: "\e905";
+}
+.icon-center-alignment:before {
+  content: "\e906";
+}
+.icon-underline:before {
+  content: "\e907";
+}
+.icon-italic:before {
+  content: "\e908";
+}
+.icon-bold:before {
+  content: "\e909";
+}
+.icon-merge:before {
+  content: "\e90a";
+}
+.icon-table-grid:before {
+  content: "\e90b";
+}
+
+.editor {
+  width: 770px;
+  min-height: 1149px;
+  margin: 0 auto;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 5px 5px 5px #7f7979;
+  outline: none;
+  margin-bottom: 50px;
+  padding: 30px 61px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.toolbar-text-editor {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f1f1f1;
+  border: 1px solid #d2d2d2;
+  border-radius: 5px;
+  margin: 0 auto 10px auto;
+  width: 770px;
+  padding: 10px;
+  user-select: none;
+
+  .active {
+    background-color: #a6a6a6;
+  }
+
+  .backward-forward {
+    display: inline;
+
+    button {
+      border: 1px solid #d2d2d2;
+      height: 30px;
+      width: 30px;
+      font-size: 16px;
+      margin-right: 5px;
+      padding: 4px;
+
+      &:hover {
+        background-color: #c5c5c5;
+        border-color: #969696;
+        cursor: pointer;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .font {
+    border: 1px solid #d2d2d2;
+    font-size: 16px;
+    height: 30px;
+    padding: 5px;
+    width: 180px;
+    margin-left: 10px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .size {
+    border: 1px solid #d2d2d2;
+    font-size: 16px;
+    height: 30px;
+    padding: 5px;
+    width: 60px;
+    margin-left: 5px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .merge-cell {
+    border: 1px solid #d2d2d2;
+    height: 30px;
+    width: 30px;
+    font-size: 16px;
+    margin-left: 15px;
+    padding: 4px;
+
+    &:hover:enabled {
+      background-color: #c5c5c5;
+      border-color: #969696;
+      cursor: pointer;
+    }
+
+    &:focus:enabled {
+      outline: none;
+    }
+  }
+
+  .font-style {
+    display: inline-block;
+    margin-left: 15px;
+
+    button {
+      border: 1px solid #d2d2d2;
+      height: 30px;
+      width: 30px;
+      font-size: 16px;
+      margin-right: 5px;
+      padding: 4px;
+
+      &:hover {
+        background-color: #c5c5c5;
+        border-color: #969696;
+        cursor: pointer;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .align {
+    display: inline-block;
+    margin-left: 10px;
+
+    button {
+      border: 1px solid #d2d2d2;
+      height: 30px;
+      width: 30px;
+      font-size: 16px;
+      margin-right: 5px;
+      padding: 4px;
+
+      &:hover {
+        background-color: #c5c5c5;
+        border-color: #969696;
+        cursor: pointer;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

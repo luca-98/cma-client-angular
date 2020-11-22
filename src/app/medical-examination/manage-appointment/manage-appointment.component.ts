@@ -8,6 +8,7 @@ import { CommonService } from 'src/app/core/service/common.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { AddAppoinmentComponent } from 'src/app/shared/dialogs/add-appoinment/add-appoinment.component';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
+import { EditAppointmentComponent } from 'src/app/shared/dialogs/edit-appointment/edit-appointment.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { buildHighlightString, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 
@@ -67,9 +68,45 @@ export class ManageAppointmentComponent implements OnInit {
 
   openAddDialog() {
     return this.dialog.open(AddAppoinmentComponent, {
-      width: '950px',
+      width: '700px',
       disableClose: true,
       autoFocus: false,
+    });
+  }
+
+  openEditDialog(item: any) {
+    const patient = item.patient;
+    const patientForm = {
+      appointmentId: item.id,
+      id: patient.id,
+      patientCode: patient.patientCode,
+      debt: patient.debt,
+      patientName: patient.patientName,
+      phone: patient.phone,
+      dateOfBirth: moment(new Date(patient.dateOfBirth)),
+      gender: patient.gender.toString(),
+      address: patient.address,
+      appointmentDate: moment(new Date(item.dayOfExamination)),
+      appointmentTime: item.time,
+      staffId: item.staff.id
+    };
+    return this.dialog.open(EditAppointmentComponent, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        patientForm
+      },
+    });
+  }
+
+  editPatient(item: any) {
+    const dialogRef = this.openEditDialog(item);
+    dialogRef.afterClosed().subscribe(result => {
+      if (typeof (result) === 'undefined') {
+        setTimeout(() => {
+          this.searchAppointment();
+        }, 300);
+      }
     });
   }
 
@@ -247,7 +284,7 @@ export class ManageAppointmentComponent implements OnInit {
         const date1 = new Date('1970/01/01 ' + a.time) as any;
         const date2 = new Date('1970/01/01 ' + b.time) as any;
         return date1 - date2;
-      })
+      });
       return {
         date,
         isShow: true,
@@ -265,17 +302,7 @@ export class ManageAppointmentComponent implements OnInit {
 
 
 
-  changeStatus(id, status) {
-    this.appointmentService.changeStatus(id, status)
-      .subscribe(
-        (data: any) => {
-        },
-        () => {
-          this.openNotifyDialog('Lỗi', 'Có lỗi xảy ra trong quá trình đổi trạng thái.');
-          this.searchAppointment();
-        }
-      );
-  }
+
 
   reset() {
     this.searchData = {

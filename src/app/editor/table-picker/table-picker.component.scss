@@ -1,0 +1,89 @@
+@font-face {
+  font-family: "editor";
+  src: url("../../../assets/fonts/editor.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "editor" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-table-grid:before {
+  content: "\e90b";
+}
+
+.table-picker {
+  display: inline-block;
+
+  .insert-table {
+    border: 1px solid #d2d2d2;
+    height: 30px;
+    width: 30px;
+    font-size: 16px;
+    margin-left: 12px;
+    padding: 4px;
+
+    &:hover {
+      background-color: #c5c5c5;
+      border-color: #969696;
+      cursor: pointer;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .table-picker-dropdown {
+    border: 1px solid #d2d2d2;
+    padding: 0;
+    margin-left: 12px;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    z-index: 1;
+    padding: 5px;
+
+    &.show {
+      display: block;
+    }
+
+    .table-picker-header {
+      margin: 0;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .table-picker-grid {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto;
+      grid-column-gap: 1px;
+      grid-row-gap: 1px;
+
+      span {
+        border: 1px solid #d2d2d2;
+        width: 15px;
+        height: 15px;
+        display: block;
+
+        &.hover {
+          background: rgba(0, 152, 247, 0.3);
+          border-color: #0098f7;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

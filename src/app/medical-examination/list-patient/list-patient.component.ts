@@ -26,7 +26,7 @@ export class ListPatientComponent implements OnInit {
   autoByAddress = [];
   pageSize = 25;
   pageIndex = 0;
-  pageSizeOptions: number[] = [1, 25, 50, 100, 200];
+  pageSizeOptions: number[] = [25, 50, 100, 200];
   isLoading = false;
   tableBottomLength = 0;
   searchData = {

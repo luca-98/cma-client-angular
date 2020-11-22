@@ -12,7 +12,7 @@
         </div>
     </div>
     <hr>
-    <form [formGroup]="detailForm">
+    <form *ngIf="detailForm" [formGroup]="detailForm">
         <div class="grid-container grid-template-1 mb-2 mt-2">
             <div class="flex-container">
                 <label class="label min-width-align">Mã bệnh nhân</label>
@@ -95,7 +95,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr *ngIf="history.length == 0">
                 <td colspan="9">Không có dữ liệu</td>
             </tr>
             <ng-container *ngFor="let h of history">

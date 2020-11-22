@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubclinicalService } from 'src/app/core/service/subclinical.service';
+import { DatePipe } from '@angular/common';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -32,6 +33,8 @@ const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | n
   }
 };
 
+declare var $: any;
+
 @Component({
   selector: 'app-appoint-subclinical',
   templateUrl: './appoint-subclinical.component.html',
@@ -40,6 +43,7 @@ const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | n
 export class AppointSubclinicalComponent implements OnInit {
 
   medicalExamId = null;
+  medicalExaminationCode = null;
   patientForm: FormGroup;
   listGroupService = [];
   listService = [];
@@ -67,6 +71,7 @@ export class AppointSubclinicalComponent implements OnInit {
     private router: Router,
     private subclinicalService: SubclinicalService,
     private route: ActivatedRoute,
+    private datePipe: DatePipe,
   ) {
     this.route.queryParams.subscribe(params => {
       this.medicalExamId = params.medicalExamId;
@@ -107,6 +112,7 @@ export class AppointSubclinicalComponent implements OnInit {
             this.router.navigate(['/medical-examination/clinical-examination']);
           }
 
+          this.medicalExaminationCode = data.message.medicalExaminationCode;
           const date = moment(new Date(data.message.dateOfBirth));
           data.message = propValToString(data.message);
           this.patientForm.patchValue({
@@ -314,7 +320,7 @@ export class AppointSubclinicalComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/medical-examination/clinical-examination']);
+    this.router.navigate(['/medical-examination/clinical-examination'], { queryParams: { medicalExamId: this.medicalExamId } });
   }
 
   save() {
@@ -362,20 +368,16 @@ export class AppointSubclinicalComponent implements OnInit {
           return;
         }
         listAppoint.push({
-          serviceReportId: null,
           serviceId: e.id,
-          staffId: e.doctorSelected,
-          status: null
+          staffId: e.doctorSelected
         });
       }
     }
 
     const objSave: any = {
       medicalExamId: this.medicalExamId,
-      patientCode: null,
       patientName,
       phone,
-      dateOfBirth: null,
       dateOfBirthStr: dateOfBirth,
       gender,
       address,
@@ -424,5 +426,179 @@ export class AppointSubclinicalComponent implements OnInit {
     } else {
       this.patientForm.get('phone').setErrors(null);
     }
+  }
+
+  print() {
+    let patientName = this.patientForm.get('patientName').value.trim();
+    let phone = this.patientForm.get('phone').value.trim();
+    let dateOfBirth = convertDateToNormal(this.patientForm.get('dateOfBirth').value);
+    let gender = this.patientForm.get('gender').value;
+    let address = this.patientForm.get('address').value.trim();
+
+    if (patientName === '') {
+      this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
+      return;
+    }
+
+    if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+      this.openNotifyDialog('Lỗi', 'Số điện thoại không đúng');
+      return;
+    }
+
+    if (dateOfBirth === '') {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không được để trống');
+      return;
+    }
+
+    if (gender === '') {
+      this.openNotifyDialog('Lỗi', 'Giới tính không được để trống');
+      return;
+    }
+
+    if (address === '') {
+      this.openNotifyDialog('Lỗi', 'Địa chỉ không được để trống');
+      return;
+    }
+
+    const listAppoint = [];
+
+    for (const e of this.listServiceSelected) {
+      if (e.checkBox) {
+        if (e.doctorSelected === '') {
+          this.openNotifyDialog('Lỗi', `Dịch vụ '${e.serviceName}' chưa được chỉ định bác sỹ`);
+          return;
+        }
+        if (e.roomSelected === '') {
+          this.openNotifyDialog('Lỗi', `Dịch vụ '${e.serviceName}' chưa được chỉ định phòng thực hiện`);
+          return;
+        }
+        listAppoint.push({
+          serviceId: e.id,
+          staffId: e.doctorSelected
+        });
+      }
+    }
+
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'APPOINT_SUBCLINICAL') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const printTemplateHtml = data2.message.templateHTML;
+                    const medicalExaminationCode = this.medicalExaminationCode;
+                    const patientCode = this.patientForm.get('patientCode').value.trim();
+                    patientName = this.patientForm.get('patientName').value.trim();
+                    gender = this.patientForm.get('gender').value == 0 ? 'Nam' : 'Nữ';
+                    phone = this.patientForm.get('phone').value.trim();
+                    dateOfBirth = this.datePipe.transform(this.patientForm.get('dateOfBirth').value, 'dd/MM/yyyy');
+                    address = this.patientForm.get('address').value.trim();
+
+                    let total = 0;
+                    const listTrNode = [];
+                    for (const ele of listAppoint) {
+                      const service = this.listService.find(x => x.id === ele.serviceId);
+                      const doctor = this.listDoctor.find(x => x.id === service.doctorSelected);
+
+                      total += service.price;
+                      const tr = document.createElement('TR');
+
+                      const td1 = document.createElement('TD');
+                      td1.style.borderCollapse = 'collapse';
+                      td1.style.border = 'none';
+                      td1.style.overflowWrap = 'break-word';
+                      td1.style.padding = '0px 6px';
+                      td1.innerHTML = service.serviceName;
+                      tr.appendChild(td1);
+
+                      const td2 = document.createElement('TD');
+                      td2.style.borderCollapse = 'collapse';
+                      td2.style.border = 'none';
+                      td2.style.overflowWrap = 'break-word';
+                      td2.style.padding = '0px 6px';
+                      const room = this.listRoom.find(x => x.id === doctor.roomServicesId[0]);
+                      td2.innerHTML = room.roomName;
+                      tr.appendChild(td2);
+
+                      const td3 = document.createElement('TD');
+                      td3.style.borderCollapse = 'collapse';
+                      td3.style.border = 'none';
+                      td3.style.overflowWrap = 'break-word';
+                      td3.style.padding = '0px 6px';
+                      td3.innerHTML = doctor.fullName;
+                      tr.appendChild(td3);
+
+                      const td4 = document.createElement('TD');
+                      td4.style.borderCollapse = 'collapse';
+                      td4.style.border = 'none';
+                      td4.style.overflowWrap = 'break-word';
+                      td4.style.padding = '0px 6px';
+                      td4.innerHTML = service.price;
+                      tr.appendChild(td4);
+
+                      listTrNode.push(tr);
+                    }
+
+                    const today = new Date();
+                    const day = this.datePipe.transform(today, 'dd');
+                    const month = this.datePipe.transform(today, 'MM');
+                    const year = this.datePipe.transform(today, 'yyyy');
+                    const objPrint = {
+                      medicalExaminationCode,
+                      patientCode,
+                      patientName,
+                      gender,
+                      phone,
+                      dateOfBirth,
+                      address,
+                      data: listTrNode,
+                      total,
+                      day,
+                      month,
+                      year
+                    };
+                    this.processDataPrint(objPrint, printTemplateHtml);
+                  },
+                  () => {
+                    this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+        }
+      );
+  }
+
+  processDataPrint(objectPrint: any, htmlTemplate: string) {
+    const printDoc = document.implementation.createHTMLDocument('no-title');
+    const wrapper = printDoc.createElement('div');
+    wrapper.setAttribute('class', 'editor');
+    printDoc.body.appendChild(wrapper);
+    wrapper.innerHTML = htmlTemplate;
+
+    const keySet = Object.keys(objectPrint);
+    for (const key of keySet) {
+      if (key === 'data') {
+        const tbodyAppoint = printDoc.getElementById('tbody-appoint');
+        const data = printDoc.getElementById('data');
+        for (const tr of objectPrint.data) {
+          tbodyAppoint.insertBefore(tr, data);
+        }
+        data.remove();
+        continue;
+      }
+      const ele = printDoc.getElementById(key);
+      if (ele !== null) {
+        ele.innerHTML = objectPrint[key];
+      }
+    }
+
+    $(wrapper).printThis({ importCSS: false });
   }
 }

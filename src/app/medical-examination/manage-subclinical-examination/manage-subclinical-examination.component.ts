@@ -7,7 +7,10 @@ import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
 import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { ManageClinicalExamService } from 'src/app/core/service/manage-clinical-exam.service';
+import { RoomService } from 'src/app/core/service/room.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
+import { StaffService } from 'src/app/core/service/staff.service';
+import { SubclinicalService } from 'src/app/core/service/subclinical.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { buildHighlightString, convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 
@@ -19,10 +22,10 @@ import { buildHighlightString, convertDateToNormal, propValToString, removeSignA
 export class ManageSubclinicalExaminationComponent implements OnInit {
 
   searchForm: FormGroup;
+  groupServiceCode = [];
   doctorList = [];
   roomList = [];
-  clinicalExamList = [];
-  nextOrdinalNumber = 1;
+  subclinicalExamList = [];
 
   totalRecord = 0;
   pageIndex = 0;
@@ -41,13 +44,15 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
     private commonService: CommonService,
     private credentialsService: CredentialsService,
     private manageClinicalExamService: ManageClinicalExamService,
-    private router: Router
+    private router: Router,
+    private staffService: StaffService,
+    private roomService: RoomService,
+    private subclinicalService: SubclinicalService
   ) { }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý phiếu khám cận lâm sàng');
     this.sideMenuService.changeItem(1.6);
-
     this.searchForm = this.formBuilder.group({
       fromDate: [moment(new Date())],
       toDate: [moment(new Date())],
@@ -59,16 +64,18 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
       phone: ['']
     });
 
-    this.getDoctorList();
-    this.getRoomList();
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
-    this.getNextOrdinalNumber();
+    this.getGroupService();
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
+
   search() {
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   resetInput() {
+    this.autoExamCode = [];
+    this.autoPatientCode = [];
+    this.autoPhone = [];
     this.searchForm.patchValue({
       fromDate: moment(new Date()),
       toDate: moment(new Date()),
@@ -82,28 +89,14 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
     this.totalRecord = 0;
     this.pageIndex = 0;
     this.pageSize = 25;
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
-    this.getNextOrdinalNumber();
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   onPageEvent(event: any) {
-    this.getClinicalExamList(event.pageSize, event.pageIndex);
+    this.getSubclinicalExamList(event.pageSize, event.pageIndex);
   }
 
-  getNextOrdinalNumber() {
-    const doctorId = this.searchForm.get('doctorId').value;
-    this.manageClinicalExamService.getNextOrdinNumberStaff(doctorId)
-      .subscribe(
-        (data: any) => {
-          this.nextOrdinalNumber = data.message;
-        },
-        () => {
-          console.error('error call api');
-        }
-      );
-  }
-
-  getClinicalExamList(pageSize: number, pageIndex: number) {
+  getSubclinicalExamList(pageSize: number, pageIndex: number) {
     this.isLoading = true;
     const fromDate = convertDateToNormal(this.searchForm.get('fromDate').value);
     const toDate = convertDateToNormal(this.searchForm.get('toDate').value);
@@ -114,7 +107,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
     const patientCode = this.searchForm.get('patientCode').value;
     const phone = this.searchForm.get('phone').value;
 
-    this.manageClinicalExamService.getPatientReceive(fromDate, toDate, roomId,
+    this.subclinicalService.getListForManage(fromDate, toDate, roomId,
       doctorId, status, clinicalExamCode, patientCode, phone, pageIndex, pageSize)
       .subscribe(
         (data: any) => {
@@ -122,7 +115,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
           this.pageIndex = data.message.pageIndex;
           this.pageSize = data.message.pageSize;
           this.totalRecord = data.message.totalRecord;
-          this.clinicalExamList = data.message.listData;
+          this.subclinicalExamList = data.message.listData;
         },
         () => {
           this.isLoading = false;
@@ -131,11 +124,13 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
       );
   }
 
-  getDoctorList() {
-    this.commonService.getAllDoctor()
+  getGroupService() {
+    this.commonService.getCurrentGroupService()
       .subscribe(
         (data: any) => {
-          this.doctorList = data.message;
+          this.groupServiceCode = data.message;
+          this.getDoctorList();
+          this.getRoomList();
         },
         () => {
           console.error('error call api');
@@ -143,16 +138,48 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
       );
   }
 
+  getDoctorList() {
+    for (const code of this.groupServiceCode) {
+      if (code === 'CLINICAL_EXAMINATION') {
+        continue;
+      }
+      this.staffService.getDoctorByGroupServiceCode(code)
+        .subscribe(
+          (data: any) => {
+            for (const staff of data.message) {
+              const index = this.doctorList.findIndex(x => x.id === staff.id);
+              if (index === -1) {
+                this.doctorList.push(staff);
+              }
+            }
+          },
+          () => {
+            console.error('error call api');
+          }
+        );
+    }
+  }
+
   getRoomList() {
-    this.commonService.getRoomMedicalExam()
-      .subscribe(
-        (data: any) => {
-          this.roomList = data.message;
-        },
-        () => {
-          console.error('error call api');
-        }
-      );
+    for (const code of this.groupServiceCode) {
+      if (code === 'CLINICAL_EXAMINATION') {
+        continue;
+      }
+      this.roomService.getRoomByGroupServiceCode(code)
+        .subscribe(
+          (data: any) => {
+            for (const room of data.message) {
+              const index = this.roomList.findIndex(x => x.id === room.id);
+              if (index === -1) {
+                this.roomList.push(room);
+              }
+            }
+          },
+          () => {
+            console.error('error call api');
+          }
+        );
+    }
   }
 
   roomChange(event: any) {
@@ -165,8 +192,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
         break;
       }
     }
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
-    this.getNextOrdinalNumber();
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   doctorChange(event: any) {
@@ -179,12 +205,11 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
         break;
       }
     }
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
-    this.getNextOrdinalNumber();
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   statusChange() {
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   onFromDateChange() {
@@ -198,7 +223,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
         fromDate: this.searchForm.get('toDate').value
       });
     }
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   onToDateChange() {
@@ -212,7 +237,7 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
         toDate: this.searchForm.get('fromDate').value
       });
     }
-    this.getClinicalExamList(this.pageSize, this.pageIndex);
+    this.getSubclinicalExamList(this.pageSize, this.pageIndex);
   }
 
   async generateAutoExamCode(event: any) {
@@ -299,8 +324,8 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
       );
   }
 
-  moveToClinicalExam(patientCode: any) {
-    this.router.navigate(['/medical-examination/clinical-examination'], { queryParams: { patientCode } });
+  moveToSubClinicalExam(medicalExamId: any) {
+    this.router.navigate(['/medical-examination/subclinical-examination'], { queryParams: { medicalExamId } });
   }
 
 

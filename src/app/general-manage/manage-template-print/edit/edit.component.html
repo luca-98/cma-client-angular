@@ -1,0 +1,40 @@
+<app-context-menu></app-context-menu>
+<div class="setting-report-container">
+    <div class="grid">
+        <mat-card class="command">
+            <button mat-raised-button routerLink="/general-manage/manage-template-report">
+                <i class="fas fa-undo-alt"></i> Quay lại
+            </button>
+            <div class="mt-1">
+                <h2>Chỉnh sửa mẫu in</h2>
+                <h3>{{templateName}}</h3>
+                <hr>
+                <div class="grid-tool">
+                    <button type="button" class="btn btn-primary btn-add-report" matTooltip="In thử mẫu kết quả"
+                        (click)="print()">
+                        <i class="icon-print"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-add-report" matTooltip="Lưu mẫu kết quả"
+                        (click)="save()">
+                        <i class="icon-save"></i>
+                    </button>
+                </div>
+                <hr>
+                <div class="grid-dragDrop">
+                    <mat-card *ngFor="let ele of dragDropItem" draggable="true" matTooltip="Kéo vào mẫu kết quả để chèn"
+                        (dragstart)="onDragStart($event, ele)">Chèn {{ele.name}}</mat-card>
+                </div>
+                <hr>
+                <div class="note">
+                    <p>* Ghi chú: Hãy sử dụng "Chèn nhập tên, chèn nhập tuổi,..." khi tạo mẫu kết quả để hệ thống có thể
+                        nhận diện được thông tin khi gõ kết quả cho bệnh nhân</p>
+                    <p>* Hướng dẫn: Kéo các nút "Chèn nhập tên, chèn nhập tuổi,..." vào mẫu kết quả để chèn</p>
+                    <p>* Để xóa một mục đã chèn, chuột phải vào mục đó, chọn xóa</p>
+                </div>
+            </div>
+        </mat-card>
+        <div class="editor-container">
+            <app-editor></app-editor>
+        </div>
+    </div>
+</div>

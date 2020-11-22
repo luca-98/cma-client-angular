@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Thông tin nhóm dịch vụ</h2>
+<mat-dialog-content>
+    <div class="dialog-content">
+        <div class="row">
+            <div class="col-12 d-flex">
+                <label class="label min-width-align">Tên</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [(ngModel)]="dataPost.groupServiceName" required />
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <h2 mat-dialog-title>Danh sách bác sĩ</h2>
+        <div class="row list-checkbox">
+            <div class="col-12 d-flex flex-wrap">
+                <div class="item-checkbox" *ngFor="let item of listStaff">
+                    <mat-checkbox [(ngModel)]="item.checked">
+                    </mat-checkbox>
+                    <label class="label min-width-align">{{item.fullName}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
+    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
+</mat-dialog-actions>

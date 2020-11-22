@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { ClinicalExaminationRoutingModule } from './clinical-examination-routing.module';
 import { ClinicalExaminationComponent } from './clinical-examination.component';
@@ -46,6 +46,7 @@ import { PrescriptionsComponent } from './prescriptions/prescriptions.component'
     MatPaginatorModule
   ],
   providers: [
+    DatePipe,
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },
     {
       provide: DateAdapter,

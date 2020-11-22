@@ -1,4 +1,4 @@
-<form [formGroup]="examForm" (keydown.enter)="$event.preventDefault()">
+<form *ngIf="examForm" [formGroup]="examForm" (keydown.enter)="$event.preventDefault()">
     <div class="d-flex">
         <div class="left-box">
             <div class="card-custom h-100 mb-0">
@@ -218,15 +218,16 @@
             <div class="card-custom h-100 mb-0 ">
                 <div>
                     <button mat-raised-button class="btn-main-color"
-                        routerLink="/medical-examination/clinical-examination/appoint-subclinical" (click)="moveToAppoint()" [disabled]="!enableFuncBtn">
+                        routerLink="/medical-examination/clinical-examination/appoint-subclinical"
+                        (click)="moveToAppoint()" [disabled]="!enableFuncBtn">
                         Chỉ định dịch vụ cận lâm sàng
                     </button>
                     <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn">Xem kết quả cận lâm
                         sàng</button>
                     <button mat-raised-button class="btn-main-color"
-                        routerLink="/medical-examination/clinical-examination/prescriptions" (click)="moveToPrescriptions()"
-                        [disabled]="!enableFuncBtn">Kê đơn thuốc</button>
-                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn">
+                        routerLink="/medical-examination/clinical-examination/prescriptions"
+                        (click)="moveToPrescriptions()" [disabled]="!enableFuncBtn">Kê đơn thuốc</button>
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn" (click)="print()">
                         <i class="fas fa-print"></i>
                         <span class="ml-1">In phiếu khám bệnh</span>
                     </button>
@@ -254,6 +255,7 @@
             </div>
         </div>
     </div>
+    <!-- fix auto complete -->
     <br>
     <br>
     <br>

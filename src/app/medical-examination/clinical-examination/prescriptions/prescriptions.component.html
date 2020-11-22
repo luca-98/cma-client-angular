@@ -1,7 +1,7 @@
 <div class=" card-custom mb-0">
     <div class="d-flex">
         <div class="left-box">
-            <form [formGroup]="patientForm">
+            <form *ngIf="patientForm" [formGroup]="patientForm">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="header m-0">Thông tin bệnh nhân</h2>
 
@@ -166,7 +166,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <h2 class="header m-0">Thông tin thuốc</h2>
         </div>
-        <div class="table-custom mt-1 set-media-query">
+        <div class="table-custom mt-1">
             <ul class="table-header">
                 <li class="header-col stt text-center">
                     #
@@ -187,7 +187,7 @@
                 </li>
             </ul>
 
-            <div class="table-content">
+            <div class="table-content caculate-height">
                 <ul class="content-row" *ngIf="listUserMedicine.length ===0">
                     <li class="content-col no-data">
                         Không có dữ liệu

@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Thông tin dịch vụ</h2>
+<mat-dialog-content>
+    <div class="dialog-content">
+
+        <div class="row">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tên dịch vụ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [(ngModel)]="dataPost.serviceName" required />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Mẫu dịch vụ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select [(ngModel)]="dataPost.templateReportservice">
+                        <mat-option *ngFor="let item of templateReport" [value]="item.templateReportId">
+                            {{ item.templateName }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+        </div>
+        <div class="row mt-1">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Giá</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput step="1000" [(ngModel)]="dataPost.price" type="number" min="0" required />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Nhóm dịch vụ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select [(ngModel)]="dataPost.groupServiceId">
+                        <mat-option *ngFor="let item of listGroupService" [value]="item.id">
+                            {{ item.groupServiceName }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <h2 mat-dialog-title>Danh sách phòng khám</h2>
+        <div class="row list-checkbox">
+            <div class="col-12 d-flex flex-wrap">
+                <div class="item-checkbox" *ngFor="let item of listRoomService">
+                    <mat-checkbox [(ngModel)]="item.checked">
+                    </mat-checkbox>
+                    <label class="label min-width-align">{{item.roomName}}</label>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
+    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
+</mat-dialog-actions>

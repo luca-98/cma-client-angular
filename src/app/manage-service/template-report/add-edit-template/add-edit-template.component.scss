@@ -1,0 +1,85 @@
+@font-face {
+    font-family: "editor";
+    src: url("../../../../assets/fonts/editor.woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+::ng-deep .input-fixed {
+    width: 100%;
+    padding-top: 5px;
+
+    .mat-form-field-wrapper {
+        padding-bottom: 0;
+    }
+}
+
+.setting-report-container {
+    padding: 10px;
+    background-color: #d4dfe6;
+
+    .grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-column-gap: 20px;
+    }
+
+    .command {
+        max-width: 550px;
+
+        .grid-tool {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-column-gap: 5px;
+
+            i {
+                /* use !important to prevent issues with browser extensions that change fonts */
+                font-family: "editor" !important;
+                font-style: normal;
+                font-weight: normal;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 1;
+
+                /* Better Font Rendering =========== */
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            .icon-save:before {
+                content: "\e911";
+            }
+            .icon-print:before {
+                content: "\e912";
+            }
+
+            .btn-add-report {
+                width: 100%;
+            }
+        }
+
+        mat-form-field {
+            width: 100%;
+        }
+
+        .grid-dragDrop {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-column-gap: 10px;
+            grid-row-gap: 10px;
+
+            mat-card {
+                background-color: #e9ecef;
+                cursor: move;
+            }
+        }
+
+        .note {
+            p {
+                font-size: 14px;
+                font-style: italic;
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+@font-face {
+  font-family: "editor";
+  src: url("../../../assets/fonts/editor.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "editor" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-insert-row-below:before {
+  content: "\e90c";
+}
+.icon-insert-row-above:before {
+  content: "\e90d";
+}
+.icon-all-border:before {
+  content: "\e90e";
+}
+.icon-insert-col-right:before {
+  content: "\e90f";
+}
+.icon-insert-col-left:before {
+  content: "\e910";
+}
+.icon-no-border:before {
+  content: "\e902";
+}
+.icon-blank:before {
+  content: "   ";
+  white-space: pre;
+}

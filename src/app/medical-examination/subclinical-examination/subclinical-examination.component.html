@@ -4,13 +4,13 @@
             <div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="header m-0">Thông tin bệnh nhân</h2>
-                    <h3 class="m-0" style="color: red; font-weight: bold;">Chưa thanh toán</h3>
+                    <h3 class="m-0" style="color: red; font-weight: bold;" *ngIf="!paid">Chưa thanh toán</h3>
                 </div>
-                <form [formGroup]="patientForm">
+                <form *ngIf="patientForm" [formGroup]="patientForm">
                     <div class="row mb-1">
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Mã bệnh nhân</label>
-                            <mat-form-field appearance="outline" class="input-fixed">
+                            <mat-form-field appearance="outline" class="input-fixed" (dblclick)="dbClick()">
                                 <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
                                     (keyup)="generateAutoPatientByPatientCode($event)">
                                 <app-patient-autocomplete [autocomplete]="inputPatientCode"
@@ -46,7 +46,8 @@
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Năm sinh</label>
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth">
+                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                                    (dateChange)="onDobChange()">
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2 color="primary"></mat-datepicker>
                             </mat-form-field>
@@ -72,10 +73,9 @@
                 </form>
             </div>
             <div class="d-flex justify-content-end action">
-                <button mat-raised-button class="btn-orange " (click)="resetInput()">
-                    <i class="fas fa-sync-alt"></i>
-                    <span class="ml-1">
-                        Nhập lại
+                <button mat-raised-button class="btn-main-color" (click)="save()">
+                    <i class="fas fa-save"></i> <span class="ml-1">
+                        Lưu
                     </span>
                 </button>
                 <button mat-raised-button class="ml-2 btn-main-color">
@@ -90,9 +90,11 @@
                         Chuyển thanh toán
                     </span>
                 </button>
-                <button mat-raised-button class="btn-main-color ml-2">
-                    <i class="fas fa-save"></i> <span class="ml-1">
-                        Lưu
+
+                <button mat-raised-button class="ml-2 btn-orange " (click)="resetInput()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
                     </span>
                 </button>
             </div>
@@ -142,7 +144,8 @@
                     </ul>
                     <ul class="content-row" *ngFor="let item of listService">
                         <li class="content-col stt text-center">
-                            <mat-checkbox (click)="hanldeSelectPatientService(item,$event)"></mat-checkbox>
+                            <mat-checkbox [(ngModel)]="item.checked" (click)="hanldeSelectPatientService(item,$event)">
+                            </mat-checkbox>
                         </li>
                         <li class="content-col width-auto text-left ">
                             {{item.serviceName}}
@@ -158,12 +161,12 @@
         </div>
     </div>
     <div class="full-width">
-        <div class="table-custom mt-3 set-media-query">
+        <div class="table-custom mt-3">
             <ul class="table-header">
                 <li class="header-col stt text-center">
                     #
                 </li>
-                <li class="header-col width-auto text-left">
+                <li class="header-col width-10 text-left">
                     Tên dịch vụ
                 </li>
                 <li class="header-col width-10 text-left">
@@ -175,13 +178,13 @@
                 <li class="header-col width-15 text-left">
                     Phòng khám
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-15 text-left">
                     Kết luận
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-15 text-left">
                     Ghi chú
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-auto text-left">
                     Trạng thái
                 </li>
                 <li class="header-col width-10 text-right">
@@ -189,7 +192,7 @@
                 </li>
             </ul>
 
-            <div class="table-content">
+            <div class="table-content caculate-height js-auto-scroll">
                 <ul class="content-row" *ngIf="listPatientService.length==0">
                     <li class="content-col no-data">
                         Không có dữ liệu
@@ -200,7 +203,7 @@
                     <li class="content-col stt text-center text-truncate">
                         {{i+1}}
                     </li>
-                    <li class="content-col width-auto text-left ">
+                    <li class="content-col width-10 text-left ">
                         {{item.serviceName}}
                     </li>
                     <li class="content-col width-10 text-left">
@@ -224,27 +227,30 @@
                             </mat-select>
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-10 text-left">
+                    <li class="content-col width-15 text-left">
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput>
+                            <input matInput [(ngModel)]="item.summary">
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-10 text-left">
+                    <li class="content-col width-15 text-left">
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput>
+                            <input matInput [(ngModel)]="item.note">
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-10 text-left ">
-                        Trạng thái
+                    <li class="content-col width-auto text-left ">
+                        {{item.status == '1' ? 'Chưa khám' : 
+                        (item.status == '2' ? 'Đang khám' : 'Đã khám xong')
+                    }}
                     </li>
                     <li class="content-col width-10 text-right ">
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-outline-secondary btn-sm" title="Đánh dấu đã hoàn tất"><i
-                                    class="fas fa-check"></i></button>
-                            <button class="btn btn-outline-secondary btn-sm ml-1" title="xxxx"><i
+                            <button class="btn btn-outline-secondary btn-sm" title="Xem chi tiết phiếu cận lâm sàng"><i
                                     class="fas fa-file"></i></button>
+                            <button class="btn btn-outline-secondary btn-sm ml-1" title="Đánh dấu đã hoàn tất"
+                                *ngIf="item.status != '0'" (click)="makeDone(item.serviceReportId,item)"><i
+                                    class="fas fa-check"></i></button>
                             <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa dịch vụ"><i
-                                    class="fas fa-trash"></i></button>
+                                    class="fas fa-trash" (click)="deleteService(item.id,true)"></i></button>
                         </div>
                     </li>
 

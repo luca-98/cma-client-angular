@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-form-field class="full-width">
+    <input matInput placeholder="Tên nhóm kết quả" [(ngModel)]="groupData.reportName">
+</mat-form-field>
+<div mat-dialog-actions>
+    <button class="btn-close-dialog" mat-dialog-close mat-raised-button color="warn" (click)="onCloseClick()"
+        cdkFocusInitial>Đóng</button>
+    <button class="btn-close-dialog" [mat-dialog-close]="groupData" mat-raised-button color="primary" mat-dialog-close
+        cdkFocusInitial [disabled]="!groupData.reportName">Lưu</button>
+</div>

@@ -1,22 +1,12 @@
 <mat-nav-list class="list-sb">
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 4.1" mat-list-item routerLink="/manage-service/service">
         Danh mục dịch vụ
     </a>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 4.2" mat-list-item routerLink="/manage-service/group-service">
         Danh mục nhóm dịch vụ
     </a>
     <mat-divider></mat-divider>
-    <a mat-list-item routerLink="/">
-        Báo cáo giá dịch vụ
-    </a>
-    <a mat-list-item routerLink="/">
-        Cập nhật giá dịch vụ
-    </a>
-    <mat-divider></mat-divider>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 4.3" mat-list-item routerLink="/manage-service/template-report">
         Mẫu kết quả dịch vụ
-    </a>
-    <a mat-list-item routerLink="/">
-        Nhóm mẫu kết quả dịch vụ
     </a>
 </mat-nav-list>

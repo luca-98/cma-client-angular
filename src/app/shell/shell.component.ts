@@ -5,6 +5,7 @@ import { AuthenticationService } from '../core/service/authentication.service';
 import { CommonService } from '../core/service/common.service';
 import { CredentialsService } from '../core/service/credentials.service';
 import { LoaderService } from '../core/service/loader.service';
+import { SideMenuService } from '../core/service/side-menu.service';
 import { SidebarItem } from '../enum/sidebar-item.enum';
 import { NotifyDialogComponent } from '../shared/dialogs/notify-dialog/notify-dialog.component';
 import { DialogChangeRoomComponent } from './dialog-change-room/dialog-change-room.component';
@@ -29,8 +30,13 @@ export class ShellComponent implements OnInit {
     private router: Router,
     private credentialsService: CredentialsService,
     private dialog: MatDialog,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private sideMenuService: SideMenuService,
   ) {
+    this.sideMenuService.changeItemSubject.subscribe((value: number) => {
+      this.sidebarRightState = +value.toString().slice(0, 1);
+      changeDetectorRef.detectChanges();
+    });
     this.loaderService.loaderSubject.subscribe((value: boolean) => {
       this.showLoader = value;
       changeDetectorRef.detectChanges();

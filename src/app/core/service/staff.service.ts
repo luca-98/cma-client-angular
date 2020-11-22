@@ -20,4 +20,8 @@ export class StaffService {
         return this.http.get(url, { params });
     }
 
+    getAllStaff() {
+        const url = this.staffUrl + 'get-all-staff';
+        return this.http.get(url);
+    }
 }

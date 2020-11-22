@@ -1,0 +1,67 @@
+::ng-deep .input-fixed {
+    width: 100%;
+  
+    .period-selector {
+      top: calc(50% - -17px) !important;
+      right: unset !important;
+      width: 70px !important;
+      background-color: white !important;
+      border-radius: 5px;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    }
+  
+    .period-selector__button--active {
+      color: unset !important;
+      background: #eaeef3 !important;
+    }
+  
+    .ngx-timepicker {
+      border: none !important;
+    }
+  
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+  
+    .mat-form-field-infix {
+      border-top: 0;
+      padding-top: 12px;
+      padding-bottom: 10px;
+      width: auto;
+    }
+  
+    .mat-form-field-label-wrapper {
+      display: none;
+    }
+  
+    .mat-select-arrow-wrapper {
+      padding-top: 10px;
+    }
+  
+    .mat-select-value {
+      color: #000;
+    }
+  }
+  
+  .label {
+    margin: auto 5px auto 0;
+  }
+  
+  .min-width-align {
+    min-width: 92px;
+  }
+  
+  .time-picker {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: inherit;
+    font-weight: 400;
+    line-height: 1.125;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    display: flex;
+    justify-content: center;
+    height: 37px;
+    margin-top: 5px;
+  }
+  

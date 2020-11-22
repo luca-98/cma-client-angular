@@ -4,7 +4,7 @@
             <h2 class="header">Quản lý phòng khám</h2>
         </div>
         <mat-progress-bar mode="indeterminate" [ngClass]="!isLoading ? 'hide' : ''"></mat-progress-bar>
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <form *ngIf="loginForm" [formGroup]="loginForm" (ngSubmit)="login()">
             <mat-card-content class="content">
                 <mat-form-field class="full-width">
                     <input matInput placeholder="Tên đăng nhập" formControlName="username">

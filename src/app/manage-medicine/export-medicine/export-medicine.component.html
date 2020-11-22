@@ -1,78 +1,201 @@
 <div class=" card-custom mb-0">
-    <div class="info">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h2 class="header m-0">Thông tin bệnh nhân</h2>
-        </div>
-        <div class="row">
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Mã bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
-                </mat-form-field>
+    <div class="d-flex">
+        <div class="left-box">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="header m-0">Thông tin bệnh nhân</h2>
+            </div>
+            <form *ngIf="patientForm" [formGroup]="patientForm">
+                <div class="row">
+                    <div class="col-6 d-flex">
+                        <label class="label min-width-align">Mã bệnh nhân</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
+                                (keyup)="generateAutoPatientByPatientCode($event)">
+                            <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                                [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
+                            </app-patient-autocomplete>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-6 d-flex">
+                        <label class="label min-width-align">Tên bệnh nhân</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
+                                autocomplete="off" #inputName>
+                            <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
+                                [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                            </app-patient-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-6 d-flex">
+                        <label class="label min-width-align">Bác sĩ khám</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="staffName">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-12 d-flex">
+                        <label class="label min-width-align">Tổng tiền</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="total">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-12 d-flex">
+                        <label class="label min-width-align">Bằng chữ</label>
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput formControlName="totalText">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+
+            <hr>
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end">
+                    <button (click)="save()" mat-raised-button class="btn-main-color">
+                        <i class="fas fa-save"></i>
+                        <span class="ml-1">
+                            Lưu
+                        </span>
+                    </button>
+                    <button mat-raised-button class="ml-2 btn-green ">
+                        <i class="fas fa-print"></i>
+                        <span class="ml-1">
+                            In hóa đơn
+                        </span>
+                    </button>
+                    <button mat-raised-button class="ml-2 btn-orange ">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="ml-1">
+                            Nhập lại
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Tên bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
-                </mat-form-field>
+        <div class="right-box pl-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="header m-0">List đơn thuốc</h2>
             </div>
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Bác sĩ khám</label>
-                <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
-                </mat-form-field>
+            <div class="table-custom mt-3">
+                <ul class="table-header">
+                    <li class="header-col stt text-center">
+                        #
+                    </li>
+                    <li class="header-col width-auto text-left">
+                        Tên đơn thuốc
+                    </li>
+                </ul>
+                <div class="table-content">
+                    <ul class="content-row" *ngIf="listDonThuoc.length ===0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <ul class="content-row" *ngFor="let item of listDonThuoc">
+                        <li class="content-col stt text-center">
+                            <mat-checkbox [(ngModel)]="item.checked" (click)="selectMedicineName(item,$event)">
+                            </mat-checkbox>
+                        </li>
+                        <li class="content-col width-auto text-left " (click)="selectMedicineName(item)"
+                            style="cursor: pointer;">
+                            {{item.nameOfPrescription}}
+                        </li>
+                    </ul>
+
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Tổng tiền</label>
-                <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
-                </mat-form-field>
-            </div>
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Bằng chữ</label>
-                <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
-                </mat-form-field>
-            </div>
-        </div>
-        <hr>
-        <div class="row">
-            <div class="col-12 d-flex justify-content-end">
-                <button mat-raised-button class="btn-main-color">
-                    <i class="fas fa-save"></i>
-                    <span class="ml-1">
-                        Lưu
-                    </span>
-                </button>
-                <button mat-raised-button class="ml-2 btn-green ">
-                    <i class="fas fa-print"></i>
-                    <span class="ml-1">
-                        In hóa đơn
-                    </span>
-                </button>
-                <button mat-raised-button class="ml-2 btn-orange ">
-                    <i class="fas fa-sync-alt"></i>
-                    <span class="ml-1">
-                        Nhập lại
-                    </span>
-                </button>
-            </div>
+
         </div>
     </div>
+
     <div class="box-table">
         <div class="d-flex align-items-center justify-content-between">
-            <h2 class="header m-0">Thông tin thuốc</h2>
+            <h2 class="header m-0">Thông tin thuốc theo đơn</h2>
         </div>
-        <div class="table-custom mt-1 set-media-query">
+        <div class="table-custom mt-1 ">
             <ul class="table-header">
                 <li class="header-col stt text-center">
                     #
                 </li>
                 <li class="header-col width-15 text-left">
+                    Tên thuốc
+                </li>
+                <li class="header-col width-10 text-left">
+                    Đơn vị
+                </li>
+                <li class="header-col width-auto text-left">
+                    Ghi chú
+                </li>
+                <li class="header-col width-10 text-left">
+                    Số lượng
+                </li>
+                <li class="header-col width-10 text-left">
+                    Số thực lấy
+                </li>
+                <li class="header-col width-15 text-left">
+                    Đơn giá
+                </li>
+                <li class="header-col width-10 text-left">
+                    Thành tiền
+                </li>
+
+            </ul>
+
+            <div class="table-content">
+                <ul class="content-row" *ngIf="listMedicine1.length===0">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul>
+                <app-loading *ngIf="isLoading"></app-loading>
+                <ul class="content-row " *ngFor="let item of listMedicine1;let i = index">
+                    <li class="content-col stt text-center">
+                        {{i+1}}
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        {{item.medicineByMedicineId.medicineName}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.medicineByMedicineId.unitName}}
+                    </li>
+                    <li class="content-col width-auto text-left">
+                        {{item.noteDetail}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.quantity}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput [(ngModel)]="item.realQuantity" type="number" min="0"
+                                max="{{item.quantity}}" (change)="validateQuantity(item)">
+                        </mat-form-field>
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        {{item.medicineByMedicineId.price}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.total}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="box-table mt-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="header m-0">Thông tin không thuốc theo đơn</h2>
+        </div>
+        <div class="table-custom mt-1 ">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-25 text-left">
                     Tên thuốc
                 </li>
                 <li class="header-col width-15 text-left">
@@ -81,55 +204,76 @@
                 <li class="header-col width-15 text-left">
                     Số lượng
                 </li>
-                <li class="header-col width-15 text-left">
-                    Số thực lấy
-                </li>
+
                 <li class="header-col width-15 text-left">
                     Đơn giá
                 </li>
                 <li class="header-col width-auto text-left">
                     Thành tiền
                 </li>
-
+                <li class="header-col width-10 text-left">
+                </li>
             </ul>
 
             <div class="table-content">
-                <!-- <ul class="content-row">
+                <ul class="content-row" *ngIf="listMedicine2.length===0">
                     <li class="content-col no-data">
                         Không có dữ liệu
                     </li>
-                </ul> -->
-                <!-- <app-loading *ngIf="isLoading"></app-loading> -->
-                <ul class="content-row ">
-                    <li class="content-col stt text-center ">
-                        1
+                </ul>
+                <ul class="content-row " *ngFor="let item of listMedicine2;let i = index">
+                    <li class="content-col stt text-center">
+                        {{i+1}}
                     </li>
-                    <li class="content-col width-15 text-left ">
-                        12123
-                    </li>
-                    <li class="content-col width-15 text-left ">
-                        123123
-                    </li>
-                    <li class="content-col width-15 text-left ">
-                        123123
-                    </li>
-                    <li class="content-col width-15 text-left ">
+                    <li class="content-col width-25 text-left">
                         <mat-form-field appearance="outline" class="input-fixed">
-                            <input matInput>
+                            <input [(ngModel)]="item.medicineName"
+                                (keyup)="generateByMedicineName($event,item.medicineName)"
+                                [matAutocomplete]="autoPatientName" matInput required>
+                            <mat-autocomplete [panelWidth]="300" autoActiveFirstOption
+                                #autoPatientName="matAutocomplete">
+                                <mat-option *ngFor="let d of autoByMedicineName" [value]="d.medicineName"
+                                    [innerHTML]="d.medicineName" (click)="inputMedicine(d,item)">
+                                </mat-option>
+                            </mat-autocomplete>
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-15 text-left ">
-                        1232131
+                    <li class="content-col width-15 text-left">
+                        {{item.unitName}}
                     </li>
+                    <li class="content-col width-15 text-left">
 
-                    <li class="content-col width-auto text-left ">
-                        123123
+                        <mat-form-field appearance="outline" class="input-fixed">
+                            <input matInput [(ngModel)]="item.quantity" type="number" min="0" max="{{item.maxQuantity}}"
+                                (change)="validateQuantity2(item)">
+                        </mat-form-field>
                     </li>
-
+                    <li class="content-col width-15 text-left">
+                        {{item.price}}
+                    </li>
+                    <li class="content-col width-auto text-left">
+                        {{item.total}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deleteMedicine(i)"
+                                title="Xóa thuốc">
+                                <i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
                 </ul>
             </div>
+            <ul class="table-footer ">
+                <li class="footer-col add-new">
+                    <button mat-raised-button class="btn-main-color" (click)="addNew()">
+                        <i class="fas fa-plus"></i>
+                        <span class="ml-1">
+                            Thêm hàng
+                        </span>
+                    </button>
+                </li>
+            </ul>
         </div>
-        
-    </div>
 
+    </div>
 </div>

@@ -1,0 +1,30 @@
+<div class="mb-1">
+    <div class="card-custom">
+        <div class="mb-2">
+            <h2 class="header">Danh sách phiếu in</h2>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tên phiếu in</th>
+                    <th>Lần sửa cuối cùng</th>
+                    <th>Chỉnh sửa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="listTemplatePrint.length === 0">
+                    <td colspan="4">Không có kết quả</td>
+                </tr>
+                <tr *ngFor="let e of listTemplatePrint; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{e.printName}}</td>
+                    <td>{{e.updatedAt | date: 'dd/MM/yyyy HH:mm'}}</td>
+                    <td>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="moveToEdit(e.id)">Chỉnh sửa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

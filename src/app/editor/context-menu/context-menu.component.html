@@ -1,0 +1,39 @@
+<div style="visibility: hidden; position: fixed" [style.left.px]="menuPosition.positionX"
+    [style.top.px]="menuPosition.positionY" [matMenuTriggerFor]="contextMenu">
+</div>
+
+<mat-menu #contextMenu="matMenu">
+    <ng-template matMenuContent let-cell="cell">
+        <button mat-menu-item [matMenuTriggerFor]="column" [matMenuTriggerData]="{cell: cell}">Cột</button>
+        <button mat-menu-item [matMenuTriggerFor]="row" [matMenuTriggerData]="{cell: cell}">Hàng</button>
+        <button mat-menu-item [matMenuTriggerFor]="properties" [matMenuTriggerData]="{cell: cell}">Thuộc tính</button>
+        <button mat-menu-item (click)="deleteTable(cell)">Xóa bảng</button>
+    </ng-template>
+</mat-menu>
+
+<mat-menu #column="matMenu">
+    <ng-template matMenuContent let-cell="cell">
+        <button mat-menu-item (click)="insertColumnLeft(cell)"><i class="icon-insert-col-left"></i><span> Chèn cột
+                trái</span></button>
+        <button mat-menu-item (click)="insertColumnRight(cell)"><i class="icon-insert-col-right"></i><span> Chèn cột
+                phải</span></button>
+        <button mat-menu-item (click)="deleteColumn(cell)"><i class="icon-blank"></i><span>Xóa cột</span></button>
+    </ng-template>
+</mat-menu>
+
+<mat-menu #row="matMenu">
+    <ng-template matMenuContent let-cell="cell">
+        <button mat-menu-item (click)="insertRowAbove(cell)"><i class="icon-insert-row-above"></i><span> Chèn hàng
+                trên</span></button>
+        <button mat-menu-item (click)="insertRowBelow(cell)"><i class="icon-insert-row-below"></i><span> Chèn hàng
+                dưới</span></button>
+        <button mat-menu-item (click)="deleteRow(cell)"><i class="icon-blank"></i><span>Xóa hàng</span></button>
+    </ng-template>
+</mat-menu>
+
+<mat-menu #properties="matMenu">
+    <ng-template matMenuContent let-cell="cell">
+        <button mat-menu-item (click)="hideBorder(cell)"><i class="icon-no-border"></i><span> Ẩn bảng</span></button>
+        <button mat-menu-item (click)="showBorder(cell)"><i class="icon-all-border"></i><span> Hiện bảng</span></button>
+    </ng-template>
+</mat-menu>

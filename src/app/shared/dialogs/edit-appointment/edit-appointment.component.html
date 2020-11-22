@@ -1,0 +1,101 @@
+<h2 mat-dialog-title>Sửa thông tin hẹn khám</h2>
+<mat-dialog-content>
+    <div class="dialog-content">
+        <form *ngIf="patientForm" [formGroup]="patientForm ">
+            <div class="row">
+                <div class="col-6">
+                    <label class="label min-width-align">Mã bệnh nhân</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="patientCode" disabled>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-6">
+                    <label class="label min-width-align">Tên bệnh nhân</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="patientName" required disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-6">
+                    <label class="label min-width-align">Số điện thoại</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="phone" required maxlength="10" minlength="10" disabled>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-6">
+                    <label class="label min-width-align">Ngày sinh</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" disabled>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-6">
+                    <label class="label min-width-align">Giới tính</label>
+                    <mat-form-field appearance="outline" class="input-fixed" disabled>
+                        <mat-select formControlName="gender" required disabled>
+                            <mat-option value="0" selected disabled>Nam</mat-option>
+                            <mat-option value="1" disabled>Nữ</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-12">
+                    <label class="label min-width-align">Địa chỉ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="address" required disabled>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-6 ">
+                    <label class="label min-width-align">Ngày hẹn</label>
+                    <mat-form-field appearance="outline" class="input-fixed" style="height: 37px;">
+                        <input matInput [matDatepicker]="picker3" formControlName="appointmentDate" required>
+                        <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                        <mat-datepicker #picker3 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-6 ">
+                    <label class="label min-width-align">Giờ hẹn</label>
+                    <div class="input-fixed time-picker">
+                        <ngx-timepicker-field formControlName="appointmentTime"
+                            [defaultTime]="date.getHours()+':'+date.getMinutes()" [format]="24" [controlOnly]="true"
+                            required>
+                        </ngx-timepicker-field>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-6">
+                    <label class="label min-width-align">Bác sĩ</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select formControlName="staffId">
+                            <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id"
+                                (click)="selectDoctor(doctor)">
+                                {{ doctor.fullName }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-6">
+                    <label class="label min-width-align">Trạng thái</label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-select formControlName="status">
+                            <mat-option value="1">Hẹn khám</mat-option>
+                            <mat-option value="0">Hủy khám</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
+    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
+</mat-dialog-actions>

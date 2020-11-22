@@ -12,6 +12,7 @@ export class CommonService {
   private staffUrl = environment.apiUrl + '/staff/';
   private medicalExamUrl = environment.apiUrl + '/medical-examination/';
   private serviceUrl = environment.apiUrl + '/service/';
+  private printTemplateUrl = environment.apiUrl + '/print-form/';
 
   constructor(
     private http: HttpClient
@@ -102,5 +103,25 @@ export class CommonService {
     formData.append('address', address);
     formData.append('phone', phone);
     return this.http.put(url, formData);
+  }
+
+  getCurrentGroupService() {
+    const url = this.staffUrl + 'get-list-group-service-code-by-staff';
+    return this.http.get(url);
+  }
+
+  getListPrintTemplate() {
+    const url = this.printTemplateUrl;
+    return this.http.get(url);
+  }
+
+  getOnePrintTemplate(id: string) {
+    const url = this.printTemplateUrl + id;
+    return this.http.get(url);
+  }
+
+  savePrintTemplate(data: any) {
+    const url = this.printTemplateUrl + data.id;
+    return this.http.put(url, data);
   }
 }

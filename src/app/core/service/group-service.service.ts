@@ -23,5 +23,27 @@ export class GroupServiceService {
         return this.http.get(url);
     }
 
+    addNewGroupService(data) {
+        const url = this.groupServiceUrl + 'add-new-group-service';
+        return this.http.post(url, data);
+    }
+
+    getDetailGroupService(groupServiceId) {
+        const url = this.groupServiceUrl + 'get-detail-group-service';
+        const params = new HttpParams().set('groupServiceId', groupServiceId);
+        return this.http.get(url, { params });
+    }
+
+    editNewGroupService(data) {
+        const url = this.groupServiceUrl + 'edit-new-group-service';
+        return this.http.post(url, data);
+    }
+
+    deleteGroupService(groupServiceId) {
+        const url = this.groupServiceUrl + 'delete-group-service';
+        const formData = new FormData();
+        formData.append('groupServiceId', groupServiceId);
+        return this.http.put(url, formData);
+    }
 
 }

@@ -1,0 +1,8 @@
+<div class="line-spacing-picker">
+    <button matTooltip="Dãn dòng" class="btn-line-spacing" (click)="showDropdown()"><i class="icon-line-spacing"></i></button>
+    <ul class="list-picker" [ngClass]="lineSpacingPickerShow ? 'show' : ''">
+        <li *ngFor="let item of lineSpacingPickerValues; let i = index" (click)="onPick($event)" value="{{i}}">
+            <span>{{item.value.toFixed(1)}}<i class="far fa-check-square" *ngIf="item.checked"></i></span>
+        </li>
+    </ul>
+</div>

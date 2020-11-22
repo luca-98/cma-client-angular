@@ -1,0 +1,10 @@
+<div class="table-picker">
+    <button matTooltip="Chèn bảng" class="insert-table" (click)="showDropdown()"><i class="icon-table-grid"></i></button>
+    <div class="table-picker-dropdown" [ngClass]="dropdownShowed ? 'show': ''">
+        <p class="table-picker-header">{{tablePickerHeader}}</p>
+        <div class="table-picker-grid" id="table-picker-grid" (mouseleave)="tablePickerGridMouseLeave()">
+            <span *ngFor="let i of arr(totalItem).fill(1)" (mouseenter)="tablePickerGridItemMouseEnter($event)"
+            (click)="gridItemOnClick($event)"></span>
+        </div>
+    </div>
+</div>

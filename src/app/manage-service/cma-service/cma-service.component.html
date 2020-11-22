@@ -1,0 +1,129 @@
+<div class=" card-custom mb-0">
+    <div class="info">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="header m-0">Tìm kiếm dịch vụ</h2>
+            <button mat-raised-button class="btn-main-color" (click)="openAddDialog()">
+                <i class="fas fa-plus"></i>
+                <span class="ml-1">
+                    Thêm mới dịch vụ
+                </span>
+            </button>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tên dịch vụ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [(ngModel)]="searchData.serviceName" (keyup)="generateAutoByNameService($event)"
+                        [matAutocomplete]="autoService">
+                    <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
+                        <mat-option *ngFor="let d of autoByNameService" [value]="d.value" [innerHTML]="d.valueDisplay"
+                            (click)="searchAllServicePagging()">
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Nhóm dịch vụ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select [(ngModel)]="searchData.selectedGroupServiceId">
+                        <mat-option value="0" (click)="searchAllServicePagging()">
+                            Tất cả
+                        </mat-option>
+                        <mat-option *ngFor="let i of listGroupService" [value]="i.id"
+                            (click)="searchAllServicePagging()">
+                            {{i.groupServiceName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button mat-raised-button class="btn-main-color" (click)="searchAllServicePagging()">
+                    <i class="fas fa-search"></i>
+                    <span class="ml-1">
+                        Tìm
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-orange " (click)=" reset()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
+                    </span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <div class="box-table">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="header m-0">Danh sách dịch vụ</h2>
+            <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        </div>
+
+        <div class="table-custom mt-3 ">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-20 text-left">
+                    Tên dịch vụ
+                </li>
+                <li class="header-col width-10 text-left">
+                    Giá
+                </li>
+                <li class="header-col width-20 text-left">
+                    Nhóm dịch vụ
+                </li>
+                <li class="header-col width-auto text-left">
+                    Mãu báo cáo mặc định
+                </li>
+                <li class="header-col width-10 text-left">
+                    Chức năng
+                </li>
+            </ul>
+
+            <div class="table-content caculate-height ">
+                <ul class="content-row" *ngIf="listService.length==0">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul>
+                <app-loading *ngIf="isLoading"></app-loading>
+                <ul class="content-row " *ngFor="let item of listService; let i = index">
+                    <li class="content-col stt text-center">
+                        {{i+1+pageIndex*pageSize}}
+                    </li>
+                    <li class="content-col width-20 text-left">
+                        {{item.serviceName}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.price}}
+                    </li>
+                    <li class="content-col width-20 text-left">
+                        {{item.groupServiceId.groupServiceName}}
+                    </li>
+                    <li class="content-col width-auto text-left">
+                        {{item.templateReport.templateName}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        <div class="d-flex justify-content-end">
+
+                            <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editService(item)"
+                                title="Sửa thông tin dịch vụ"><i title="Sửa thông tin dịch vụ"
+                                    class="fas fa-pen"></i></button>
+                            <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deleteService(item)"
+                                title="Xóa dịch vụ">
+                                <i title="Xóa dịch vụ" class="fas fa-trash"></i></button>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>

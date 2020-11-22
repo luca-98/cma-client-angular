@@ -2,7 +2,7 @@
     <div class="d-flex w-100">
         <div class=" pl-0 pr-0 box-receive-left" id="top">
             <div class="card-custom h-100 mb-0">
-                <form [formGroup]="receiveForm" (keydown.enter)="$event.preventDefault()">
+                <form *ngIf="receiveForm" [formGroup]="receiveForm" (keydown.enter)="$event.preventDefault()">
                     <div class="administrative-info">
                         <div class="mb-2">
                             <h2 class="header">Thông tin hành chính</h2>
@@ -150,7 +150,7 @@
                                 {{isEditReceive ? 'Cập nhật': 'Lưu'}}
                             </span>
                         </button>
-                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive">
+                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive" (click)="print()">
                             <i class="fas fa-print "></i>
                             <span class="ml-1">In số thứ tự</span>
                         </button>
@@ -225,7 +225,7 @@
             [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
     </div>
 
-    <div class="table-custom mt-3 set-media-query">
+    <div class="table-custom mt-3">
         <ul class="table-header">
             <li class="header-col text-center stt">
                 #
@@ -306,7 +306,7 @@
             </li>
         </ul>
 
-        <div class="table-content ">
+        <div class="table-content caculate-height">
             <ul class="content-row" *ngIf="receiveList.length == 0">
                 <li class="content-col no-data">
                     Không có dữ liệu

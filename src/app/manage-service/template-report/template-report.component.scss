@@ -1,0 +1,32 @@
+.setting-report-container {
+    margin: 10px;
+
+    .selected {
+        background-color: #007ad9;
+        color: white;
+    }
+
+    .btn-tool {
+        color: #696969;
+    }
+
+    .last-updated {
+        width: 300px;
+    }
+
+    .command {
+        width: 101px;
+    }
+
+    .children {
+        margin-left: 35px;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+}

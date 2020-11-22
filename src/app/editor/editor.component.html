@@ -1,0 +1,42 @@
+<app-context-menu (afterTableChange)="afterTableChange($event)" (beforeTableChange)="beforeTableChange()"></app-context-menu>
+<div class="toolbar-text-editor">
+    <div class="backward-forward">
+        <button matTooltip="Quay lại" (click)="onUndo()" [disabled]="disabledUndo"><i class="icon-backward"></i></button>
+        <button matTooltip="Hoàn tác" (click)="onRedo()" [disabled]="disabledRedo"><i class="icon-forward"></i></button>
+    </div>
+    <select matTooltip="Font chữ" [(ngModel)]="selectedFont" (change)="onFontChange($event)" class="font">
+        <option *ngFor="let option of listFonts" [style.font-family]="option.value">
+            {{option.name}}
+        </option>
+    </select>
+    <select matTooltip="Cỡ chữ" [(ngModel)]="selectedFontSize" (change)="onFontSizeChange($event)" class="size">
+        <option *ngFor="let option of listFontsSize">
+            {{option.name}}
+        </option>
+    </select>
+    <app-table-picker (select)="pickedTable($event)"></app-table-picker>
+    <button matTooltip="Gộp ô" class="merge-cell" (click)="mergeCell()" [disabled]="disabledMergCell"><i
+            class="icon-merge"></i></button>
+    <div class="font-style">
+        <button matTooltip="In đậm" (click)="onBold()" [ngClass]="btnBoldActive ? 'active' : ''">
+            <i class="icon-bold"></i></button>
+        <button matTooltip="In ngiêng" (click)="onItalic()" [ngClass]="btnItalicActive ? 'active' : ''">
+            <i class="icon-italic"></i></button>
+        <button matTooltip="Gạch chân" (click)="onUnderline()" [ngClass]="btnUnderlineActive ? 'active' : ''">
+            <i class="icon-underline"></i></button>
+    </div>
+    <div class="align">
+        <button matTooltip="Căn trái" (click)="onAlignLeft()" [ngClass]="btnAlignLeftActive ? 'active' : ''">
+            <i class="icon-left-alignment"></i>
+        </button>
+        <button matTooltip="Căn giữa" (click)="onAlignCenter()" [ngClass]="btnAlignCenterActive ? 'active' : ''">
+            <i class="icon-center-alignment"></i>
+        </button>
+        <button matTooltip="Căn phải" (click)="onAlignRight()" [ngClass]="btnAlignRightActive ? 'active' : ''">
+            <i class="icon-right-alignment"></i>
+        </button>
+    </div>
+    <app-line-spacing-picker (select)="pickedLineSpacing($event)"></app-line-spacing-picker>
+</div>
+
+<div id="editor" class="editor"></div>

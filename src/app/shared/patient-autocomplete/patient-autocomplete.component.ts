@@ -16,6 +16,7 @@ export class PatientAutocompleteComponent implements OnInit {
   listPatient: PatientDTO[] = [];
   indexSelect = 0;
   @Input() maxHeight = 200;
+  @Input() isMini = false;
   @Input() autocomplete: any;
   @Input() keySearch: number;
   @Input() set patients(value: PatientDTO[]) {

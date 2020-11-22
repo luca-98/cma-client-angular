@@ -220,12 +220,13 @@ export class PrescriptionsComponent implements OnInit {
       this.medicineService.getPrescriptionByMedicalexamId(medicalExamId)
         .subscribe(
           (data: any) => {
-            if (data.message) {
+            if (data.message.id) {
               this.prescriptionId = data.message.id;
               this.autoSelected(data.message.medicalExaminationByMedicalExaminationId.patient);
               this.patientForm.patchValue({
                 note: data.message.note
               });
+              this.listUserMedicine = [];
               for (const iterator of data.message.lstPrescriptionDetailDTO) {
                 const dataPush = {
                   id: iterator.id,
@@ -238,6 +239,8 @@ export class PrescriptionsComponent implements OnInit {
                 };
                 this.listUserMedicine.push(dataPush);
               }
+            } else {
+              this.getPatientInfo(this.patientCode);
             }
           },
           () => {
@@ -260,7 +263,7 @@ export class PrescriptionsComponent implements OnInit {
   }
 
   deleteMedicine(medicineId, isClickDeleteButton?) {
-    let indexListUserMedicine = this.listUserMedicine.findIndex(x => x.medicineId === medicineId);
+    const indexListUserMedicine = this.listUserMedicine.findIndex(x => x.medicineId === medicineId);
     const prescriptionDetailId = this.listUserMedicine[indexListUserMedicine].id;
     const hanldeCheckbox = () => {
       if (indexListUserMedicine !== -1) {
@@ -270,9 +273,9 @@ export class PrescriptionsComponent implements OnInit {
         const index = this.listMedicine.findIndex(x => x.medicineId === medicineId);
         if (index !== -1) {
           this.listMedicine[index].checked = false;
-        };
+        }
       }
-    }
+    };
     if (prescriptionDetailId) {
       const dialogRef = this.openConfirmDialog(
         'Thông báo',
@@ -297,7 +300,7 @@ export class PrescriptionsComponent implements OnInit {
           const index = this.listMedicine.findIndex(x => x.medicineId === medicineId);
           if (index !== -1) {
             this.listMedicine[index].checked = true;
-          };
+          }
         }
       });
     } else {
@@ -333,7 +336,8 @@ export class PrescriptionsComponent implements OnInit {
       }
       // if (item.quantity > item.maxQuantity) {
       //   item.quantity = item.maxQuantity;
-      //   this.openNotifyDialog('Thông báo', '"' + item.medicineName + '"' + ' hiện chỉ còn ' + item.maxQuantity + ' ' + item.unitName + ' trong kho thuốc.');
+      //   this.openNotifyDialog('Thông báo',
+      // '"' + item.medicineName + '"' + ' hiện chỉ còn ' + item.maxQuantity + ' ' + item.unitName + ' trong kho thuốc.');
       // }
     }, 500);
   }
@@ -438,6 +442,7 @@ export class PrescriptionsComponent implements OnInit {
         (data: any) => {
           if (data.message) {
             this.openNotifyDialog('Thông báo', 'Lưu thông tin đơn thuốc thành công.');
+            this.getPrescriptionByMedicalexamId(this.medicalExamId);
           }
         },
         () => {

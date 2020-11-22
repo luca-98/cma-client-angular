@@ -10,6 +10,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExportMedicineComponent } from './export-medicine.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 
 @NgModule({
@@ -24,7 +27,12 @@ import { ExportMedicineComponent } from './export-medicine.component';
     MatSelectModule,
     MatInputModule,
     MatCheckboxModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+
   ]
 })
 export class ExportMedicineModule { }

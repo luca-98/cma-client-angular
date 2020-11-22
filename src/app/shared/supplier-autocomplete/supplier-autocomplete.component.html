@@ -1,0 +1,32 @@
+<div class="autocomplete" *ngIf="isDisplay">
+
+    <table class="table table-bordered table-hover " [style.max-height.px]="maxHeight"
+        [ngClass]="{'table-mini': isMini}">
+        <thead class="thead-light">
+            <tr>
+                <th>Tên nhà cung cấp</th>
+                <th>Địa chỉ nhà cung cấp</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Số tài khoản</th>
+                <th>Công nợ</th>
+            </tr>
+        </thead>
+        <tbody #tableBody>
+            <!-- <tr>
+                <td colspan="5">
+                    <app-loading></app-loading>
+                </td>
+            </tr> -->
+            <tr *ngFor="let supplier of listSupplier; let i = index" (click)="selectRow(supplier.id)"
+                [className]="i == indexSelect ? 'selected' : ''">
+                <td [innerHtml]="supplier.supplierName"></td>
+                <td [innerHtml]="supplier.address"></td>
+                <td [innerHtml]="supplier.phone"></td>
+                <td [innerHtml]="supplier.email"></td>
+                <td [innerHtml]="supplier.accountNumber"></td>
+                <td [innerHtml]="supplier.debt"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -4,42 +4,68 @@
             <h2 class="header m-0">Thông tin xuất thuốc</h2>
         </div>
         <div class="row">
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Khoảng ngày</label>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Từ ngày</label>
                 <mat-form-field appearance="outline" class="input-fixed">
-                    <mat-date-range-input [rangePicker]="picker">
-                        <input matStartDate placeholder="Ngày bắt đầu">
-                        <input matEndDate placeholder="Ngày kết thúc">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
+                    <input matInput [matDatepicker]="picker1" [max]="today" [(ngModel)]="searchData.startDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1 color="primary"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Đến ngày</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [matDatepicker]="picker2" [max]="today" [(ngModel)]="searchData.endDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2 color="primary"></mat-datepicker>
                 </mat-form-field>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Số toa</label>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Mã bệnh nhân</label>
                 <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
+                    <input matInput [(ngModel)]="searchData.patientCode" (keyup)="generateAutoPatientByCode($event)"
+                        [matAutocomplete]="autoPatientCode">
+                    <mat-autocomplete autoActiveFirstOption #autoPatientCode="matAutocomplete">
+                        <mat-option *ngFor="let d of autoByPatientCode" [value]="d.value" [innerHTML]="d.valueDisplay">
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
-            <div class="col-6 d-flex">
-                <label class="label min-width-align">Tên người xuất</label>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Tên bệnh nhân</label>
                 <mat-form-field appearance="outline" class="input-fixed">
-                    <input matInput>
+                    <input matInput [(ngModel)]="searchData.patientNameSearch"
+                        (keyup)="generateAutoPatientByName($event)" [matAutocomplete]="autoPatientName">
+                    <mat-autocomplete autoActiveFirstOption #autoPatientName="matAutocomplete">
+                        <mat-option *ngFor="let d of autoByName" [value]="d.value" [innerHTML]="d.valueDisplay">
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Người xuất</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [(ngModel)]="searchData.staffName" (keyup)="generateAutoStaff($event)"
+                        [matAutocomplete]="autoStaffName">
+                    <mat-autocomplete autoActiveFirstOption #autoStaffName="matAutocomplete">
+                        <mat-option *ngFor="let d of autoByStaff" [value]="d.value" [innerHTML]="d.valueDisplay">
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
         </div>
         <hr>
         <div class="row">
             <div class="col-12 d-flex justify-content-end">
-                <button mat-raised-button class="btn-main-color">
+                <button mat-raised-button class="btn-main-color" (click)="search()">
                     <i class="fas fa-search"></i>
                     <span class="ml-1">
                         Tìm
                     </span>
                 </button>
-                <button mat-raised-button class="ml-2 btn-orange ">
+                <button mat-raised-button class="ml-2 btn-orange " (click)="  resetInput()">
                     <i class="fas fa-sync-alt"></i>
                     <span class="ml-1">
                         Nhập lại
@@ -55,13 +81,16 @@
                 [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
         </div>
 
-        <div class="table-custom mt-3 set-media-query">
+        <div class="table-custom mt-3 ">
             <ul class="table-header">
                 <li class="header-col stt text-center">
                     #
                 </li>
+                <li class="header-col width-10 text-left">
+                    Mã bệnh nhân
+                </li>
                 <li class="header-col width-20 text-left">
-                    Số toa
+                    Tên bệnh nhân
                 </li>
                 <li class="header-col width-20 text-left">
                     Ngày
@@ -74,29 +103,32 @@
                 </li>
             </ul>
 
-            <div class="table-content">
-                <!-- <ul class="content-row">
-                        <li class="content-col no-data">
-                            Không có dữ liệu
-                        </li>
-                    </ul> -->
-                <!-- <app-loading *ngIf="isLoading"></app-loading> -->
-                <ul class="content-row ">
+            <div class="table-content caculate-height ">
+                <ul class="content-row" *ngIf="medicineSaleList.length==0">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul>
+                <app-loading *ngIf="isLoading"></app-loading>
+                <ul class="content-row " *ngFor="let item of medicineSaleList; let i = index">
                     <li class="content-col stt text-center text-truncate">
-                        1
+                        {{i+1}}
+                    </li>
+                    <li class="content-col width-10 text-left text-truncate">
+                        {{item.patientEntity.patientCode}}
                     </li>
                     <li class="content-col width-20 text-left text-truncate">
-                        123
+                        {{item.patientEntity.patientName}}
                     </li>
                     <li class="content-col width-20 text-left text-truncate">
-                        10/05/1998
+                        {{item.updatedAt | date: 'dd/MM/yyyy'}}
                     </li>
                     <li class="content-col width-auto text-left text-truncate">
-                        Nguyễn đứuc thiện
+                        {{item.staffEntity.fullName}}
                     </li>
                     <li class="content-col width-10 text-center text-truncate">
                         <button class="btn btn-outline-secondary btn-sm" title="Xem chi tiết"
-                           >
+                            (click)="viewDetail(item.id)">
                             <i class="fas fa-file"></i>
                         </button>
                     </li>

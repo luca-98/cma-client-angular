@@ -17,7 +17,7 @@ import { stompConfig } from './core/stomp.config';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,

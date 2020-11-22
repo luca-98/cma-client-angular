@@ -1,0 +1,81 @@
+@font-face {
+  font-family: "editor";
+  src: url("../../../assets/fonts/editor.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i:not(.far) {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "editor" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-line-spacing:before {
+  content: "\e903";
+}
+
+.line-spacing-picker {
+  display: inline-block;
+  position: relative;
+  margin-left: 10px;
+
+  .btn-line-spacing {
+    border: 1px solid #d2d2d2;
+    height: 30px;
+    width: 30px;
+    font-size: 16px;
+    padding: 4px;
+
+    &:hover {
+      background-color: #c5c5c5;
+      border-color: #969696;
+      cursor: pointer;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .list-picker {
+    list-style-type: none;
+    border: 1px solid #308dfc;
+    width: 60px;
+    padding: 0;
+    margin: 0 0 0 5px;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    z-index: 1;
+
+    &.show {
+      display: block;
+    }
+
+    li {
+      font-size: 15px;
+      padding: 2px 5px 5px 3px;
+      width: 59px;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #308dfc;
+        color: #fff;
+      }
+
+      i {
+          margin-left: 15px;
+      }
+    }
+  }
+}

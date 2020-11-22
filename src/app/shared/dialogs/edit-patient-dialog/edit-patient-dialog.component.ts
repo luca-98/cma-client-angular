@@ -76,6 +76,7 @@ export class EditPatientDialogComponent implements OnInit {
       return;
     }
     if (!this.onDobChange()) {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng hoặc vượt quá ngày hiện tại.');
       return;
     }
 
@@ -158,9 +159,9 @@ export class EditPatientDialogComponent implements OnInit {
       return false;
     }
     if (dob.isAfter(this.today)) {
-      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng hoặc vượt quá ngày hiện tại.');
       return false;
     }
+    return true;
   }
 
 }

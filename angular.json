@@ -61,8 +61,8 @@
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.min.js",
-              "./node_modules/print-this/printThis.js",
-              "./node_modules/colresizable/colResizable-1.6.min.js"
+              "./src/assets/js/colResizable-1.6.min.js",
+              "./node_modules/print-this/printThis.js"
             ]
           },
           "configurations": {

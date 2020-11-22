@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import * as moment from 'moment';
 import { AppointmentService } from 'src/app/core/service/appointment.service';
 import { CommonService } from 'src/app/core/service/common.service';
-import { convertDateToNormal, propValToString } from '../../share-func';
+import { convertDateToNormal, propValToString, removeSignAndLowerCase } from '../../share-func';
 import { EditPatientDialogComponent } from '../edit-patient-dialog/edit-patient-dialog.component';
 import { NotifyDialogComponent } from '../notify-dialog/notify-dialog.component';
 
@@ -19,6 +19,8 @@ export class AddAppoinmentComponent implements OnInit {
   doctorList = [];
   roomList = [];
   autoByPatientCode = [];
+  autoByName = [];
+  autoByPhone = [];
   timer;
   today = moment(new Date());
   date = new Date();
@@ -26,7 +28,7 @@ export class AddAppoinmentComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
-    public dialogRef: MatDialogRef<EditPatientDialogComponent>,
+    public dialogRef: MatDialogRef<AddAppoinmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private commonService: CommonService,
     private appoinmentService: AppointmentService
@@ -105,10 +107,6 @@ export class AddAppoinmentComponent implements OnInit {
       appointmentTime: this.patientForm.get('appointmentTime').value,
       debt: this.patientForm.get('debt').value
     };
-    if (this.autoByPatientCode.findIndex(i => i.patientCode === appointmentData.patientCode) === -1 && appointmentData.patientCode !== '') {
-      this.openNotifyDialog('Lỗi', 'Mã bệnh nhân không tồn tại trong hệ thống');
-      return;
-    }
 
     if (appointmentData.patientName === '') {
       this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
@@ -138,8 +136,8 @@ export class AddAppoinmentComponent implements OnInit {
           } else {
             this.openNotifyDialog('Lỗi', 'Bạn không thể đặt lịch hẹn khám cho bác sĩ "' + this.selectedDoctor.fullName + '" vì đang có lịch hẹn khám khác vào khoảng thời gian này ngày ' + appointmentData.appointmentDate + '. Hệ thống sẽ tự động tăng thời gian thêm 15 phút, vui lòng kiểm tra và lưu thông tin lại.');
             const time = appointmentData.appointmentTime.split(':');
-            let hour = parseInt(time[0]);
-            let minute = parseInt(time[1]);
+            let hour = parseInt(time[0], 10);
+            let minute = parseInt(time[1], 10);
             minute += 15;
             if (minute >= 60) {
               hour++;
@@ -195,6 +193,50 @@ export class AddAppoinmentComponent implements OnInit {
         );
     }, 300);
   }
+  generateAutoPatientByName(event: any): void {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      const keyCode = event.keyCode;
+      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
+        return;
+      }
+      const value = this.patientForm.get('patientName').value.trim();
+      if (value.length === 0) {
+        return;
+      }
+      this.commonService.searchByName(removeSignAndLowerCase(value))
+        .subscribe(
+          (data: any) => {
+            this.autoByName = data.message;
+          },
+          () => {
+            console.error('search auto failed');
+          }
+        );
+    }, 300);
+  }
+  generateAutoPatientByPhone(event: any): void {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      const keyCode = event.keyCode;
+      if (keyCode === 40 || keyCode === 38 || keyCode === 13 || keyCode === 27) {
+        return;
+      }
+      const value = this.patientForm.get('phone').value.trim();
+      if (value.length === 0) {
+        return;
+      }
+      this.commonService.searchByPhone(value)
+        .subscribe(
+          (data: any) => {
+            this.autoByPhone = data.message;
+          },
+          () => {
+            console.error('search auto failed');
+          }
+        );
+    }, 300);
+  }
 
   autoSelected(event: any) {
     const date = moment(new Date(event.dateOfBirth));
@@ -208,18 +250,18 @@ export class AddAppoinmentComponent implements OnInit {
       phone: event.phone,
       debt: event.debt
     });
+    this.patientForm.get('patientCode').disable();
     this.patientForm.get('patientName').disable();
     this.patientForm.get('dateOfBirth').disable();
     this.patientForm.get('gender').disable();
     this.patientForm.get('address').disable();
     this.patientForm.get('phone').disable();
   }
-  doubleClick() {
-    this.resetInput();
-    this.patientForm.get('patientCode').enable();
-  }
 
   resetInput() {
+    this.autoByPatientCode = [];
+    this.autoByName = [];
+    this.autoByPhone = [];
     this.patientForm.get('patientCode').reset();
     this.patientForm.get('patientName').reset();
     this.patientForm.get('dateOfBirth').reset();
@@ -228,6 +270,11 @@ export class AddAppoinmentComponent implements OnInit {
     this.patientForm.get('phone').reset();
     this.patientForm.get('staffId').reset();
     this.patientForm.enable();
+    this.patientForm.get('patientCode').disable();
+  }
+  dbClick() {
+    this.resetInput();
+    this.patientForm.get('patientCode').enable();
   }
 
 }

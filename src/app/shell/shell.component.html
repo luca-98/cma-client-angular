@@ -20,29 +20,38 @@
         <!-- Left menu -->
         <section class="left-menu-content">
             <!-- Quản lý khám bệnh -->
-            <app-sm-medical-examination *ngIf="sidebarRightState == sidebarItem.MedicalExamination">
+            <app-sm-medical-examination
+                [style.display]="sidebarRightState == sidebarItem.MedicalExamination ? 'block': 'none'">
             </app-sm-medical-examination>
 
             <!-- Quản lý thuốc -->
-            <app-sm-medicine *ngIf="sidebarRightState == sidebarItem.Medicine"></app-sm-medicine>
+            <app-sm-medicine [style.display]="sidebarRightState == sidebarItem.Medicine ? 'block': 'none'">
+            </app-sm-medicine>
 
             <!-- Quản lý vật tư -->
-            <app-sm-materials *ngIf="sidebarRightState == sidebarItem.Materials"></app-sm-materials>
+            <app-sm-materials [style.display]="sidebarRightState == sidebarItem.Materials ? 'block': 'none'">
+            </app-sm-materials>
 
             <!-- Quản lý dịch vụ -->
-            <app-sm-service *ngIf="sidebarRightState == sidebarItem.Service"></app-sm-service>
+            <app-sm-service [style.display]="sidebarRightState == sidebarItem.Service ? 'block': 'none'">
+            </app-sm-service>
 
             <!-- Quản lý tài chính -->
-            <app-sm-finance *ngIf="sidebarRightState == sidebarItem.Financial"></app-sm-finance>
+            <app-sm-finance [style.display]="sidebarRightState == sidebarItem.Financial ? 'block': 'none'">
+            </app-sm-finance>
 
             <!-- Báo cáo -->
-            <app-sm-report *ngIf="sidebarRightState == sidebarItem.Report"></app-sm-report>
+            <app-sm-report [style.display]="sidebarRightState == sidebarItem.Report ? 'block': 'none'">
+            </app-sm-report>
 
             <!-- Thống kê -->
-            <app-sm-statistical *ngIf="sidebarRightState == sidebarItem.Statistical"></app-sm-statistical>
+            <app-sm-statistical [style.display]="sidebarRightState == sidebarItem.Statistical ? 'block': 'none'">
+            </app-sm-statistical>
 
             <!-- Quản lý chung -->
-            <app-sm-general-manage *ngIf="sidebarRightState == sidebarItem.GeneralManage"></app-sm-general-manage>
+            <app-sm-general-manage
+                [style.display]="sidebarRightState == sidebarItem.GeneralManage ? 'block': 'none'">
+            </app-sm-general-manage>
 
         </section>
 
@@ -52,7 +61,7 @@
         </div>
     </mat-sidenav>
     <mat-sidenav-content>
-        <mat-toolbar class="side-menu">
+        <mat-toolbar class="top-menu">
             <button mat-icon-button aria-label="Menu" (click)="snav.toggle()">
                 <mat-icon>menu</mat-icon>
             </button>
@@ -62,19 +71,19 @@
                 Quản lý khám bệnh
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Medicine"
-                (click)="changeSidebarRightState(sidebarItem.Medicine)">
+                (click)="changeSidebarRightState(sidebarItem.Medicine)" routerLink="/manage-medicine">
                 Quản lý thuốc
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Materials"
-                (click)="changeSidebarRightState(sidebarItem.Materials)">
+                (click)="changeSidebarRightState(sidebarItem.Materials)" routerLink="/manage-material">
                 Quản lý vật tư
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Service"
-                (click)="changeSidebarRightState(sidebarItem.Service)">
+                (click)="changeSidebarRightState(sidebarItem.Service)" routerLink="/manage-service">
                 Quản lý dịch vụ
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Financial"
-                (click)="changeSidebarRightState(sidebarItem.Financial)">
+                (click)="changeSidebarRightState(sidebarItem.Financial)" routerLink="/manage-finance">
                 Quản lý tài chính
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Report"
@@ -86,7 +95,7 @@
                 Thống kê
             </button>
             <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.GeneralManage"
-                (click)="changeSidebarRightState(sidebarItem.GeneralManage)">
+                (click)="changeSidebarRightState(sidebarItem.GeneralManage)" routerLink="/general-manage">
                 Quản lý chung
             </button>
 

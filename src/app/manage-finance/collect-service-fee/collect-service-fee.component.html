@@ -1,0 +1,201 @@
+<div class="card-custom">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="header m-0">Thông tin bệnh nhân</h2>
+    </div>
+    <form *ngIf="patientForm" [formGroup]="patientForm">
+        <div class="row mb-1">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Mã bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed" (dblclick)="dbClick()">
+                    <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
+                        (keyup)="generateAutoPatientByPatientCode($event)">
+                    <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                        [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
+                    </app-patient-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Năm sinh</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tên bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
+                        autocomplete="off" #inputName>
+                    <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
+                        [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                    </app-patient-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Giới tính</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-select formControlName="gender">
+                        <mat-option value="0">Nam</mat-option>
+                        <mat-option value="1">Nữ</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Số điện thoại</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="phone" autocomplete="off" #inputPhone
+                        (keyup)="generateAutoPatientByPhone($event)" maxlength="10">
+                    <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone" [keySearch]="'phone'"
+                        (selectedRow)="autoSelected($event)">
+                    </app-patient-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Địa chỉ</label>
+                <mat-form-field appearance="outline" class="input-fixed">
+                    <input matInput formControlName="address">
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button mat-raised-button class="btn-main-color" (click)=" save()">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="ml-1">
+                        Thu tiền
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-orange " (click)="  resetInput()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
+                    </span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+        <h2 class="header m-0">Danh sách dịch vụ</h2>
+    </div>
+    <div class="row mb-1">
+        <div class="col-4 d-flex">
+            <label class="label min-width-align">Tổng tiền</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput disabled [(ngModel)]="total">
+            </mat-form-field>
+        </div>
+        <div class="col-4 d-flex">
+            <label class="label min-width-align">Thực thu</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput disabled [(ngModel)]="collected">
+            </mat-form-field>
+        </div>
+        <div class="col-4 d-flex">
+            <label class="label min-width-align">Còn nợ</label>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <input matInput disabled [(ngModel)]="debt">
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-5">
+            <div class="table-custom  ">
+                <ul class="table-header">
+                    <li class="header-col stt text-center">
+                        #
+                    </li>
+                    <li class="header-col width-10 text-left">
+                    </li>
+                    <li class="header-col width-auto text-left">
+                        Dịch vụ/thuốc
+                    </li>
+                    <li class="header-col width-25 text-right">
+                        Còn nợ
+                    </li>
+
+                </ul>
+
+                <div class="table-content caculate-height ">
+                    <ul class="content-row" *ngIf="lstInvoiceDetails.length==0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                    <ul class="content-row " *ngFor="let item of lstInvoiceDetails;let i = index">
+                        <li class="content-col stt text-center">
+                            {{i+1}}
+                        </li>
+                        <li class="content-col width-10 text-left">
+                            <mat-checkbox (click)="addService(item)"></mat-checkbox>
+                        </li>
+                        <li class="content-col width-auto text-left">
+                            {{item.serviceDto.serviceName}}
+                        </li>
+                        <li class="content-col width-25 text-right">
+                            {{item.amount - item.amountPaid}}đ
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="table-custom ">
+                <ul class="table-header">
+                    <li class="header-col stt text-center">
+                        #
+                    </li>
+                    <li class="header-col width-auto text-left">
+                        Dịch vụ/thuốc
+                    </li>
+                    <li class="header-col width-20 text-left">
+                        Thành tiền
+                    </li>
+                    <li class="header-col width-25 text-left">
+                        Thực thu
+                    </li>
+                    <li class="header-col width-20 text-left">
+                        Còn nợ
+                    </li>
+                </ul>
+
+                <div class="table-content caculate-height ">
+                    <ul class="content-row" *ngIf="lstInvoiceDetailsSelected.length==0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <!-- <app-loading *ngIf="isLoading"></app-loading> -->
+                    <ul class="content-row " *ngFor="let item of lstInvoiceDetailsSelected;let i = index">
+                        <li class="content-col stt text-center">
+                            {{i+1}}
+                        </li>
+                        <li class="content-col width-auto text-left">
+                            {{item.serviceDto.serviceName}}
+                        </li>
+                        <li class="content-col width-20 text-left">
+                            {{item.amount}}đ
+                        </li>
+                        <li class="content-col width-25 text-left">
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput [(ngModel)]="item.amountPaid" (change)="onInput(item)" type="number"
+                                    min="0" step="1000" max="{{item.amount}}">
+                            </mat-form-field>
+                        </li>
+                        <li class="content-col width-20 text-left">
+                            {{item.amount - item.amountPaid}}đ
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
