@@ -13,37 +13,40 @@
                                 <mat-form-field appearance="outline" class="input-fixed" (dblclick)="doubleClick()">
                                     <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
                                         (keyup)="generateAutoPatientByPatientCode($event)" (blur)="onBlurPatientCode()">
-                                    <app-patient-autocomplete [autocomplete]="inputPatientCode"
-                                        [patients]="autoByPatientCode" [keySearch]="'patientCode'"
-                                        (selectedRow)="autoSelected($event)">
+                                    <app-patient-autocomplete *ngIf="autoByPatientCode.length !== 0"
+                                        [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                                        [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
                                     </app-patient-autocomplete>
                                 </mat-form-field>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-4 pr-0 d-flex align-items-center">
-                                <label class="label min-width-align">Tên bệnh nhân</label>
+                                <label class="label min-width-align">Tên BN <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <input matInput formControlName="patientName"
                                         (keyup)="generateAutoPatientByName($event)" autocomplete="off" #inputName>
-                                    <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
-                                        [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                                    <app-patient-autocomplete *ngIf="autoByName.length !== 0" [autocomplete]="inputName"
+                                        [patients]="autoByName" [keySearch]="'patientName'"
+                                        (selectedRow)="autoSelected($event)">
                                     </app-patient-autocomplete>
                                 </mat-form-field>
                             </div>
                             <div class="col-4 pr-0 d-flex align-items-center">
-                                <label class="label min-width-align">Số điện thoại</label>
+                                <label class="label min-width-align">Số điện thoại <span
+                                        class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <input matInput formControlName="phone" autocomplete="off" #inputPhone
                                         (keyup)="generateAutoPatientByPhone($event)" maxlength="10"
                                         (input)="onPhoneInput()">
-                                    <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
-                                        [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
+                                    <app-patient-autocomplete *ngIf="autoByPhone.length !== 0"
+                                        [autocomplete]="inputPhone" [patients]="autoByPhone" [keySearch]="'phone'"
+                                        (selectedRow)="autoSelected($event)">
                                     </app-patient-autocomplete>
                                 </mat-form-field>
                             </div>
                             <div class="col-4 d-flex align-items-center">
-                                <label class="label min-width-align">Ngày sinh</label>
+                                <label class="label min-width-align">Ngày sinh <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth"
                                         [max]="today" (dateChange)="onDobChange()">
@@ -54,7 +57,7 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-8 pr-0 d-flex align-items-center">
-                                <label class="label min-width-align">Địa chỉ</label>
+                                <label class="label min-width-align">Địa chỉ <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <input matInput formControlName="address" [matAutocomplete]="autoByAddress"
                                         (keyup)="generateAutoAddress($event)">
@@ -66,7 +69,7 @@
                                 </mat-form-field>
                             </div>
                             <div class="col-4  d-flex align-items-center">
-                                <label class="label min-width-align">Giới tính</label>
+                                <label class="label min-width-align">Giới tính <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <mat-select formControlName="gender">
                                         <mat-option value="0">Nam</mat-option>
@@ -106,7 +109,7 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-4 pr-0 d-flex align-items-center">
-                                <label class="label min-width-align">Phòng khám</label>
+                                <label class="label min-width-align">Phòng khám <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <mat-select (selectionChange)="roomChange($event)" formControlName="roomId"
                                         [disabled]="isEditReceive">
@@ -116,7 +119,7 @@
                                 </mat-form-field>
                             </div>
                             <div class="col-4 pr-0 d-flex align-items-center">
-                                <label class="label min-width-align">Bác sĩ</label>
+                                <label class="label min-width-align">Bác sĩ <span class="required">*</span></label>
                                 <mat-form-field appearance="outline" class="input-fixed">
                                     <mat-select (selectionChange)="doctorChange($event)" formControlName="doctorId"
                                         [disabled]="isEditReceive">
@@ -144,21 +147,38 @@
                     <hr>
 
                     <div class="d-flex justify-content-end flex-wrap action">
-                        <button mat-raised-button class="mt-1 btn-main-color" (click)="save()" type="submit">
+                        <button mat-raised-button class="mt-1 btn-main-color" (click)="save()" type="submit"
+                            *ngIf="!isEditReceive">
                             <i class="fas fa-save "></i>
                             <span class="ml-1">
-                                {{isEditReceive ? 'Cập nhật': 'Lưu'}}
+                                Lưu
                             </span>
                         </button>
-                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive" (click)="print()">
+                        <button mat-raised-button class="mt-1 btn-main-color" (click)="save()" type="submit"
+                            *ngIf="isEditReceive" [disabled]="!userPermissionCode.includes('A22')">
+                            <i class="fas fa-save "></i>
+                            <span class="ml-1">
+                                Cập nhật
+                            </span>
+                        </button>
+                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive"
+                            (click)="print()">
                             <i class="fas fa-print "></i>
                             <span class="ml-1">In số thứ tự</span>
                         </button>
-                        <button mat-raised-button class="ml-2 mt-1 btn-main-color" [disabled]="!isEditReceive">
+                        <a mat-raised-button class="ml-2 mt-1 btn-main-color"
+                            *ngIf="isEditReceive && userPermissionCode.includes('A21')"
+                            routerLink="/manage-finance/collect-service-fee"
+                            [queryParams]="{ patientId: this.receiveForm.get('patientId').value }">
+                            <i class="fas fa-receipt"></i>
+                            <span class="ml-1"> Chuyển thanh toán</span>
+                        </a>
+                        <button mat-raised-button class="ml-2 mt-1 btn-main-color"
+                            *ngIf="!isEditReceive  && userPermissionCode.includes('A21')" disabled>
                             <i class="fas fa-receipt"></i>
                             <span class="ml-1"> Chuyển thanh toán</span>
                         </button>
-                        <button mat-raised-button class="ml-2 mt-1 btn-orange" (click)="resetInput()">
+                        <button mat-raised-button class="ml-2 mt-1 btn-orange" (click)="resetInput($event)">
                             <i class="fas fa-sync-alt "></i>
                             <span class="ml-1">Nhập lại</span>
                         </button>
@@ -256,14 +276,13 @@
             </li>
         </ul>
 
-        <ul class="table-header-search">
+        <!-- <ul class="table-header-search">
             <li class="header-col text-center stt">
                 <i class="fas fa-search"></i>
             </li>
             <li class="header-col width-10 text-left text-truncate">
                 <mat-form-field appearance="outline" class="input-fixed">
                     <input matInput [matDatepicker]="pickerTable">
-                    <!-- <mat-datepicker-toggle matSuffix [for]="pickerTable"></mat-datepicker-toggle> -->
                     <mat-datepicker #pickerTable color="primary"></mat-datepicker>
                 </mat-form-field>
             </li>
@@ -304,7 +323,7 @@
             </li>
             <li class="header-col width-10 text-right">
             </li>
-        </ul>
+        </ul> -->
 
         <div class="table-content caculate-height">
             <ul class="content-row" *ngIf="receiveList.length == 0">
@@ -342,12 +361,14 @@
                 <li class="content-col width-10 text-left">
                     <div style="display: flex; justify-content: flex-end;">
                         <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editInfo(e)"
+                            *ngIf="userPermissionCode.includes('A22')"
                             [disabled]="e.status == 0 || e.status == 5 || ((e.createdAt | date:'yMMdd') != (time | date:'yMMdd'))"
                             title="Sửa thông tin bệnh nhân">
                             <i class="fas fa-pen"></i>
                         </button>
                         <button class="btn btn-outline-secondary btn-sm ml-1" (click)="cancelReceive(e)"
-                            [disabled]="e.status != 1" title="Hủy tiếp đón bệnh nhân">
+                            *ngIf="userPermissionCode.includes('A23')" [disabled]="e.status != 1"
+                            title="Hủy tiếp đón bệnh nhân">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

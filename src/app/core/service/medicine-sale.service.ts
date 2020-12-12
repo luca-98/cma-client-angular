@@ -27,13 +27,13 @@ export class MedicineSaleService {
     searchMedicineSale(searchData) {
         const url = this.medicineSaleUrl + 'search-medicine-sale';
         const params = new HttpParams()
-            .set('patientCode', searchData.patientCode ? searchData.patientCode : '')
+            .set('patientCode', searchData.patientCode ? searchData.patientCode.trim() : '')
             .set('startDate', searchData.startDate ? searchData.startDate : '')
             .set('endDate', searchData.endDate ? searchData.endDate : '')
             .set('pageSize', searchData.pageSize)
             .set('pageIndex', searchData.pageIndex)
-            .set('staffNameSearch', searchData.staffNameSearch ? searchData.staffNameSearch : '')
-            .set('patientNameSearch', searchData.patientNameSearch ? searchData.patientNameSearch : '');
+            .set('staffNameSearch', searchData.staffNameSearch ? searchData.staffNameSearch.trim() : '')
+            .set('patientNameSearch', searchData.patientNameSearch ? searchData.patientNameSearch.trim() : '');
         return this.http.get(url, { params });
     }
 

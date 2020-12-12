@@ -3,8 +3,8 @@
     <div class="dialog-content">
         <div class="row">
             <div class="col-12 d-flex">
-                <label class="label min-width-align">Tên</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <label class="label min-width-align">Tên <span class="required">*</span></label>
+                <mat-form-field appearance="outline" class="input-fixed-add-group-service">
                     <input matInput [(ngModel)]="dataPost.groupServiceName" required />
                 </mat-form-field>
             </div>
@@ -24,5 +24,5 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="mb-0 pb-0">
     <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
-    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
+    <button mat-button class="btn-main-color" (click)="save()" >Lưu</button>
 </mat-dialog-actions>

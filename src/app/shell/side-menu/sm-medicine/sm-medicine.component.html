@@ -1,15 +1,18 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 2.1" mat-list-item routerLink="/manage-medicine/import-medicine">
-        Nhập thuốc
+    <a [class.item-active]="currentItem === 2.1" mat-list-item routerLink="/manage-medicine/import-medicine"
+        *ngIf="userPermissionCode.includes('B10')">
+        Nhập thuốc, vật tư
     </a>
     <a mat-list-item routerLink="/" disabled>
         Quản lý nhập thuốc
     </a>
     <mat-divider></mat-divider>
-    <a [class.item-active]="currentItem === 2.3" mat-list-item routerLink="/manage-medicine/export-medicine">
+    <a [class.item-active]="currentItem === 2.3" mat-list-item routerLink="/manage-medicine/export-medicine"
+        *ngIf="userPermissionCode.includes('B20')">
         Xuất bán thuốc
     </a>
-    <a [class.item-active]="currentItem === 2.4" mat-list-item routerLink="/manage-medicine/manage-export-medicine">
+    <a [class.item-active]="currentItem === 2.4" mat-list-item routerLink="/manage-medicine/manage-export-medicine"
+        *ngIf="userPermissionCode.includes('B30')">
         Quản lý xuất bán thuốc
     </a>
     <mat-divider></mat-divider>

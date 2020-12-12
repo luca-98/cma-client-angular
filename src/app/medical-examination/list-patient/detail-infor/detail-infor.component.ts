@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MedicalExaminationService } from 'src/app/core/service/medical-examination.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { PatientService } from 'src/app/core/service/patient.service';
 import { ReceivePatientService } from 'src/app/core/service/receive-patient.service';
+import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
+import { MedicalExamReportDialogComponent } from 'src/app/shared/dialogs/medical-exam-report-dialog/medical-exam-report-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { convertDateToNormal, propValToString } from 'src/app/shared/share-func';
+import { PrescriptionReportDialogComponent } from 'src/app/shared/dialogs/prescription-report-dialog/prescription-report-dialog.component';
+import { SubclinicalReportDialogComponent } from 'src/app/shared/dialogs/subclinical-report-dialog/subclinical-report-dialog.component';
+import { convertDateToNormal, oneDot, propValToString } from 'src/app/shared/share-func';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -41,6 +48,7 @@ export class DetailInforComponent implements OnInit {
   today = moment(new Date());
   isEdit = false;
   history = [];
+  userPermissionCode = [];
 
   constructor(
     private title: Title,
@@ -50,15 +58,35 @@ export class DetailInforComponent implements OnInit {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private sideMenuService: SideMenuService,
+    private medicalExaminationSerivce: MedicalExaminationService,
+    private credentialsService: CredentialsService,
+    private menuService: MenuService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.route.queryParams.subscribe(params => {
       this.patientId = params.patientId;
     });
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
   }
 
   ngOnInit(): void {
-    this.title.setTitle('Chi tiết bệnh nhân');
+    this.sideMenuService.changeItem(1.1);
+    this.title.setTitle('Lịch sử khám bệnh');
     this.detailForm = this.formBuilder.group({
       patientName: ['', [Validators.required]],
       patientCode: [''],
@@ -78,6 +106,7 @@ export class DetailInforComponent implements OnInit {
     if (this.patientId != null) {
       this.initPatient(this.patientId);
     }
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
 
   initPatient(id: any) {
@@ -94,7 +123,7 @@ export class DetailInforComponent implements OnInit {
               gender: data.message.gender,
               address: data.message.address,
               phone: data.message.phone,
-              debt: data.message.debt
+              debt: oneDot(data.message.debt)
             });
             this.initHistory();
           } else {
@@ -231,7 +260,7 @@ export class DetailInforComponent implements OnInit {
     this.detailForm.get('gender').enable();
     this.detailForm.get('address').enable();
     this.detailForm.get('phone').enable();
-    this.detailForm.get('debt').enable();
+    // this.detailForm.get('debt').enable();
   }
 
   saveInfo() {
@@ -288,5 +317,65 @@ export class DetailInforComponent implements OnInit {
           );
       }
     });
+  }
+
+  detailReport(id: any, type: any) {
+    // type 1: Lâm sàng
+    // type 2: Cận lâm sàng
+    // type 3: Đơn thuốc
+    if (type === 1) {
+      this.medicalExaminationSerivce.getMedicalExam(id)
+        .subscribe(
+          (data: any) => {
+            this.dialog.open(MedicalExamReportDialogComponent, {
+              width: '825px',
+              height: '100%',
+              data: {
+                id,
+                content: data.message.printDataHtml
+              },
+            });
+          },
+          () => {
+            this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
+          }
+        );
+    }
+    if (type === 2) {
+      this.commonService.getSubClinicaById(id)
+        .subscribe(
+          (data: any) => {
+            this.dialog.open(SubclinicalReportDialogComponent, {
+              width: '1000px',
+              height: '100%',
+              data: {
+                id,
+                content: data.message.htmlReport
+              },
+            });
+          },
+          () => {
+            this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
+          }
+        );
+    }
+    if (type === 3) {
+      this.commonService.getPrescriptionsyId(id)
+        .subscribe(
+          (data: any) => {
+            this.dialog.open(PrescriptionReportDialogComponent, {
+              width: '825px',
+              height: '100%',
+              data: {
+                id,
+                content: data.message.htmlReport
+              },
+            });
+          },
+          () => {
+            this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
+          }
+        );
+    }
   }
 }

@@ -1,6 +1,6 @@
 <div class="full-width card-custom">
     <div class="mb-2">
-        <form *ngIf="searchForm" [formGroup]="searchForm">
+        <form *ngIf="searchForm" [formGroup]="searchForm" (keydown.enter)="$event.preventDefault()">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="header">Tìm kiếm phiếu khám cận lâm sàng</h2>
             </div>
@@ -185,10 +185,11 @@
                 </li>
                 <li class="content-col width-auto text-left">
                     <div style="display: flex; justify-content: flex-end;">
-                        <button class="btn btn-outline-secondary btn-sm"
-                            (click)="moveToSubClinicalExam(s.medicalExamId)" title="Xem thông tin phiếu cận lâm sàng">
+                        <a class="btn btn-outline-secondary btn-sm"
+                            routerLink="/medical-examination/subclinical-examination"
+                            [queryParams]="{ medicalExamId: s.medicalExamId }" title="Xem thông tin phiếu cận lâm sàng">
                             <i class="fas fa-file" title="Xem thông tin phiếu cận lâm sàng"></i>
-                        </button>
+                        </a>
                     </div>
                 </li>
             </ul>

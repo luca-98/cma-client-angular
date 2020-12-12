@@ -71,3 +71,7 @@ export function buildHighlightString(rawString: string, resultString: string) {
     + resultString.substring(indexStart, indexEnd) + '</strong>'
     + resultString.substring(indexEnd) + '</p>';
 }
+
+export function oneDot(input) {
+  return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

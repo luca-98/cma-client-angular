@@ -1,0 +1,48 @@
+<div class="mb-1">
+    <div class="card-custom">
+        <div class="mb-2 d-flex align-items-center justify-content-between">
+            <h2 class="header">Danh sách người dùng</h2>
+            <button mat-raised-button class="btn-main-color" (click)="add()">
+                <i class="fas fa-plus"></i>
+                <span class="ml-1">
+                    Thêm mới
+                </span>
+            </button>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ và tên</th>
+                    <th>Nhóm người dùng</th>
+                    <th>Chỉnh sửa</th>
+                    <th style="width: 180px;">Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="listUser.length === 0">
+                    <td colspan="5">Không có kết quả</td>
+                </tr>
+                <tr *ngFor="let e of listUser; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{e.userName}}</td>
+                    <td>{{e.fullName}}</td>
+                    <td>{{e.userGroupName}}</td>
+                    <td>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="edit(e)">Chi tiết</button>
+                        <button class="btn btn-outline-secondary btn-sm ml-2" (click)="resetPassword(e.appUserId, e.fullName, e.userName)"
+                            [disabled]="e.userGroupCode == 'ROLE_MANAGER'">Cấp lại mật khẩu</button>
+                        <button class="btn btn-outline-danger btn-sm ml-2"
+                            [disabled]="e.userGroupCode == 'ROLE_MANAGER'" (click)="deleteUser(e.staffId)">Xóa</button>
+                    </td>
+                    <td>
+                        <mat-slide-toggle (change)="changeStatusStaff(e, $event)" [(ngModel)]="e.status" [disabled]="e.userGroupCode == 'ROLE_MANAGER'">
+                            {{ e.status ? 'Hoạt động' : 'Không hoạt động' }}
+                        </mat-slide-toggle>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

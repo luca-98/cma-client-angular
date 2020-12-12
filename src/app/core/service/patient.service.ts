@@ -14,6 +14,12 @@ export class PatientService {
         private http: HttpClient
     ) { }
 
+    getPatientInfoById(patientId){
+        const url = this.patientUrl + 'get-by-id';
+        const params = new HttpParams().set('id', patientId);
+        return this.http.get(url, { params });
+    }
+
     getPatient(pageSize: any, pageIndex: any) {
         const url = this.patientUrl + 'get-all-patient';
         const params = new HttpParams().set('pageSize', pageSize)

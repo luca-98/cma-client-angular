@@ -1,0 +1,161 @@
+<div class="card-custom">
+    <div class="flex-container flex-content-between mb-2">
+        <h2 class="header">Báo cáo doanh thu tổng hợp</h2>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-4">
+            <label class="label min-width-align">Kiểu</label>
+            <mat-form-field appearance="outline" class="input-fixed-revenue">
+                <mat-select [(ngModel)]="searchData.type">
+                    <mat-option value="1" (click)="showReportSum();resetPaging()">Ngày</mat-option>
+                    <mat-option value="2" (click)="showReportSum();resetPaging() ">Tháng</mat-option>
+                    <mat-option value="3" (click)="showReportSum();resetPaging() ">Quý</mat-option>
+                    <mat-option value="4" (click)="showReportSum();resetPaging() ">Năm</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="col-4 ">
+            <label class="label min-width-align">Khoảng ngày</label>
+            <mat-form-field appearance="outline" class="input-fixed-revenue">
+                <mat-date-range-input [rangePicker]="picker" [max]="today" [disabled]="searchData.type!=='1'">
+                    <input matStartDate placeholder="Ngày bắt đầu" [(ngModel)]="searchData.startDate" [max]="today"
+                        (dateChange)="showReportSum()">
+                    <input matEndDate placeholder="Ngày kết thúc" [(ngModel)]="searchData.endDate" [max]="today"
+                        (dateChange)="showReportSum()">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+        <div class="col-4 ">
+            <label class="label min-width-align">Năm</label>
+            <mat-form-field appearance="outline" class="input-fixed-revenue">
+                <mat-select [(ngModel)]="searchData.year">
+                    <mat-option *ngFor="let item of listYear" [value]="item" (click)="showReportSum();resetPaging()">
+                        {{item}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end align-items-center">
+            <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <!-- <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator> -->
+            <div class="table-custom">
+                <ul class="table-header">
+                    <li class="header-col stt">
+                        #
+                    </li>
+                    <li *ngIf="searchData.type === '1'" class="header-col width-10 text-left">
+                        Ngày
+                    </li>
+                    <li *ngIf="searchData.type === '2'" class="header-col width-10 text-left">
+                        Tháng
+                    </li>
+                    <li *ngIf="searchData.type === '3'" class="header-col width-10 text-left">
+                        Quý
+                    </li>
+                    <li *ngIf="searchData.type === '4'" class="header-col width-10 text-left">
+                        Năm
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Tổng thu
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Tổng chi
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Thu nợ
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Trả nợ
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Xuất thuốc
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Dịch vụ
+                    </li>
+                    <li class="header-col width-auto text-right">
+                        Nhập thuốc vật tư
+                    </li>
+                </ul>
+                <div class="table-content caculate-height">
+                    <ul class="content-row" *ngIf="listShow.length ===0">
+                        <li class="content-col no-data">
+                            Không có dữ liệu
+                        </li>
+                    </ul>
+                    <app-loading *ngIf="isLoading"></app-loading>
+                    <ul class="content-row " *ngFor="let item of listShow;let i = index">
+                        <li class="content-col stt">
+                            {{i+1}}
+                        </li>
+                        <li class="content-col width-10 text-left">
+                            {{item.time}}
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalReceived)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalPaymented)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalAmountDebtReceivable)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalAmountDebtPayment)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalAmountMedicineSale)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalAmountService)}} đ
+                        </li>
+                        <li class="content-col width-auto text-right">
+                            {{oneDot(item.reportSumShowDTO.totalAmountReceipt)}} đ
+                        </li>
+                    </ul>
+
+                </div>
+                <ul class="table-footer">
+                    <li class="footer-col stt">
+                    </li>
+                    <li class="footer-col width-10 text-left">
+                        Tổng cộng
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalReceived)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalPaymented)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalAmountDebtReceivable)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalAmountDebtPayment)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalAmountMedicineSale)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalAmountService)}} đ
+                    </li>
+                    <li class="footer-col width-auto text-right">
+                        {{oneDot(total.totalAmountReceipt)}} đ
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

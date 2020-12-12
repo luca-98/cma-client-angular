@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { MedicineSaleService } from 'src/app/core/service/medicine-sale.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { buildHighlightString, convertDateToNormal, removeSignAndLowerCase } from 'src/app/shared/share-func';
@@ -45,8 +47,22 @@ export class ManageExportMedicineComponent implements OnInit {
     private sideMenuService: SideMenuService,
     private medicineSaleService: MedicineSaleService,
     private dialog: MatDialog,
-    private router: Router
-  ) { }
+    private router: Router,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lí xuất bán thuốc');
@@ -215,6 +231,7 @@ export class ManageExportMedicineComponent implements OnInit {
       pageSize: this.pageSize,
       pageIndex: this.pageIndex
     };
+    this.search();
   }
 
   viewDetail(id) {

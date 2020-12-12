@@ -21,6 +21,7 @@ import { DialogChangeRoomComponent } from './dialog-change-room/dialog-change-ro
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -50,6 +51,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatSelectModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule
+
   ]
 })
 export class ShellModule { }

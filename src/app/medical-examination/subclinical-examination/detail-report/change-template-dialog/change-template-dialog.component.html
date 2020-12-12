@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>Thay đổi mẫu kết quả dịch vụ</h1>
+<div mat-dialog-content class="change-template-dialog-container">
+    <form *ngIf="formGroup" [formGroup]="formGroup" (keydown.enter)="$event.preventDefault()">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nhóm mẫu kết quả dịch vụ</mat-label>
+            <mat-select formControlName="groupTemplate" (selectionChange)="groupChange($event)">
+                <mat-option value="0">
+                    Tất cả
+                </mat-option>
+                <mat-option *ngFor="let group of listGroupTemplate" [value]="group.id">
+                    {{ group.groupTemplateName }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mẫu kết quả</mat-label>
+            <mat-select formControlName="template">
+                <mat-option value="0">
+                    --
+                </mat-option>
+                <ng-container *ngFor="let template of listTemplate">
+                    <mat-option [value]="template.templateReportId" *ngIf="template.isShow">
+                        {{ template.templateName }}
+                    </mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button class="btn-close-dialog btn-orange" [mat-dialog-close]="false" mat-raised-button mat-dialog-close
+        cdkFocusInitial>Hủy bỏ</button>
+    <button class="btn-close-dialog btn-main-color" mat-raised-button mat-dialog-close (click)="submit()"
+        cdkFocusInitial>Xác nhận</button>
+</div>

@@ -1,0 +1,58 @@
+<h2 mat-dialog-title *ngIf="type===2">Phiếu thu tiền mặt</h2>
+<h2 mat-dialog-title *ngIf="type===1">Phiếu chi tiền mặt</h2>
+<mat-dialog-content>
+    <div class="dialog-content" [ngClass]="{'dialog-view': id?true:false}">
+        <form *ngIf="patientForm" [formGroup]="patientForm " style="width: 100%;"
+            (keydown.enter)="$event.preventDefault()">
+
+            <div class="row mb-1 ">
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Đối tượng <span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <input *ngIf="type===2" matInput formControlName="objectReceipt" required>
+                        <input *ngIf="type===1" matInput formControlName="objectPayment" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Ngày</label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <input matInput [matDatepicker]="picker2" formControlName="date" [max]="today" disabled>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Tiền(đ)<span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <input matInput formControlName="amount" required type="number" min="0" step="1000" pattern="[0-9.]+" (change)="updateText(this)">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Bằng chữ</label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <textarea matInput rows="5" formControlName="amountText" disabled></textarea>
+                    </mat-form-field>
+                  
+                </div>
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Số Phiếu</label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <input matInput disabled formControlName="number" />
+                    </mat-form-field>
+                </div>
+                <div class="col-12 d-flex">
+                    <label class="label min-width-align">Diễn giải<span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-collect-cash">
+                        <textarea matInput rows="5" formControlName="description" required></textarea>
+                    </mat-form-field>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button *ngIf="id" mat-button mat-dialog-close class="btn-orange">Đóng</button>
+    <button *ngIf="!id" mat-button mat-dialog-close class="btn-orange">Hủy</button>
+    <button *ngIf="!id" mat-button class="btn-main-color" (click)="save()">Lưu</button>
+</mat-dialog-actions>

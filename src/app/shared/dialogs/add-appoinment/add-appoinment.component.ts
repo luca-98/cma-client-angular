@@ -80,18 +80,45 @@ export class AddAppoinmentComponent implements OnInit {
     });
   }
   onDobChange() {
+    const dob = this.patientForm.get('dateOfBirth').value;
+    if (dob === null) {
+      this.patientForm.patchValue({
+        dateOfBirth: this.today
+      });
+      return false;
+    }
     const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
-    if (!regexDate.test(this.patientForm.get('dateOfBirth').value)) {
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
       this.patientForm.patchValue({
         dateOfBirth: this.today
       });
-      return;
+      return false;
     }
-    if (this.patientForm.get('dateOfBirth').value.isAfter(this.today)) {
+    if (dob.isAfter(this.today)) {
       this.patientForm.patchValue({
         dateOfBirth: this.today
       });
+      return false;
     }
+    return true;
+  }
+  onDateChange() {
+    const dob = this.patientForm.get('appointmentDate').value;
+    if (dob === null) {
+      this.patientForm.patchValue({
+        appointmentDate: this.today
+      });
+      return false;
+    }
+    const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
+      this.patientForm.patchValue({
+        appointmentDate: this.today
+      });
+      return false;
+    }
+    return true;
+
   }
 
   save() {
@@ -107,6 +134,7 @@ export class AddAppoinmentComponent implements OnInit {
       appointmentTime: this.patientForm.get('appointmentTime').value,
       debt: this.patientForm.get('debt').value
     };
+    this.patientForm.markAllAsTouched();
 
     if (appointmentData.patientName === '') {
       this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
@@ -125,14 +153,26 @@ export class AddAppoinmentComponent implements OnInit {
       this.openNotifyDialog('Lỗi', 'Giờ hẹn không được để trống');
       return;
     }
+    if (!this.onDateChange()) {
+      this.openNotifyDialog('Lỗi', 'Ngày hẹn không đúng định dạng');
+      return;
+    }
+    if (appointmentData.dateOfBirth !== '' && !this.onDobChange()) {
+      this.openNotifyDialog('Lỗi', 'Ngày sinh không đúng định dạng');
+      return;
+    }
 
     this.appoinmentService.addPatientAppointment(appointmentData)
       .subscribe(
         (data: any) => {
-          if (!data.message.timeExist) {
+          if (data.message.appointmentDateExist) {
+            this.openNotifyDialog('Lỗi', 'Đã có lịch hẹn khám cho bệnh nhân này trong ngày hôm nay');
+            this.dialogRef.close();
+            return;
+          }
+          if (!data.message.timeExist && !data.message.appointmentDateExist) {
             this.openNotifyDialog('Thông báo', 'Thêm thông tin hẹn khám thành công');
             this.dialogRef.close();
-
           } else {
             this.openNotifyDialog('Lỗi', 'Bạn không thể đặt lịch hẹn khám cho bác sĩ "' + this.selectedDoctor.fullName + '" vì đang có lịch hẹn khám khác vào khoảng thời gian này ngày ' + appointmentData.appointmentDate + '. Hệ thống sẽ tự động tăng thời gian thêm 15 phút, vui lòng kiểm tra và lưu thông tin lại.');
             const time = appointmentData.appointmentTime.split(':');
@@ -244,7 +284,7 @@ export class AddAppoinmentComponent implements OnInit {
     this.patientForm.patchValue({
       patientName: event.patientName,
       patientCode: event.patientCode,
-      dateOfBirth: date,
+      dateOfBirth: event.dateOfBirth ? date : '',
       gender: event.gender,
       address: event.address,
       phone: event.phone,
@@ -262,15 +302,24 @@ export class AddAppoinmentComponent implements OnInit {
     this.autoByPatientCode = [];
     this.autoByName = [];
     this.autoByPhone = [];
-    this.patientForm.get('patientCode').reset();
-    this.patientForm.get('patientName').reset();
-    this.patientForm.get('dateOfBirth').reset();
-    this.patientForm.get('gender').reset();
-    this.patientForm.get('address').reset();
-    this.patientForm.get('phone').reset();
-    this.patientForm.get('staffId').reset();
+    this.patientForm.patchValue({
+      patientCode: '',
+      patientName: '',
+      phone: '',
+      dateOfBirth: '',
+      gender: '',
+      staffId: '',
+      address: '',
+      appointmentDate: '',
+      appointmentTime: '',
+      debt: 0
+    });
     this.patientForm.enable();
     this.patientForm.get('patientCode').disable();
+    this.patientForm.patchValue({
+      appointmentDate: this.today,
+      appointmentTime: this.date.getHours() + ':' + this.date.getMinutes()
+    });
   }
   dbClick() {
     this.resetInput();

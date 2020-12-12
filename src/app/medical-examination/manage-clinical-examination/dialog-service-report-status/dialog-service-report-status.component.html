@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Danh sách chỉ định cận lâm sàng</h1>
+<div mat-dialog-content>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th style="width: 1%;">STT</th>
+                <th>Dịch vụ</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let ele of dataDisplay; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ ele.name }}</td>
+                <td>{{ ele.status == '1' ? 'Chưa khám' : 
+                    (ele.status == '2' ? 'Đang khám' : 'Đã khám xong') }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div mat-dialog-actions class="mb-0 pb-0" align="end">
+    <button class="btn-orange " mat-raised-button mat-dialog-close cdkFocusInitial>Đóng</button>
+</div>

@@ -7,7 +7,11 @@ import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import * as moment from 'moment';
 import { ManageClinicalExamService } from 'src/app/core/service/manage-clinical-exam.service';
 import { buildHighlightString, convertDateToNormal } from 'src/app/shared/share-func';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogServiceReportStatusComponent } from './dialog-service-report-status/dialog-service-report-status.component';
+import { MenuService } from 'src/app/core/service/menu.service';
 
 @Component({
   selector: 'app-manage-clinical-examination',
@@ -40,8 +44,22 @@ export class ManageClinicalExaminationComponent implements OnInit {
     private commonService: CommonService,
     private credentialsService: CredentialsService,
     private manageClinicalExamService: ManageClinicalExamService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private dialog: MatDialog,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý phiếu khám');
@@ -63,6 +81,19 @@ export class ManageClinicalExaminationComponent implements OnInit {
     this.getClinicalExamList(this.pageSize, this.pageIndex);
     this.getNextOrdinalNumber();
   }
+
+  openNotifyDialog(title: string, content: string) {
+    return this.dialog.open(NotifyDialogComponent, {
+      width: '350px',
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title,
+        content
+      },
+    });
+  }
+
 
   search() {
     this.getClinicalExamList(this.pageSize, this.pageIndex);
@@ -303,7 +334,30 @@ export class ManageClinicalExaminationComponent implements OnInit {
       );
   }
 
-  moveToClinicalExam(medicalExamId: any) {
-    this.router.navigate(['/medical-examination/clinical-examination'], { queryParams: { medicalExamId } });
+  serviceReport(id: any) {
+    this.manageClinicalExamService.getServiceReportByMedicalId(id)
+      .subscribe(
+        (data: any) => {
+          console.log(data);
+          const dataDisplay = [];
+          for (const ele of data.message) {
+            dataDisplay.push({
+              name: ele.service.serviceName,
+              status: ele.status
+            });
+          }
+          this.dialog.open(DialogServiceReportStatusComponent, {
+            width: '600px',
+            disableClose: true,
+            autoFocus: false,
+            data: {
+              dataDisplay
+            },
+          });
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu, vui lòng thử lại');
+        }
+      );
   }
 }

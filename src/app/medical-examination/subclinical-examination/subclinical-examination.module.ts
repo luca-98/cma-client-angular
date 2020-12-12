@@ -17,10 +17,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DATE_PICKER_FORMATS } from 'src/app/core/date-picker-formats';
-
+import { DetailReportComponent } from './detail-report/detail-report.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EditorModule } from 'src/app/editor/editor.module';
+import { ChangeTemplateDialogComponent } from './detail-report/change-template-dialog/change-template-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [SubclinicalExaminationComponent],
+  declarations: [SubclinicalExaminationComponent, DetailReportComponent, ChangeTemplateDialogComponent],
   imports: [
     CommonModule,
     SubclinicalExaminationRoutingModule,
@@ -36,7 +41,10 @@ import { DATE_PICKER_FORMATS } from 'src/app/core/date-picker-formats';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatDatepickerModule,
-
+    EditorModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatDialogModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },

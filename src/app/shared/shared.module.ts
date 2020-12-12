@@ -14,7 +14,7 @@ import { LoadingComponent } from './loading/loading.component';
 import { EditPatientDialogComponent } from './dialogs/edit-patient-dialog/edit-patient-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DATE_PICKER_FORMATS } from '../core/date-picker-formats';
 import { AddAppoinmentComponent } from './dialogs/add-appoinment/add-appoinment.component';
@@ -24,6 +24,13 @@ import { EditAppointmentComponent } from './dialogs/edit-appointment/edit-appoin
 import { AddServiceComponent } from './dialogs/add-service/add-service.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AddGroupServiceComponent } from './dialogs/add-group-service/add-group-service.component';
+import { SubclinicalReportDialogComponent } from './dialogs/subclinical-report-dialog/subclinical-report-dialog.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ViewDebtComponent } from './dialogs/view-debt/view-debt.component';
+import { MedicalExamReportDialogComponent } from './dialogs/medical-exam-report-dialog/medical-exam-report-dialog.component';
+import { PrescriptionReportDialogComponent } from './dialogs/prescription-report-dialog/prescription-report-dialog.component';
+import { CollectPayCashComponent } from './dialogs/collect-pay-cash/collect-pay-cash.component';
 
 
 @NgModule({
@@ -31,7 +38,11 @@ import { AddGroupServiceComponent } from './dialogs/add-group-service/add-group-
     ToastComponent, NotifyDialogComponent,
     ConfirmDialogComponent, PatientAutocompleteComponent,
     LoadingComponent, EditPatientDialogComponent,
-    AddAppoinmentComponent, SupplierAutocompleteComponent, EditAppointmentComponent, AddServiceComponent, AddGroupServiceComponent],
+    AddAppoinmentComponent, SupplierAutocompleteComponent,
+    EditAppointmentComponent, AddServiceComponent,
+    AddGroupServiceComponent,
+    CollectPayCashComponent, SubclinicalReportDialogComponent,
+    ViewDebtComponent, MedicalExamReportDialogComponent, PrescriptionReportDialogComponent],
   imports: [
     CommonModule,
     MatSnackBarModule,
@@ -45,8 +56,9 @@ import { AddGroupServiceComponent } from './dialogs/add-group-service/add-group-
     MatDatepickerModule,
     NgxMaterialTimepickerModule,
     MatCheckboxModule,
-
-
+    MatCardModule,
+    MatNativeDateModule,
+    MatTooltipModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },
@@ -57,7 +69,9 @@ import { AddGroupServiceComponent } from './dialogs/add-group-service/add-group-
     },
     { provide: MAT_DATE_FORMATS, useValue: DATE_PICKER_FORMATS }
   ],
-  exports: [PatientAutocompleteComponent, LoadingComponent, SupplierAutocompleteComponent, EditAppointmentComponent, AddServiceComponent,
+  exports: [PatientAutocompleteComponent, LoadingComponent,
+    SupplierAutocompleteComponent, EditAppointmentComponent,
+    AddServiceComponent,
     AddGroupServiceComponent]
 })
 export class SharedModule { }

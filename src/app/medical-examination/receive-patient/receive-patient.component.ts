@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
@@ -7,11 +7,14 @@ import { ReceivePatientService } from 'src/app/core/service/receive-patient.serv
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { buildHighlightString, convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { buildHighlightString, convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 import * as moment from 'moment';
 import { WebsocketService } from 'src/app/core/service/websocket.service';
 import { CommonService } from 'src/app/core/service/common.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppointmentService } from 'src/app/core/service/appointment.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -63,6 +66,9 @@ export class ReceivePatientComponent implements OnInit {
   timer: any;
 
   patientIdFromListScreen = null;
+  appointmentId = null;
+
+  userPermissionCode = [];
 
   constructor(
     private titleService: Title,
@@ -74,9 +80,29 @@ export class ReceivePatientComponent implements OnInit {
     private websocketService: WebsocketService,
     private commonService: CommonService,
     private route: ActivatedRoute,
+    private appointmentService: AppointmentService,
+    private router: Router,
+    private credentialsService: CredentialsService,
+    private menuService: MenuService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.route.queryParams.subscribe(params => {
       this.patientIdFromListScreen = params.patientId;
+      this.appointmentId = params.appointmentId;
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
     });
   }
 
@@ -84,6 +110,7 @@ export class ReceivePatientComponent implements OnInit {
     this.titleService.setTitle('Tiếp đón bệnh nhân');
     this.sideMenuService.changeItem(1.2);
     this.receiveForm = this.formBuilder.group({
+      patientId: [''],
       patientName: ['', [Validators.required]],
       patientCode: [''],
       dateOfBirth: ['', [Validators.required]],
@@ -115,7 +142,12 @@ export class ReceivePatientComponent implements OnInit {
     this.listenWebsocket();
     if (this.patientIdFromListScreen != null) {
       this.initPatient(this.patientIdFromListScreen);
+    } else {
+      if (this.appointmentId != null) {
+        this.initByAppointment(this.appointmentId);
+      }
     }
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
 
   initPatient(id: any) {
@@ -127,7 +159,29 @@ export class ReceivePatientComponent implements OnInit {
           }
         },
         () => {
-          console.error('search auto failed');
+          console.error('failed to get data');
+        }
+      );
+  }
+
+  initByAppointment(id: any) {
+    this.appointmentService.getReceiveByAppoint(id)
+      .subscribe(
+        (data: any) => {
+          console.log(data.message);
+          if (data.message.patientDTO != null) {
+            this.autoSelected(data.message.patientDTO, true);
+          }
+          if (data.message.ordinal != null) {
+            this.receiveForm.patchValue({
+              ordinalNumber: data.message.ordinal,
+              doctorId: data.message.staffId,
+              roomId: data.message.roomId
+            });
+          }
+        },
+        () => {
+          console.error('failed to get data');
         }
       );
   }
@@ -241,7 +295,7 @@ export class ReceivePatientComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.receiveForm.patchValue({
-            clinicalExamPrice: data.message.price
+            clinicalExamPrice: oneDot(data.message.price)
           });
         },
         () => {
@@ -250,18 +304,32 @@ export class ReceivePatientComponent implements OnInit {
       );
   }
 
-  autoSelected(event: any) {
-    this.resetInput();
-    const date = moment(new Date(event.dateOfBirth));
+  checkValidObj(obj: any) {
+    return obj !== null && obj !== undefined;
+  }
+
+  autoSelected(event: any, noResetInputFlag?: any) {
+    if (!noResetInputFlag) {
+      this.resetInput();
+    }
+    const dateOfBirth = this.checkValidObj(event.dateOfBirth) ? event.dateOfBirth : '';
+    const date = dateOfBirth === '' ? '' : moment(new Date(event.dateOfBirth));
+    const patientName = this.checkValidObj(event.patientName) ? event.patientName : '';
+    const patientCode = this.checkValidObj(event.patientCode) ? event.patientCode : '';
+    const gender = this.checkValidObj(event.gender) ? event.gender : '';
+    const address = this.checkValidObj(event.address) ? event.address : '';
+    const phone = this.checkValidObj(event.phone) ? event.phone : '';
+    const debt = this.checkValidObj(event.debt) ? oneDot(event.debt) : '0';
     event = propValToString(event);
     this.receiveForm.patchValue({
-      patientName: event.patientName,
-      patientCode: event.patientCode,
+      patientId: event.id,
+      patientName,
+      patientCode,
       dateOfBirth: date,
-      gender: event.gender,
-      address: event.address,
-      phone: event.phone,
-      debt: event.debt
+      gender: gender.toString(),
+      address,
+      phone,
+      debt
     });
     this.receivePatientService.checkReceive(event.patientCode, null)
       .subscribe(
@@ -279,13 +347,14 @@ export class ReceivePatientComponent implements OnInit {
                 this.autoByPatientCode = [];
                 this.autoByPhone = [];
                 this.receiveForm.patchValue({
+                  patientId: data.message.patient.id,
                   patientName: data.message.patient.patientName,
                   patientCode: data.message.patient.patientCode,
                   dateOfBirth: moment(new Date(data.message.patient.dateOfBirth)),
                   gender: data.message.patient.gender.toString(),
                   address: data.message.patient.address,
                   phone: data.message.patient.phone,
-                  debt: data.message.patient.debt,
+                  debt: oneDot(data.message.patient.debt),
                   roomId: data.message.roomService.id,
                   doctorId: data.message.staff.id,
                   ordinalNumber: data.message.ordinalNumber.ordinalNumber,
@@ -404,14 +473,18 @@ export class ReceivePatientComponent implements OnInit {
     }, 300);
   }
 
-  resetInput() {
+  resetInput(event?: any) {
+    if (event) {
+      event.preventDefault();
+    }
     this.isEditReceive = false;
     this.autoByName = [];
     this.autoByPatientCode = [];
     this.autoByPhone = [];
-    const clinicalExamPrice = this.receiveForm.get('clinicalExamPrice').value;
+    const clinicalExamPrice = oneDot(this.receiveForm.get('clinicalExamPrice').value);
     this.receiveForm.reset();
     this.receiveForm.patchValue({
+      patientId: '',
       patientName: '',
       patientCode: '',
       dateOfBirth: '',
@@ -425,11 +498,17 @@ export class ReceivePatientComponent implements OnInit {
       ordinalNumber: '',
       examinationReason: ''
     });
-    Object.keys(this.receiveForm.controls).forEach(key => {
-      this.receiveForm.get(key).setErrors(null);
-    });
     this.receiveForm.get('patientCode').disable();
     this.isListenUpdateOrdinal = true;
+    this.appointmentId = null;
+    this.clearQueryParam();
+  }
+
+  clearQueryParam() {
+    this.router.navigate(
+      ['.'],
+      { relativeTo: this.route, queryParams: {} }
+    );
   }
 
   doubleClick() {
@@ -462,13 +541,14 @@ export class ReceivePatientComponent implements OnInit {
                           this.autoByPatientCode = [];
                           this.autoByPhone = [];
                           this.receiveForm.patchValue({
+                            patientId: data.message.patient.id,
                             patientName: data.message.patient.patientName,
                             patientCode: data.message.patient.patientCode,
                             dateOfBirth: moment(new Date(data.message.patient.dateOfBirth)),
                             gender: data.message.patient.gender.toString(),
                             address: data.message.patient.address,
                             phone: data.message.patient.phone,
-                            debt: data.message.patient.debt,
+                            debt: oneDot(data.message.patient.debt),
                             roomId: data.message.roomService.id,
                             doctorId: data.message.staff.id,
                             ordinalNumber: data.message.ordinalNumber.ordinalNumber,
@@ -484,13 +564,14 @@ export class ReceivePatientComponent implements OnInit {
                       const date = moment(new Date(res.message.dateOfBirth));
                       res.message = propValToString(res.message);
                       this.receiveForm.patchValue({
+                        patientId: res.message.id,
                         patientName: res.message.patientName,
                         patientCode: res.message.patientCode,
                         dateOfBirth: date,
                         gender: res.message.gender,
                         address: res.message.address,
                         phone: res.message.phone,
-                        debt: res.message.debt
+                        debt: oneDot(res.message.debt)
                       });
                     }
                   },
@@ -570,13 +651,8 @@ export class ReceivePatientComponent implements OnInit {
     const clinicalExamPrice = this.receiveForm.get('clinicalExamPrice').value;
     const roomServiceId = this.receiveForm.get('roomId').value;
     const staffId = this.receiveForm.get('doctorId').value;
-    const debt = this.receiveForm.get('debt').value;
+    const debt = parseInt(this.receiveForm.get('debt').value.replace(/,/gmi, ''), 10);
     const examinationReason = this.receiveForm.get('examinationReason').value.trim();
-
-    if (ordinalNumber === '') {
-      this.openNotifyDialog('Lỗi', 'Lưu tiếp đón không thành công, vui lòng thử lại');
-      return;
-    }
 
     if (patientName === '') {
       this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
@@ -613,6 +689,11 @@ export class ReceivePatientComponent implements OnInit {
       return;
     }
 
+    if (ordinalNumber === '') {
+      this.openNotifyDialog('Lỗi', 'Lưu tiếp đón không thành công, vui lòng thử lại');
+      return;
+    }
+
     if (this.isEditReceive) {
       const dialogRef = this.openConfirmDialog('Thông báo', 'Bạn có cập nhật thông tin tiếp đón này?');
 
@@ -638,13 +719,14 @@ export class ReceivePatientComponent implements OnInit {
         if (result) {
           this.isListenUpdateOrdinal = false;
           this.receivePatientService.receivePatient(patientCode, patientName, phone, dateOfBirth, gender, address,
-            ordinalNumber, clinicalExamPrice, roomServiceId, staffId, debt, examinationReason)
+            ordinalNumber, clinicalExamPrice, roomServiceId, staffId, debt, examinationReason, this.appointmentId)
             .subscribe(
               (data: any) => {
                 if (data.message.patient.patientCode) {
                   this.idReceiveForEdit = data.message.id;
                   this.isEditReceive = true;
                   this.receiveForm.patchValue({
+                    patientId: data.message.patient.id,
                     patientCode: data.message.patient.patientCode,
                     ordinalNumber: data.message.ordinalNumber.ordinalNumber
                   });
@@ -715,13 +797,14 @@ export class ReceivePatientComponent implements OnInit {
     this.autoByPhone = [];
     this.time = new Date(e.createdAt);
     this.receiveForm.patchValue({
+      patientId: e.patient.id,
       patientName: e.patient.patientName,
       patientCode: e.patient.patientCode,
       dateOfBirth: moment(new Date(e.patient.dateOfBirth)),
       gender: e.patient.gender.toString(),
       address: e.patient.address,
       phone: e.patient.phone,
-      debt: e.patient.debt,
+      debt: oneDot(e.patient.debt),
       roomId: e.roomService.id,
       doctorId: e.staff.id,
       ordinalNumber: e.ordinalNumber.ordinalNumber,

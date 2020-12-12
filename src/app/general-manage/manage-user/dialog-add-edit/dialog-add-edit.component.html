@@ -1,0 +1,121 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content class="add-edit-user">
+    <mat-tab-group mat-align-tabs="start">
+        <mat-tab label="Thông tin cá nhân">
+            <div class="tab-content">
+                <form *ngIf="formGroup" [formGroup]="formGroup " (keydown.enter)="$event.preventDefault()">
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="label min-width-align">Tên đăng nhập <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="userName" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label class="label min-width-align">Nhóm người dùng <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <mat-select formControlName="userGroupId" required
+                                    [disabled]="staff != null && staff.userGroupCode == 'ROLE_MANAGER'">
+                                    <ng-container *ngFor="let e of listGroupUser">
+                                        <mat-option [value]="e.id" [disabled]="e.userGroupCode == 'ROLE_MANAGER'">
+                                            {{ e.userGroupName }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mt-1" *ngIf="!isEdit">
+                        <div class="col-6">
+                            <label class="label min-width-align">Mật khẩu <span class="required">*</span> </label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput type="password" formControlName="password" required>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label class="label min-width-align">Nhập lại mật khẩu <span
+                                    class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput type="password" formControlName="confirmPassword" required
+                                    (input)="onConfirmPasswordInput()">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-6">
+                            <label class="label min-width-align">Họ và tên <span class="required">*</span> </label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="fullName" required>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label class="label min-width-align">Ngày sinh <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                                    (dateChange)="onDobChange()">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-6">
+                            <label class="label min-width-align">Email <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="email" required>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label class="label min-width-align">Số điện thoại <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="phone" required maxlength="10"
+                                    (input)="onPhoneInput()">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-12">
+                            <label class="label min-width-align">Địa chỉ <span class="required">*</span></label>
+                            <mat-form-field appearance="outline" class="input-fixed">
+                                <input matInput formControlName="address" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="Thông tin làm việc">
+            <h3 mat-dialog-title>Danh sách nhóm dịch vụ</h3>
+            <div class="checkbox-container">
+                <div class="row list-checkbox">
+                    <div class="col-12 d-flex flex-wrap">
+                        <div class="item-checkbox" *ngFor="let item of listGroupService">
+                            <mat-checkbox [(ngModel)]="item.checked" (change)="checkGroupService($event, item)"
+                                [disabled]="staff != null && staff.userGroupCode == 'ROLE_MANAGER'">
+                                {{item.groupServiceName}}
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h3 mat-dialog-title class="mb-0 mt-2">Phòng làm việc</h3>
+            <mat-form-field appearance="outline" class="input-fixed">
+                <mat-select [(ngModel)]="roomId">
+                    <mat-option [value]="-1">
+                        Không xác định
+                    </mat-option>
+                    <mat-option *ngFor="let e of listRoomService" [value]="e.id">
+                        {{ e.roomName }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+<div mat-dialog-actions class="mb-0 pb-0" align="end">
+    <button class="btn-close-dialog btn-orange" mat-raised-button mat-dialog-close cdkFocusInitial>Hủy bỏ</button>
+    <button class="btn-close-dialog btn-main-color" mat-raised-button cdkFocusInitial (click)="submit()">
+        Lưu
+    </button>
+</div>

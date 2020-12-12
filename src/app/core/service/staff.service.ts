@@ -24,4 +24,25 @@ export class StaffService {
         const url = this.staffUrl + 'get-all-staff';
         return this.http.get(url);
     }
+
+    getAuthenObj(id: any) {
+        const url = this.staffUrl + 'get-authen-object/' + id;
+        return this.http.get(url);
+    }
+
+    updateGroupServiceStaff(id: any, listGroupService: any) {
+        const url = this.staffUrl + 'update-group-service-staff/' + id;
+        const formData = new FormData();
+        formData.append('listGroupService', listGroupService);
+        return this.http.put(url, formData);
+    }
+
+    updateRoomStaff(id: any, roomId: any) {
+        const url = this.staffUrl + 'update-room-staff/' + id;
+        const formData = new FormData();
+        if (roomId != null) {
+            formData.append('roomId', roomId);
+        }
+        return this.http.put(url, formData);
+    }
 }

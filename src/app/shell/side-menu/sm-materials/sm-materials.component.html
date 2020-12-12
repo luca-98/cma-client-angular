@@ -1,6 +1,7 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 3.1" mat-list-item routerLink="/manage-medicine/import-medicine">
-        Nhập vật tư
+    <a [class.item-active]="currentItem === 3.1" mat-list-item routerLink="/manage-medicine/import-medicine"
+        *ngIf="userPermissionCode.includes('C10')">
+        Nhập thuốc, vật tư
     </a>
     <a mat-list-item routerLink="/" disabled>
         Quản lý nhập vật tư

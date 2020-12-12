@@ -4,9 +4,12 @@
         <div>
             <input #excelInput hidden="true" type="file" onclick="this.value=null" (change)="excelInputChange($event)"
                 accept=".xlsx" />
-            <button mat-raised-button class="btn-green" (click)="excelInput.click()">Nhập từ excel</button>
-            <button mat-raised-button class="btn-orange ml-1" (click)="exportExcel()">Xuất excel</button>
-            <button mat-raised-button class="btn-main-color ml-1" (click)="downloadTemplate()">Tải mẫu</button>
+            <button mat-raised-button class="btn-green" (click)="excelInput.click()"
+                *ngIf="userPermissionCode.includes('A11')">Nhập từ excel</button>
+            <button mat-raised-button class="btn-green ml-1" (click)="exportExcel()"
+                *ngIf="userPermissionCode.includes('A12')">Xuất excel</button>
+            <button mat-raised-button class="btn-green ml-1" (click)="downloadTemplate()"
+                *ngIf="userPermissionCode.includes('A11')">Tải mẫu</button>
         </div>
     </div>
     <hr>
@@ -105,7 +108,7 @@
                 <li class="header-col width-15 text-left">
                     Điện thoại
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-10 text-right">
                     Công nợ
                 </li>
                 <li class="header-col width-10 text-right">
@@ -115,7 +118,7 @@
             <div class="table-content caculate-height">
                 <ul class="content-row" *ngIf="patientList.length == 0">
                     <li class="content-col no-data">
-                        no data
+                        Không có dữ liệu
                     </li>
                 </ul>
                 <app-loading *ngIf="isLoading"></app-loading>
@@ -136,24 +139,26 @@
                         {{item.dateOfBirth | date: 'dd/MM/yyyy'}}
                     </li>
                     <li class="content-col width-10 text-left ">
-                        {{item.gender == 0 ? 'Nam' : 'Nữ'}}
+                        {{item.gender == 0 ? 'Nam' : item.gender == 1 ? 'Nữ' : ''}}
                     </li>
                     <li class="content-col width-15 text-left ">
                         {{item.phone}}
                     </li>
-                    <li class="content-col width-10 text-left ">
-                        {{item.debt}}
+                    <li class="content-col width-10 text-right ">
+                        {{oneDot(item.debt) }}đ
                     </li>
                     <li class="content-col width-10 text-right">
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-outline-secondary btn-sm" (click)="moveToDetail(item.id)"
-                                title="Xem lịch sử khám bệnh">
+                            <a class="btn btn-outline-secondary btn-sm" *ngIf="userPermissionCode.includes('A13')"
+                                routerLink="/medical-examination/list-patient/detail-infor"
+                                [queryParams]="{ patientId: item.id}" title="Xem lịch sử khám bệnh">
                                 <i class="fas fa-file"></i>
-                            </button>
+                            </a>
                             <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editPatient(item)"
-                                title="Sửa thông tin bệnh nhân"><i class="fas fa-pen"></i></button>
+                                *ngIf="userPermissionCode.includes('A14')" title="Sửa thông tin bệnh nhân"><i
+                                    class="fas fa-pen"></i></button>
                             <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deletePatient(item.id)"
-                                title="Xóa bệnh nhân">
+                                *ngIf="userPermissionCode.includes('A15')" title="Xóa bệnh nhân">
                                 <i class="fas fa-trash"></i></button>
                         </div>
                     </li>

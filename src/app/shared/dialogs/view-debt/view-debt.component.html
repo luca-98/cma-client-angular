@@ -1,0 +1,137 @@
+<h2 mat-dialog-title *ngIf="type === 3">Chi tiết phiếu thu nợ</h2>
+<h2 mat-dialog-title *ngIf="type === 4">Chi tiết phiếu trả nợ</h2>
+
+<mat-dialog-content>
+    <div class="dialog-content dialog-view">
+        <div class="row mb-2">
+            <div class="col-6 d-flex" *ngIf="type === 3">
+                <label class="label min-width-align">Mã bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.patient.patientCode" disabled>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex" *ngIf="type === 4">
+                <label class="label min-width-align">Nhà cung cấp</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.supplier.supplierName" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Số phiếu</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.voucherNumber" disabled>
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex" *ngIf="type === 3">
+                <label class="label min-width-align">Tên bệnh nhân</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.patient.patientName" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex" *ngIf="type === 4">
+                <label class="label min-width-align">Số điện thoại</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.supplier.phone" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Ngày</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.debtPaymentDate | date: 'dd/MM/yyyy' " disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tổng(đ)</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="oneDot(data.total)" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Người tạo</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="data.staffName" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Tổng trả(đ)</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="oneDot(data.paid)" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-6 d-flex">
+                <label class="label min-width-align">Còn nợ(đ)</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <input matInput [value]="oneDot(data.debt)" disabled />
+                </mat-form-field>
+            </div>
+            <div class="col-12 d-flex">
+                <label class="label min-width-align">Note</label>
+                <mat-form-field appearance="outline" class="input-view-debt">
+                    <textarea matInput rows="2" [value]="data.debtPaymentNote" disabled></textarea>
+                </mat-form-field>
+            </div>
+
+        </div>
+
+        <div class="row ">
+            <div class="col-12">
+                <div class="table-custom  ">
+
+                    <ul class="table-header">
+                        <li class="header-col stt text-center">
+                            #
+                        </li>
+                        <li class="header-col width-auto text-left">
+                            Tên
+                        </li>
+                        <li class="header-col width-20 text-right">
+                            Thành tiền
+                        </li>
+                        <li class="header-col width-20 text-right">
+                            Tổng đã trả
+                        </li>
+                        <li class="header-col width-20 text-right">
+                            Đã trả ở phiếu này
+                        </li>
+                        <li class="header-col width-15 text-right">
+                            Còn nợ
+                        </li>
+                    </ul>
+
+                    <div class="table-content caculate-height ">
+                        <ul class="content-row" *ngIf="listData.length==0">
+                            <li class="content-col no-data">
+                                Không có dữ liệu
+                            </li>
+                        </ul>
+                        <app-loading *ngIf="isLoading"></app-loading>
+
+                        <ul class="content-row " *ngFor="let item of listData;let i= index">
+                            <li class="content-col stt text-center">
+                                {{i+1}}
+                            </li>
+                            <li class="content-col width-auto text-left">
+                                {{item.name}}
+                            </li>
+                            <li class="content-col width-20 text-right">
+                                {{oneDot(item.total)}}đ
+                            </li>
+                            <li class="content-col width-20 text-right">
+                                {{oneDot(item.paid)}}đ
+                            </li>
+                            <li class="content-col width-20 text-right">
+                                {{oneDot(item.paidAtThis)}}đ
+                            </li>
+                            <li class="content-col width-15 text-right">
+                                {{oneDot(item.debt)}}đ
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="mb-0 pb-0">
+    <button mat-button mat-dialog-close class="btn-orange">Đóng</button>
+</mat-dialog-actions>

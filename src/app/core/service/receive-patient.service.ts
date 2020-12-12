@@ -22,7 +22,8 @@ export class ReceivePatientService {
   }
 
   receivePatient(patientCode: any, patientName: any, phone: any, dateOfBirth: any, gender: any, address: any,
-    ordinalNumber: any, clinicalExamPrice: any, roomServiceId: any, staffId: any, debt: any, examinationReason: any): any {
+    ordinalNumber: any, clinicalExamPrice: any, roomServiceId: any, staffId: any, debt: any, examinationReason: any,
+    appointmentId?: any): any {
     const url = this.receivePatientUrl + 'add-patient-receive';
 
     const formData = new FormData();
@@ -40,6 +41,9 @@ export class ReceivePatientService {
     formData.append('staffId', staffId);
     formData.append('debt', debt);
     formData.append('examinationReason', examinationReason);
+    if (appointmentId !== null && appointmentId !== undefined) {
+      formData.append('appointmentId', appointmentId);
+    }
 
     return this.http.post(url, formData);
   }

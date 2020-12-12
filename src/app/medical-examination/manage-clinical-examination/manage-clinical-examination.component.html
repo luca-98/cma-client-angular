@@ -1,6 +1,6 @@
 <div class="full-width card-custom">
     <div class="mb-2">
-        <form *ngIf="searchForm" [formGroup]="searchForm">
+        <form *ngIf="searchForm" [formGroup]="searchForm" (keydown.enter)="$event.preventDefault()">
             <div class="flex-container flex-content-between">
                 <h2 class="header">Tìm kiếm phiếu khám</h2>
                 <h3 style="font-weight: bold;">Số thứ tự khám mới tiếp theo: {{nextOrdinalNumber}}</h3>
@@ -100,13 +100,13 @@
             <i class="fas fa-search"></i>
             <span class="ml-1">
                 Tìm kiếm
-            </span>   
+            </span>
         </button>
         <button mat-raised-button class="ml-2 btn-orange" (click)="resetInput()">
             <i class="fas fa-sync-alt"></i>
             <span class="ml-1">
                 Nhập lại
-            </span>  
+            </span>
         </button>
     </div>
     <div class="table-custom mt-3">
@@ -181,10 +181,13 @@
                 </li>
                 <li class="content-col width-10 text-left">
                     <div style="display: flex; justify-content: flex-end;">
-                        <button class="btn btn-outline-secondary btn-sm" (click)="moveToClinicalExam(m.id)" title="Chuyển đến lập phiếu khám">
+                        <a class="btn btn-outline-secondary btn-sm"
+                            routerLink="/medical-examination/clinical-examination"
+                            [queryParams]="{ medicalExamId: m.id }" title="Chuyển đến lập phiếu khám">
                             <i class="fas fa-file"></i>
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm ml-1" title="Sửa thông tin bệnh nhân" title="Xem thông tin phiếu khám">
+                        </a>
+                        <button class="btn btn-outline-secondary btn-sm ml-1" [disabled]="m.status != '3'"
+                            (click)="serviceReport(m.id)" title="Xem trạng thái kết quả CLS">
                             <i class="fas fa-list"></i>
                         </button>
                     </div>

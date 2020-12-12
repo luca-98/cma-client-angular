@@ -65,17 +65,21 @@ export class AddServiceComponent implements OnInit {
     });
   }
 
+
   save() {
     this.dataPost.serviceName = this.dataPost.serviceName.trim();
     if (this.dataPost.serviceName === '') {
       this.openNotifyDialog('Lỗi', 'Tên dịch vụ không được để trống.');
       return;
     }
-    if (this.dataPost.price < 0) {
+
+    if (this.dataPost.price < 0 || this.dataPost.price === null) {
       this.dataPost.price = 0;
       this.openNotifyDialog('Lỗi', 'Giá dịch vụ không được nhỏ hơn 0.');
       return;
     }
+
+
     this.dataPost.roomServiceId = [];
     for (const iterator of this.listRoomService) {
       if (iterator.checked) {
@@ -89,7 +93,7 @@ export class AddServiceComponent implements OnInit {
             this.openNotifyDialog('Thông báo', 'Thêm dịch vụ mới thành công.');
             this.dialogRef.close();
           } else {
-            this.openNotifyDialog('Lỗi', 'Thêm dịch vụ mới thất bại.');
+            this.openNotifyDialog('Lỗi', 'Tên dịch vụ đã tồn tại trong hệ thống, vui lòng kiểm tra lại.');
           }
         }, err => {
           this.openNotifyDialog('Lỗi', 'Thêm dịch vụ mới thất bại.');

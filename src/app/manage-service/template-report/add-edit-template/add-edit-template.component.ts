@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +17,7 @@ declare var $: any;
   templateUrl: './add-edit-template.component.html',
   styleUrls: ['./add-edit-template.component.scss']
 })
-export class AddEditTemplateComponent implements OnInit {
+export class AddEditTemplateComponent implements OnInit, AfterViewInit {
 
   title = '';
   editor: any;
@@ -44,7 +44,6 @@ export class AddEditTemplateComponent implements OnInit {
 
   ngOnInit(): void {
     this.sideMenuService.changeItem(4.3);
-    this.editor = document.getElementById('editor');
     if (this.currentId === undefined) {
       this.titleService.setTitle('Thêm mới mẫu kết quả dịch vụ');
       this.title = this.titleService.getTitle();
@@ -52,6 +51,10 @@ export class AddEditTemplateComponent implements OnInit {
       this.titleService.setTitle('Chỉnh sửa mẫu kết quả dịch vụ');
       this.title = this.titleService.getTitle();
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.editor = document.getElementById('editor');
     this.setEventDropCommand();
     this.initData();
   }
@@ -316,7 +319,7 @@ export class AddEditTemplateComponent implements OnInit {
         contentNode.style.fontFamily = '"Times New Roman",Times,serif';
         contentNode.setAttribute('placeholder', `Nhập ${item.name.toLowerCase()}`);
         contentNode.setAttribute('rows', '1');
-        contentNode.setAttribute('id', 'input-result');
+        contentNode.setAttribute('id', item.id);
         appendNode.appendChild(contentNode);
       }
 

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { TemplateReportService } from 'src/app/core/service/template-report.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
@@ -20,18 +22,40 @@ export class TemplateReportComponent implements OnInit {
   dataDisplay = [];
   lastEditArray = [];
 
+  userPermissionCode = [];
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
     private dialog: MatDialog,
     private templateReportService: TemplateReportService,
     private router: Router,
-  ) { }
+    private credentialsService: CredentialsService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý mẫu kết quả dịch vụ');
     this.sideMenuService.changeItem(4.3);
     this.initData();
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
 
   openNotifyDialog(title: string, content: string) {

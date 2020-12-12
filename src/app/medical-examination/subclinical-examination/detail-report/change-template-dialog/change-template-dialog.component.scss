@@ -1,0 +1,18 @@
+.btn-close-dialog {
+    margin-left: auto;
+}
+
+.full-width {
+    width: 100%;
+}
+
+::ng-deep .change-template-dialog-container {S
+    .mat-form-field {
+        padding: 0;
+    }
+
+    .mat-form-field-outline {
+        border: none;
+        border-radius: 0;
+    }
+}

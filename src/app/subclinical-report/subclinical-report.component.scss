@@ -1,0 +1,19 @@
+::ng-deep {
+    html,
+    body {
+        background-color: #d4dfe6;
+    }
+}
+
+.editor {
+    width: 770px;
+    min-height: 1150px;
+    margin: 10px auto;
+    background-color: #fff;
+    overflow: hidden;
+    box-shadow: 5px 5px 5px #7f7979;
+    outline: none;
+    margin-bottom: 50px;
+    padding: 30px 45px;
+    font-family: "Times New Roman", Times, serif;
+}

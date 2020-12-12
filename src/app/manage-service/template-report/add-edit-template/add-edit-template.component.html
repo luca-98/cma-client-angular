@@ -2,7 +2,7 @@
 <div class="setting-report-container">
     <div class="grid">
         <mat-card class="command">
-            <button mat-raised-button routerLink="/manage-service/template-report">
+            <button class="btn-green" mat-raised-button routerLink="/manage-service/template-report">
                 <i class="fas fa-undo-alt"></i> Quay lại
             </button>
             <div class="mt-1">
@@ -18,11 +18,11 @@
                         <i class="icon-save"></i>
                     </button>
                 </div>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-add-edit">
                     <mat-label>Nhập tên mẫu kết quả</mat-label>
                     <input matInput placeholder="Tên mẫu kết quả" [(ngModel)]="reportName" required>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-add-edit">
                     <mat-label>Nhóm mẫu kết quả</mat-label>
                     <mat-select [(value)]="parentGroupId">
                         <mat-option value="0">--</mat-option>

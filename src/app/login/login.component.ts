@@ -3,12 +3,12 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AuthenticationService } from '../core/service/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToastComponent } from '../shared/toast/toast.component';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { LoaderService } from '../core/service/loader.service';
+import { CredentialsService } from '../core/service/credentials.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +29,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private titleService: Title,
     private loaderService: LoaderService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private credentialsService: CredentialsService
   ) {
     this.loaderService.loaderSubject.subscribe((value: boolean) => {
       this.isLoading = value;
@@ -44,12 +45,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: ['', [Validators.required]],
       rememberMe: [true]
     });
+    if (this.credentialsService.isAuthenticated) {
+      this.router.navigate(['/']);
+    }
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
-
 
   login(): void {
     const loginContext: LoginContext = {
@@ -85,12 +90,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             }
           );
       }
-    }else{
+    } else {
       this.errorMessage = 'Tên đăng nhập hoặc mật khẩu không được để trống hoặc chứa kí tự đặc biệt!';
     }
-
-
-
   }
-
 }

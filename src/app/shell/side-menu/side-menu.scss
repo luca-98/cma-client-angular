@@ -1,4 +1,5 @@
 @import "../../../main-theme.scss";
+
 .side-menu-icon {
   font-size: 20px !important;
   margin-top: 2px;
@@ -16,6 +17,8 @@
     &:hover {
       color: $main-color;
     }
+
+
   }
 
   .item-active {
@@ -23,10 +26,16 @@
     background-color: $main-color;
 
     &:hover {
-      color: #fff!important;
-      background-color: $main-color!important;
+      color: #fff !important;
+      background-color: $main-color !important;
     }
   }
 
 
 }
+
+// a:disabled,
+// .mat-list-item-disabled {
+//   text-decoration-line: line-through !important;
+//   opacity: 0.8;
+// }

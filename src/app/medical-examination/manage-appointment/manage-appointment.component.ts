@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { AppointmentService } from 'src/app/core/service/appointment.service';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { AddAppoinmentComponent } from 'src/app/shared/dialogs/add-appoinment/add-appoinment.component';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
@@ -28,12 +31,13 @@ export class ManageAppointmentComponent implements OnInit {
   autoByPhone = [];
   timer;
   listAppointment = [];
+  today = moment(new Date());
   searchData = {
     patientCode: '',
     patientName: '',
     phone: '',
-    startDate: '',
-    endDate: '',
+    startDate: this.today,
+    endDate: this.today,
     status: ''
   };
   isLoading = false;
@@ -44,13 +48,27 @@ export class ManageAppointmentComponent implements OnInit {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
-    private appointmentService: AppointmentService
-  ) { }
+    private appointmentService: AppointmentService,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Hẹn khám');
     this.sideMenuService.changeItem(1.8);
-    this.getListAppointment();
+    this.searchAppointment();
   }
 
 
@@ -83,13 +101,14 @@ export class ManageAppointmentComponent implements OnInit {
       debt: patient.debt,
       patientName: patient.patientName,
       phone: patient.phone,
-      dateOfBirth: moment(new Date(patient.dateOfBirth)),
-      gender: patient.gender.toString(),
+      dateOfBirth: patient.dateOfBirth ? moment(new Date(patient.dateOfBirth)) : '',
+      gender: patient.gender === null ? '' : patient.gender.toString(),
       address: patient.address,
       appointmentDate: moment(new Date(item.dayOfExamination)),
       appointmentTime: item.time,
       staffId: item.staff.id
     };
+
     return this.dialog.open(EditAppointmentComponent, {
       disableClose: true,
       autoFocus: false,
@@ -245,9 +264,15 @@ export class ManageAppointmentComponent implements OnInit {
 
   searchAppointment() {
     this.isLoading = true;
-    const dataAppontment = { ...this.searchData };
-    dataAppontment.startDate = this.convertDateToNormal(dataAppontment.startDate);
-    dataAppontment.endDate = this.convertDateToNormal(dataAppontment.endDate);
+    const dataAppontment = {
+      patientCode: this.searchData.patientCode,
+      patientName: this.searchData.patientName,
+      phone: this.searchData.phone,
+      startDate: this.convertDateToNormal(this.searchData.startDate),
+      endDate: this.convertDateToNormal(this.searchData.endDate),
+      status: this.searchData.status
+    };
+
     if (dataAppontment.status === '-1') {
       dataAppontment.status = '';
     }
@@ -268,6 +293,7 @@ export class ManageAppointmentComponent implements OnInit {
   }
 
   buildListAppointment(list) {
+    // tslint:disable-next-line: no-shadowed-variable
     const groups = list.reduce((groups, item) => {
       const date = item.dayOfExamination;
       if (!groups[date]) {
@@ -294,6 +320,18 @@ export class ManageAppointmentComponent implements OnInit {
     this.listAppointment.sort((a, b) => b.date - a.date);
   }
 
+  openConfirmDialog(title: string, content: string) {
+    return this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title,
+        content
+      },
+    });
+  }
+
   onPageEvent(event) {
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
@@ -301,7 +339,24 @@ export class ManageAppointmentComponent implements OnInit {
   }
 
 
+  changeStatus(id, status) {
+    const dialogRef = this.openConfirmDialog('Thông báo', 'Bạn có muốn hủy khám cho bệnh nhân này không?');
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.appointmentService.changeStatus(id, status)
+          .subscribe(
+            (data: any) => {
+              this.openNotifyDialog('Thông báo', 'Hủy khám thành công.');
+              this.searchAppointment();
 
+            },
+            () => {
+              this.openNotifyDialog('Lỗi', 'Có lỗi xảy ra trong quá trình hủy khám.');
+            }
+          );
+      }
+    });
+  }
 
 
   reset() {
@@ -309,9 +364,18 @@ export class ManageAppointmentComponent implements OnInit {
       patientCode: '',
       patientName: '',
       phone: '',
-      startDate: '',
-      endDate: '',
+      startDate: '' as any,
+      endDate: '' as any,
       status: ''
     };
+    this.searchAppointment();
+  }
+
+  isToday(inp: any) {
+    const today = new Date();
+    const someDate = new Date(+inp);
+    return someDate.getDate() == today.getDate() &&
+      someDate.getMonth() == today.getMonth() &&
+      someDate.getFullYear() == today.getFullYear();
   }
 }

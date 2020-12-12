@@ -5,7 +5,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="header m-0">Thông tin bệnh nhân</h2>
                 </div>
-                <form *ngIf="patientForm" [formGroup]="patientForm">
+                <form *ngIf="patientForm" [formGroup]="patientForm" (keydown.enter)="$event.preventDefault()">
                     <div class="row mb-1">
                         <div class="col-6 d-flex">
                             <label class="label min-width-align">Mã bệnh nhân</label>
@@ -119,7 +119,7 @@
                     <li class="header-col width-auto text-left">
                         Tên dịch vụ
                     </li>
-                    <li class="header-col width-20 text-left">
+                    <li class="header-col width-20 text-right">
                         Đơn giá
                     </li>
                 </ul>
@@ -139,8 +139,8 @@
                             <li class="content-col width-auto text-left ">
                                 {{i.serviceName}}
                             </li>
-                            <li class="content-col width-20 text-left">
-                                {{i.price}}
+                            <li class="content-col width-20 text-right">
+                                {{oneDot(i.price)}}đ
                             </li>
                         </ul>
                     </ng-container>
@@ -157,7 +157,7 @@
                 <li class="header-col width-auto text-left">
                     Tên dịch vụ
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-10 text-right">
                     Đơn giá
                 </li>
                 <li class="header-col width-15 text-left">
@@ -188,10 +188,10 @@
                         <li class="content-col width-auto text-left ">
                             {{service.serviceName}}
                         </li>
-                        <li class="content-col width-10 text-left">
-                            {{service.price}}
+                        <li class="content-col width-10 text-right">
+                            {{oneDot(service.price)}}đ
                         </li>
-                        <li class="content-col width-15 text-left ">
+                        <li class="content-col width-15 text-left">
                             <mat-form-field appearance="outline" class="input-fixed">
                                 <mat-select [(value)]="service.doctorSelected" [disabled]="service.status != 1"
                                     (selectionChange)="onChangeDoctor(service)">
@@ -222,8 +222,10 @@
                         </li>
                         <li class="content-col width-10 text-right ">
                             <div style="display: flex; justify-content: flex-end;">
-                                <button class="btn btn-outline-secondary btn-sm" title="xxxx"><i
-                                        class="fas fa-file"></i></button>
+                                <button class="btn btn-outline-secondary btn-sm" title="Xem phiếu"
+                                    [disabled]="service.status != 3" (click)="openReport(service.serviceReportId)">
+                                    <i class="fas fa-file"></i>
+                                </button>
                                 <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa dịch vụ"
                                     [disabled]="service.status != 1 && service.status != 2"
                                     (click)="removeService(service)">

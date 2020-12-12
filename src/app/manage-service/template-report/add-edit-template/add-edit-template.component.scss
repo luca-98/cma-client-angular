@@ -6,12 +6,21 @@
     font-display: block;
 }
 
-::ng-deep .input-fixed {
+::ng-deep .input-fixed-add-edit {
     width: 100%;
     padding-top: 5px;
 
     .mat-form-field-wrapper {
         padding-bottom: 0;
+    }
+
+    .mat-form-field-infix {
+        padding: 7px;
+    }
+
+    .mat-form-field-outline {
+        border: none;
+        border-radius: 0;
     }
 }
 

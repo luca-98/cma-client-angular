@@ -1,16 +1,17 @@
-<h2 mat-dialog-title>Đăng kí hẹn khám</h2>
+<h2 mat-dialog-title>Đăng ký hẹn khám</h2>
 <mat-dialog-content>
     <div class="dialog-content d-flex align-items-center">
-        <form *ngIf="patientForm" [formGroup]="patientForm " style="width: 100%;">
+        <form *ngIf="patientForm" [formGroup]="patientForm " style="width: 100%;"
+            (keydown.enter)="$event.preventDefault()">
             <div class="row">
                 <div class="col-12 d-flex">
                     <label class="label min-width-align">Mã bệnh nhân</label>
-                    <mat-form-field appearance="outline" class="input-fixed" (dblclick)="dbClick()">
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment" (dblclick)="dbClick()">
                         <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
                             (keyup)="generateAutoPatientByPatientCode($event)" placeholder="BNxxxxx">
-                        <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
-                            [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)" [maxHeight]="150"
-                            [isMini]="true">
+                        <app-patient-autocomplete *ngIf="autoByPatientCode.length !== 0" [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                            [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)" [maxHeight]="200"
+                            [maxWidth]="530" [isMini]="true">
                         </app-patient-autocomplete>
                     </mat-form-field>
                 </div>
@@ -18,13 +19,13 @@
             </div>
             <div class="row mt-1">
                 <div class="col-12 d-flex">
-                    <label class="label min-width-align">Tên bệnh nhân</label>
-                    <mat-form-field appearance="outline" class="input-fixed" (dblclick)="resetInput()">
-                        <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
-                            autocomplete="off" #inputName>
-                        <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
-                            [keySearch]="'patientName'" (selectedRow)="autoSelected($event)" [maxHeight]="150"
-                            [isMini]="true">
+                    <label class="label min-width-align">Tên BN <span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment" (dblclick)="resetInput()">
+                        <input required matInput formControlName="patientName"
+                            (keyup)="generateAutoPatientByName($event)" autocomplete="off" #inputName>
+                        <app-patient-autocomplete *ngIf="autoByName.length !== 0" [autocomplete]="inputName"
+                            [patients]="autoByName" [keySearch]="'patientName'" (selectedRow)="autoSelected($event)"
+                            [maxHeight]="200" [maxWidth]="530" [isMini]="true">
                         </app-patient-autocomplete>
                     </mat-form-field>
                 </div>
@@ -32,21 +33,21 @@
             </div>
             <div class="row mt-1">
                 <div class="col-12 d-flex">
-                    <label class="label min-width-align">Số điện thoại</label>
-                    <mat-form-field appearance="outline" class="input-fixed" (dblclick)="resetInput()">
-                        <input matInput formControlName="phone" autocomplete="off" #inputPhone
-                            (keyup)="generateAutoPatientByPhone($event)" maxlength="10">
-                        <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone"
+                    <label class="label min-width-align">Số điện thoại <span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment" (dblclick)="resetInput()">
+                        <input required matInput formControlName="phone" autocomplete="off" #inputPhone
+                            (keyup)="generateAutoPatientByPhone($event)" maxlength="10" pattern="[0-9+]+">
+                        <app-patient-autocomplete *ngIf="autoByPhone.length !== 0"  [autocomplete]="inputPhone" [patients]="autoByPhone"
                             [keySearch]="'phone'" (selectedRow)="autoSelected($event)" [maxHeight]="150"
-                            [isMini]="true" >
+                            [maxWidth]="530" [isMini]="true">
                         </app-patient-autocomplete>
                     </mat-form-field>
                 </div>
             </div>
             <div class="row mt-1">
                 <div class="col-12 d-flex">
-                    <label class="label min-width-align">địa chỉ</label>
-                    <mat-form-field appearance="outline" class="input-fixed">
+                    <label class="label min-width-align">Địa chỉ</label>
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment">
                         <input matInput formControlName="address" autocomplete="off" maxlength="10">
                     </mat-form-field>
                 </div>
@@ -54,7 +55,7 @@
             <div class="row mt-1">
                 <div class="col-6  d-flex">
                     <label class="label min-width-align">Ngày sinh</label>
-                    <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment">
                         <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
                             (dateChange)="onDobChange()">
                         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
@@ -63,7 +64,7 @@
                 </div>
                 <div class="col-6 d-flex">
                     <label class="label min-width-align">Giới tính</label>
-                    <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment">
                         <mat-select formControlName="gender">
                             <mat-option value="0">Nam</mat-option>
                             <mat-option value="1">Nữ</mat-option>
@@ -73,16 +74,17 @@
             </div>
             <div class="row mt-1">
                 <div class="col-6 d-flex">
-                    <label class="label min-width-align">Ngày hẹn</label>
-                    <mat-form-field appearance="outline" class="input-fixed">
-                        <input matInput [matDatepicker]="picker3" formControlName="appointmentDate" required>
+                    <label class="label min-width-align">Ngày hẹn <span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment">
+                        <input [min]="today" (dateChange)="onDateChange()" matInput [matDatepicker]="picker3"
+                            formControlName="appointmentDate" required>
                         <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
                         <mat-datepicker #picker3 color="primary"></mat-datepicker>
                     </mat-form-field>
                 </div>
                 <div class="col-6 d-flex">
-                    <label class="label min-width-align">Giờ hẹn</label>
-                    <div class="input-fixed time-picker">
+                    <label class="label min-width-align">Giờ hẹn <span class="required">*</span></label>
+                    <div class="input-fixed-add-appoinment time-picker">
                         <ngx-timepicker-field formControlName="appointmentTime"
                             [defaultTime]="date.getHours()+':'+date.getMinutes()" [format]="24" [controlOnly]="true"
                             required>
@@ -94,7 +96,7 @@
             <div class="row mt-1">
                 <div class="col-12 d-flex">
                     <label class="label min-width-align">Bác sĩ</label>
-                    <mat-form-field appearance="outline" class="input-fixed">
+                    <mat-form-field appearance="outline" class="input-fixed-add-appoinment">
                         <mat-select formControlName="staffId">
                             <mat-option *ngFor="let doctor of doctorList" [value]="doctor.id"
                                 (click)="selectDoctor(doctor)">

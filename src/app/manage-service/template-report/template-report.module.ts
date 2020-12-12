@@ -35,13 +35,7 @@ import { EditorModule } from 'src/app/editor/editor.module';
     MatInputModule,
     MatSlideToggleModule,
     MatCardModule,
-    MatFormFieldModule,
     EditorModule,
-    MatTooltipModule,
-    MatInputModule,
-    MatButtonModule,
-    MatMenuModule,
-    FormsModule,
     MatSelectModule,
   ],
   entryComponents: [

@@ -25,4 +25,8 @@ export class RoomService {
         return this.http.get(url);
     }
 
+    getCurrentRoomByStaff(id: any) {
+        const url = this.roomUrl + 'get-current-room-by-staff/' + id;
+        return this.http.get(url);
+    }
 }

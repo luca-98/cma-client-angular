@@ -1,19 +1,28 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 5.1" mat-list-item routerLink="/manage-finance/collect-service-fee">
+    <a [class.item-active]="currentItem === 5.1" mat-list-item routerLink="/manage-finance/collect-service-fee"
+        *ngIf="userPermissionCode.includes('E10')">
         Thu tiền dịch vụ
     </a>
     <mat-divider></mat-divider>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 5.2" mat-list-item (click)="openCollectCashDialog()"
+        *ngIf="userPermissionCode.includes('E20')">
         Phiếu thu tiền mặt
     </a>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 5.3" mat-list-item (click)="openPaymentCashDialog()"
+        *ngIf="userPermissionCode.includes('E30')">
         Phiếu chi tiền mặt
     </a>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 5.4" mat-list-item routerLink="/manage-finance/collect-debt"
+        *ngIf="userPermissionCode.includes('E40')">
         Phiếu thu công nợ
     </a>
+    <a [class.item-active]="currentItem === 5.6" mat-list-item routerLink="/manage-finance/pay-debt"
+        *ngIf="userPermissionCode.includes('E50')">
+        Phiếu trả công nợ
+    </a>
     <mat-divider></mat-divider>
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 5.5" mat-list-item routerLink="/manage-finance/manage-revenue-expenditure"
+        *ngIf="userPermissionCode.includes('E60')">
         Quản lý thu chi
     </a>
 </mat-nav-list>

@@ -8,13 +8,15 @@ import { environment } from 'src/environments/environment';
 export class ManageClinicalExamService {
 
   private medicalExamUrl = environment.apiUrl + '/medical-examination/';
+  private servicerReportUrl = environment.apiUrl + '/service-report/';
 
   constructor(
     private http: HttpClient
   ) { }
 
   getPatientReceive(fromDate: any, toDate: any, roomId: any, doctorId: any, status: any,
-                    clinicalExamCode: any, patientCode: any, phone: any, pageIndex: any, pageSize: any) {
+    // tslint:disable-next-line: align
+    clinicalExamCode: any, patientCode: any, phone: any, pageIndex: any, pageSize: any) {
     const url = this.medicalExamUrl + 'get-list-medical-exam';
     const params = new HttpParams()
       .set('fromDate', fromDate)
@@ -39,6 +41,12 @@ export class ManageClinicalExamService {
   getNextOrdinNumberStaff(staffId: any) {
     const url = this.medicalExamUrl + 'get-next-ordinal-staff';
     const params = new HttpParams().set('staffId', staffId);
+    return this.http.get(url, { params });
+  }
+
+  getServiceReportByMedicalId(id: any) {
+    const url = this.servicerReportUrl + 'get-service-report-by-medicalExamId';
+    const params = new HttpParams().set('medicalExamId', id);
     return this.http.get(url, { params });
   }
 }

@@ -5,7 +5,7 @@ import { ListPatientComponent } from './list-patient.component';
 
 const routes: Routes = [
   { path: '', component: ListPatientComponent },
-  { path: 'detail-infor', component: DetailInforComponent },
+  { path: 'detail-infor', component: DetailInforComponent, data: { permissionCode: ['A13'] } },
 ];
 
 @NgModule({

@@ -76,7 +76,7 @@ export class AddGroupServiceComponent implements OnInit {
             this.openNotifyDialog('Thông báo', 'Thêm nhóm dịch vụ mới thành công.');
             this.dialogRef.close();
           } else {
-            this.openNotifyDialog('Lỗi', 'Thêm nhóm dịch vụ mới thất bại.');
+            this.openNotifyDialog('Lỗi', 'Tên nhóm dịch vụ đã có trong hệ thống. Vui lòng thử lại');
           }
         }, err => {
           this.openNotifyDialog('Lỗi', 'Thêm nhóm dịch vụ mới thất bại.');

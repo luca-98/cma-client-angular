@@ -22,6 +22,7 @@ export class EditAppointmentComponent implements OnInit {
   date = new Date();
 
   today = moment(new Date());
+  isChange = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -69,6 +70,7 @@ export class EditAppointmentComponent implements OnInit {
   }
   selectDoctor(doctor) {
     this.selectedDoctor = doctor;
+    this.onChange();
   }
 
   ngOnInit(): void {
@@ -109,53 +111,82 @@ export class EditAppointmentComponent implements OnInit {
         }
       );
   }
+  onDateChange() {
+    const dob = this.patientForm.get('appointmentDate').value;
+    if (dob === null) {
+      this.patientForm.patchValue({
+        appointmentDate: this.today
+      });
+      return false;
+    }
+    const regexDate = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    if (!regexDate.test(dob) && !dob._isAMomentObject) {
+      this.patientForm.patchValue({
+        appointmentDate: this.today
+      });
+      return false;
+    }
+    return true;
+
+  }
 
   save() {
-    if (this.patientForm.get('status').value === '1') {
-      const dataPost = {
-        appointmentDate: convertDateToNormal(this.patientForm.get('appointmentDate').value),
-        appointmentTime: this.patientForm.get('appointmentTime').value,
-        staffId: this.patientForm.get('staffId').value ? this.patientForm.get('staffId').value : '',
-        appointmentId: this.patientForm.get('appointmentId').value,
-      };
-      this.appointmentService.editAppointmentCreated(dataPost).subscribe(
-        (data: any) => {
-          if (!data.message.timeExist) {
-            this.openNotifyDialog('Thông báo', 'Thêm thông tin hẹn khám thành công');
-            this.dialogRef.close();
-          } else {
-            this.openNotifyDialog('Lỗi', 'Bạn không thể đặt lịch hẹn khám cho bác sĩ "' + this.selectedDoctor.fullName + '" vì đang có lịch hẹn khám khác vào khoảng thời gian này ngày ' + dataPost.appointmentDate + '. Hệ thống sẽ tự động tăng thời gian thêm 15 phút, vui lòng kiểm tra và lưu thông tin lại.');
-            const time = dataPost.appointmentTime.split(':');
-            let hour = parseInt(time[0], 10);
-            let minute = parseInt(time[1], 10);
-            minute += 15;
-            if (minute >= 60) {
-              hour++;
-              minute -= 60;
-            }
-            if (hour > 23) {
-              hour = 0;
+    if (this.isChange) {
+      if (this.patientForm.get('status').value === '1') {
+        const dataPost = {
+          appointmentDate: convertDateToNormal(this.patientForm.get('appointmentDate').value),
+          appointmentTime: this.patientForm.get('appointmentTime').value,
+          staffId: this.patientForm.get('staffId').value ? this.patientForm.get('staffId').value : '',
+          appointmentId: this.patientForm.get('appointmentId').value,
+        };
+        if (!this.onDateChange()) {
+          this.openNotifyDialog('Lỗi', 'Ngày hẹn không đúng định dạng');
+          return;
+        }
+        this.appointmentService.editAppointmentCreated(dataPost).subscribe(
+          (data: any) => {
+            if (!data.message.timeExist) {
+              this.openNotifyDialog('Thông báo', 'Sửa thông tin hẹn khám thành công');
+              this.dialogRef.close();
+            } else {
+              this.openNotifyDialog('Lỗi', 'Bạn không thể đặt lịch hẹn khám cho bác sĩ "' + this.selectedDoctor.fullName + '" vì đang có lịch hẹn khám khác vào khoảng thời gian này ngày ' + dataPost.appointmentDate + '. Hệ thống sẽ tự động tăng thời gian thêm 15 phút, vui lòng kiểm tra và lưu thông tin lại.');
+              const time = dataPost.appointmentTime.split(':');
+              let hour = parseInt(time[0], 10);
+              let minute = parseInt(time[1], 10);
+              minute += 15;
+              if (minute >= 60) {
+                hour++;
+                minute -= 60;
+              }
+              if (hour > 23) {
+                hour = 0;
+                this.patientForm.patchValue({
+                  appointmentDate: this.patientForm.get('appointmentDate').value.add(1, 'day')
+                });
+              }
               this.patientForm.patchValue({
-                appointmentDate: this.patientForm.get('appointmentDate').value.add(1, 'day')
+                appointmentTime: hour + ':' + minute
               });
             }
-            this.patientForm.patchValue({
-              appointmentTime: hour + ':' + minute
-            });
+
+          },
+          (error) => {
+            this.openNotifyDialog('Lỗi', 'Có lỗi xảy ra trong quá trình thay đổi thông tin hẹn khám.');
+            this.dialogRef.close();
           }
-
-        },
-        (error) => {
-          this.openNotifyDialog('Lỗi', 'Có lỗi xảy ra trong quá trình thay đổi thông tin hẹn khám.');
-          this.dialogRef.close();
-        }
-      );
-    }
-    else {
-      this.changeStatus(this.patientForm.get('appointmentId').value, 0);
-      this.dialogRef.close();
+        );
+      }
+      else {
+        this.changeStatus(this.patientForm.get('appointmentId').value, 0);
+        this.dialogRef.close();
+      }
     }
 
+
+  }
+
+  onChange() {
+    this.isChange = true;
   }
 
 }

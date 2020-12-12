@@ -10,7 +10,8 @@ export class WebsocketService {
   onWsMessageReceivePatient: Subject<string> = new Subject();
   onWsMessageRoomService: Subject<string> = new Subject();
   onWsMessageOrdinalNumber: Subject<string> = new Subject();
-  topicSubscription: any;
+  onWsMessagePermission: Subject<string> = new Subject();
+  lstTopicSubscription = [];
 
   constructor(
     private rxStompService: RxStompService
@@ -27,32 +28,41 @@ export class WebsocketService {
 
     // receive patient
     const queueReceivePatient = '/topic/receive-patient';
-    this.topicSubscription = this.rxStompService.watch(queueReceivePatient).subscribe((message: any) => {
+    this.lstTopicSubscription.push(this.rxStompService.watch(queueReceivePatient).subscribe((message: any) => {
       const obj = JSON.parse(message.body);
       console.log('On WS message: ', obj);
       this.onWsMessageReceivePatient.next(obj);
-    });
+    }));
 
     // room service
     const queueRoomService = '/topic/room-service';
-    this.topicSubscription = this.rxStompService.watch(queueRoomService).subscribe((message: any) => {
+    this.lstTopicSubscription.push(this.rxStompService.watch(queueRoomService).subscribe((message: any) => {
       const obj = JSON.parse(message.body);
       console.log('On WS message: ', obj);
       this.onWsMessageRoomService.next(obj);
-    });
+    }));
 
     // ordinal number
     const queueOrdinalNumber = '/topic/ordinal-number';
-    this.topicSubscription = this.rxStompService.watch(queueOrdinalNumber).subscribe((message: any) => {
+    this.lstTopicSubscription.push(this.rxStompService.watch(queueOrdinalNumber).subscribe((message: any) => {
       const obj = JSON.parse(message.body);
       console.log('On WS message: ', obj);
       this.onWsMessageOrdinalNumber.next(obj);
-    });
+    }));
+
+    // update permission
+    const queuePermission = '/topic/permission';
+    this.lstTopicSubscription.push(this.rxStompService.watch(queuePermission).subscribe((message: any) => {
+      const obj = JSON.parse(message.body);
+      console.log('On WS message: ', obj);
+      this.onWsMessagePermission.next(obj);
+    }));
   }
 
   unsubcribe() {
-    if (this.topicSubscription) {
-      this.topicSubscription.unsubscribe();
+    for (const e of this.lstTopicSubscription) {
+      e.unsubscribe();
     }
+    this.lstTopicSubscription = [];
   }
 }

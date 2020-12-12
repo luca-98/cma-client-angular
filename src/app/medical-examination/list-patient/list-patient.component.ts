@@ -1,16 +1,18 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { PatientService } from 'src/app/core/service/patient.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { EditPatientDialogComponent } from 'src/app/shared/dialogs/edit-patient-dialog/edit-patient-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 import { buildHighlightString } from 'src/app/shared/share-func';
 
 @Component({
@@ -39,6 +41,7 @@ export class ListPatientComponent implements OnInit {
   };
   timer;
   progress = 0;
+  userPermissionCode = [];
 
   constructor(
     private titleService: Title,
@@ -46,13 +49,33 @@ export class ListPatientComponent implements OnInit {
     private patientService: PatientService,
     private dialog: MatDialog,
     private commonService: CommonService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private credentialsService: CredentialsService,
+    private menuService: MenuService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private route: ActivatedRoute,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Danh sách bệnh nhân');
     this.sideMenuService.changeItem(1.1);
     this.getListPatient();
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
 
   reset() {
@@ -64,6 +87,11 @@ export class ListPatientComponent implements OnInit {
       phone: '',
       yearOfBirth: ''
     };
+    this.searchPatient();
+  }
+
+  oneDot(item) {
+    return oneDot(item);
   }
 
   openNotifyDialog(title: string, content: string) {
@@ -94,11 +122,11 @@ export class ListPatientComponent implements OnInit {
     const patientForm = {
       id: patient.id,
       patientCode: patient.patientCode,
-      debt: patient.debt,
+      debt: oneDot(patient.debt),
       patientName: patient.patientName,
       phone: patient.phone,
-      dateOfBirth: moment(new Date(patient.dateOfBirth)),
-      gender: patient.gender.toString(),
+      dateOfBirth: patient.dateOfBirth ? moment(new Date(patient.dateOfBirth)) : '',
+      gender: patient.gender ? patient.gender.toString() : '',
       address: patient.address
     };
     return this.dialog.open(EditPatientDialogComponent, {
@@ -361,10 +389,6 @@ export class ListPatientComponent implements OnInit {
         this.openNotifyDialog('Lỗi', 'Đã xảy ra lỗi trong quá trình tải file template, vui lòng thử lại.');
       }
     );
-  }
-
-  moveToDetail(patientId: any) {
-    this.router.navigate(['/medical-examination/list-patient/detail-infor'], { queryParams: { patientId } });
   }
 
   downloadFile(data: any, fileName: string) {

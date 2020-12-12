@@ -17,10 +17,12 @@ import { DATE_PICKER_FORMATS } from 'src/app/core/date-picker-formats';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { DialogServiceReportStatusComponent } from './dialog-service-report-status/dialog-service-report-status.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
-  declarations: [ManageClinicalExaminationComponent],
+  declarations: [ManageClinicalExaminationComponent, DialogServiceReportStatusComponent],
   imports: [
     CommonModule,
     ManageClinicalExaminationRoutingModule,
@@ -36,6 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     FormsModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
+    MatDialogModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },

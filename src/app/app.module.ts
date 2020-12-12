@@ -14,10 +14,12 @@ import { getVietnamesePaginatorIntl } from './core/vietnamese-paginator.intl';
 import { DatePipe } from '@angular/common';
 import { InjectableRxStompConfig, RxStompService, rxStompServiceFactory } from '@stomp/ng2-stompjs';
 import { stompConfig } from './core/stomp.config';
+import { MedicalExamReportComponent } from './medical-exam-report/medical-exam-report.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    MedicalExamReportComponent,
   ],
   imports: [
     BrowserModule,

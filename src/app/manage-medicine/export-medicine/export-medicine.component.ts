@@ -1,16 +1,24 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
 import { MedicineSaleService } from 'src/app/core/service/medicine-sale.service';
 import { MedicineService } from 'src/app/core/service/medicine.service';
+import { PatientService } from 'src/app/core/service/patient.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { SupplierService } from 'src/app/core/service/supplier.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { getText } from 'number-to-text-vietnamese';
+import { InvoiceService } from 'src/app/core/service/invoice.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
+
+declare var $: any;
 
 @Component({
   selector: 'app-export-medicine',
@@ -30,7 +38,8 @@ export class ExportMedicineComponent implements OnInit {
   autoByMedicineName = [];
   isLoading = false;
   prescriptionId;
-  medicineSaleId = '';
+  medicineSaleId;
+  isDisabled = true;
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
@@ -40,8 +49,25 @@ export class ExportMedicineComponent implements OnInit {
     private medicineSaleService: MedicineSaleService,
     private medicineService: MedicineService,
     private activatedRoute: ActivatedRoute,
-
-  ) { }
+    private datePipe: DatePipe,
+    private patientService: PatientService,
+    private invoiceService: InvoiceService,
+    private router: Router,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Xuất bán thuốc');
@@ -61,8 +87,21 @@ export class ExportMedicineComponent implements OnInit {
       this.medicineSaleId = params.medicineSaleId;
     });
     if (this.medicineSaleId) {
+      this.isDisabled = true;
       this.getAllByMedicineSaleId();
     }
+  }
+
+  oneDot(item) {
+    return oneDot(item);
+  }
+
+  navigateConlectServiceFree() {
+    this.router.navigate(['/manage-finance/collect-service-fee'], {
+      queryParams:
+        { patientId: this.patientForm.get('id').value }, replaceUrl: true
+    });
+
   }
 
 
@@ -127,7 +166,22 @@ export class ExportMedicineComponent implements OnInit {
   resetInput() {
     this.autoByName = [];
     this.autoByPatientCode = [];
-    this.patientForm.reset();
+    this.listMedicine1 = [];
+    this.listMedicine2 = [];
+    this.listDonThuoc = [];
+    this.prescriptionId = [];
+    this.medicineSaleId = '';
+    this.prescriptionId = '';
+    this.patientForm.patchValue(
+      {
+        id: '',
+        patientName: '',
+        patientCode: '',
+        staffName: '',
+        total: '',
+        totalText: ''
+      }
+    );
   }
 
   autoSelected(event: any) {
@@ -170,7 +224,6 @@ export class ExportMedicineComponent implements OnInit {
     for (const iterator of this.listDonThuoc) {
       iterator.checked = false;
     }
-
     this.medicineSaleService.getPrescriptionById(id).subscribe(
       (data: any) => {
         if (data.message.length !== 0) {
@@ -203,9 +256,24 @@ export class ExportMedicineComponent implements OnInit {
     );
   }
 
-  selectMedicineName(item, $event) {
+  selectMedicineName(item, event) {
+
     if (typeof (this.medicineSaleId) === 'undefined' || this.medicineSaleId === '') {
-      this.getPrescriptionById(item.id);
+      if (!item.checked) {
+        this.getPrescriptionById(item.id);
+      } else {
+        this.listMedicine1 = [];
+        this.listMedicine2 = [];
+        if (!event) {
+          item.checked = false;
+        }
+      }
+    } else {
+      if (event) {
+        item.checked = false;
+      } else {
+        item.checked = true;
+      }
     }
   }
 
@@ -219,7 +287,7 @@ export class ExportMedicineComponent implements OnInit {
         if (real > max) {
           item.realQuantity = max;
           this.openNotifyDialog('Cảnh báo',
-            'bạn chỉ có thể chọn tối đa ' + max + ' ' + unitName);
+            'Bạn chỉ có thể chọn tối đa ' + max + ' ' + unitName);
         }
         if (real < 0) {
           item.realQuantity = 0;
@@ -240,7 +308,7 @@ export class ExportMedicineComponent implements OnInit {
         if (real > max) {
           item.quantity = max;
           this.openNotifyDialog('Cảnh báo',
-            'bạn chỉ có thể chọn tối đa ' + max +
+            'Bạn chỉ có thể chọn tối đa ' + max +
             ' vì trong kho chỉ còn ' + max + ' ' + unitName);
         }
         if (real < 0) {
@@ -262,9 +330,11 @@ export class ExportMedicineComponent implements OnInit {
       price2 += iterator.total;
     }
     const totalPrice = price1 + price2;
+    let text = getText(totalPrice) + ' đồng.';
+    text = text[0].toUpperCase() + text.slice(1);
     this.patientForm.patchValue({
-      total: totalPrice,
-      totalText: totalPrice
+      total: oneDot(totalPrice),
+      totalText: text
     });
   }
 
@@ -341,6 +411,10 @@ export class ExportMedicineComponent implements OnInit {
         this.openNotifyDialog('Lỗi', 'Tất cả các đơn thuốc không theo đơn phải được chọn từ danh sách thuốc gợi ý.');
         return;
       }
+      if (iterator.quantity <= 0) {
+        this.openNotifyDialog('Lỗi', 'Tất cả các đơn thuốc không theo đơn phải có số lượng lớn hơn 0.');
+        return;
+      }
       lstMedicineSaleDetials.push(temp);
     }
 
@@ -350,7 +424,7 @@ export class ExportMedicineComponent implements OnInit {
       patientCode: this.patientForm.get('patientCode').value.trim(),
       prescriptionId: this.prescriptionId ? this.prescriptionId : null,
       medicineSaleId: this.medicineSaleId ? this.medicineSaleId : null,
-      totalAmout: this.patientForm.get('total').value,
+      totalAmout: parseInt(this.patientForm.get('total').value.replace(/,/gmi, ''), 10),
       lstMedicineSaleDetials
     };
     if (dataPost.patientId === '') {
@@ -369,10 +443,12 @@ export class ExportMedicineComponent implements OnInit {
       this.openNotifyDialog('Lỗi', 'Danh sách thuốc không theo đơn không được để trống.');
       return;
     }
+
     this.medicineSaleService.saveMedicineSale(dataPost).subscribe(
       (data: any) => {
         if (data.message) {
           this.openNotifyDialog('Thông báo', 'Lưu thông tin thành công.');
+          this.isDisabled = false;
         } else {
           this.openNotifyDialog('Lỗi', 'Lưu thông tin thất bại.');
         }
@@ -394,6 +470,15 @@ export class ExportMedicineComponent implements OnInit {
             patientCode: medicineSaleByMedicineSaleId.patientEntity.patientCode,
             staffName: medicineSaleByMedicineSaleId.staffEntity.fullName
           });
+          this.invoiceService.getInvoiceByPatientId(medicineSaleByMedicineSaleId.patientEntity.id)
+            .subscribe(
+              (data2: any) => {
+                if (data2.message.length === 0) {
+                  this.isDisabled = true;
+                } else {
+                  this.isDisabled = false;
+                }
+              });
           if (medicineSaleByMedicineSaleId.prescriptionEntity.id) {
             this.listDonThuoc.push(medicineSaleByMedicineSaleId.prescriptionEntity);
             for (const iterator of this.listDonThuoc) {
@@ -431,7 +516,9 @@ export class ExportMedicineComponent implements OnInit {
             }
             iterator2.total = iterator2.medicineByMedicineId.price * iterator2.realQuantity;
           }
-
+          if (this.listDonThuoc.length !== 0 && this.listMedicine1.length === 0) {
+            this.listDonThuoc[0].checked = false;
+          }
           this.caculatePrice();
         }
       }, err => {
@@ -442,6 +529,145 @@ export class ExportMedicineComponent implements OnInit {
 
   deleteMedicine(item) {
     this.listMedicine2.splice(item, 1);
+    this.caculatePrice();
+  }
+
+  print() {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'EXPORT_MEDICINE') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const printTemplateHtml = data2.message.templateHTML;
+                    // const medicalExaminationCode = this.medicalExamCode;
+
+                    this.patientService.getPatientInfoById(this.patientForm.get('id').value)
+                      .subscribe(
+                        (data3: any) => {
+                          const patientCode = data3.message.patientCode;
+                          const patientName = data3.message.patientName;
+                          const gender = data3.message.gender == 0 ? 'Nam' : 'Nữ';
+                          const phone = data3.message.phone;
+                          const dateOfBirth = this.datePipe.transform(data3.message.dateOfBirth, 'dd/MM/yyyy');
+                          const address = data3.message.address;
+
+                          const listTrNode = [];
+                          let count = 1;
+                          let totalAmount = 0;
+                          for (const ele of this.listMedicine1) {
+                            const tr = document.createElement('TR');
+
+                            const td1 = document.createElement('TD');
+                            td1.style.borderCollapse = 'collapse';
+                            td1.style.border = '1px dotted rgb(0, 0, 0)';
+                            td1.style.overflowWrap = 'break-word';
+                            td1.style.padding = '0px 6px';
+                            td1.innerHTML = '' + count++;
+                            tr.appendChild(td1);
+
+                            const td2 = document.createElement('TD');
+                            td2.style.borderCollapse = 'collapse';
+                            td2.style.border = '1px dotted rgb(0, 0, 0)';
+                            td2.style.overflowWrap = 'break-word';
+                            td2.style.padding = '0px 6px';
+                            td2.innerHTML = ele.medicineByMedicineId.medicineName;
+                            tr.appendChild(td2);
+
+                            const td3 = document.createElement('TD');
+                            td3.style.borderCollapse = 'collapse';
+                            td3.style.border = '1px dotted rgb(0, 0, 0)';
+                            td3.style.overflowWrap = 'break-word';
+                            td3.style.padding = '0px 6px';
+                            td3.innerHTML = ele.realQuantity;
+                            tr.appendChild(td3);
+
+                            const td4 = document.createElement('TD');
+                            td4.style.borderCollapse = 'collapse';
+                            td4.style.border = '1px dotted rgb(0, 0, 0)';
+                            td4.style.overflowWrap = 'break-word';
+                            td4.style.padding = '0px 6px';
+                            td4.innerHTML = ele.medicineByMedicineId.price;
+                            tr.appendChild(td4);
+
+                            const td5 = document.createElement('TD');
+                            td5.style.borderCollapse = 'collapse';
+                            td5.style.border = '1px dotted rgb(0, 0, 0)';
+                            td5.style.overflowWrap = 'break-word';
+                            td5.style.padding = '0px 6px';
+                            td5.innerHTML = ele.total;
+                            totalAmount += ele.total;
+                            tr.appendChild(td5);
+
+                            listTrNode.push(tr);
+                          }
+
+                          const today = new Date();
+                          const day = this.datePipe.transform(today, 'dd');
+                          const month = this.datePipe.transform(today, 'MM');
+                          const year = this.datePipe.transform(today, 'yyyy');
+                          const objPrint = {
+                            // medicalExaminationCode,
+                            patientCode,
+                            patientName,
+                            gender,
+                            phone,
+                            dateOfBirth,
+                            address,
+                            data: listTrNode,
+                            day,
+                            month,
+                            year,
+                            totalAmount
+                          };
+                          this.processDataPrint(objPrint, printTemplateHtml);
+                        },
+                        () => {
+                          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                        }
+                      );
+                  },
+                  () => {
+                    this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+        }
+      );
+  }
+
+  processDataPrint(objectPrint: any, htmlTemplate: string) {
+    const printDoc = document.implementation.createHTMLDocument('no-title');
+    const wrapper = printDoc.createElement('div');
+    wrapper.setAttribute('class', 'editor');
+    printDoc.body.appendChild(wrapper);
+    wrapper.innerHTML = htmlTemplate;
+
+    const keySet = Object.keys(objectPrint);
+    for (const key of keySet) {
+      if (key === 'data') {
+        const tbodyAppoint = printDoc.getElementById('tbody-export-medicine');
+        const data = printDoc.getElementById('data');
+        for (const tr of objectPrint.data) {
+          tbodyAppoint.insertBefore(tr, data);
+        }
+        data.remove();
+        continue;
+      }
+      const ele = printDoc.getElementById(key);
+      if (ele !== null) {
+        ele.innerHTML = objectPrint[key];
+      }
+    }
+
+    $(wrapper).printThis({ importCSS: false });
   }
 }
 

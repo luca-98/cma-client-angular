@@ -1,0 +1,53 @@
+<div class="detail-report-container">
+    <div class="grid">
+        <mat-card class="command">
+            <button class="btn-green" mat-raised-button routerLink="/medical-examination/subclinical-examination"
+                [queryParams]="{ medicalExamId: medicalExamId }" (click)="back()">
+                <i class="fas fa-undo-alt"></i> Quay lại
+            </button>
+            <div class="mt-1">
+                <h2 class="title">Chi tiết kết quả</h2>
+                <div class="grid-tool">
+                    <button type="button" class="btn btn-primary btn-add-report" matTooltip="In kết quả"
+                        (click)="print()">
+                        <i class="icon-print"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-add-report" matTooltip="Lưu kết quả"
+                        (click)="save()">
+                        <i class="icon-save"></i>
+                    </button>
+                </div>
+                <div class="template-name-container mt-2">
+                    <mat-form-field appearance="outline" class="input-fixed-detail-report">
+                        <mat-label>Mẫu kết quả</mat-label>
+                        <input matInput [(ngModel)]="currentService.templateName" disabled>
+                    </mat-form-field>
+                    <button mat-raised-button class="btn-change btn-green" (click)="changeTemplate()">
+                        Đổi
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div class="mt-1">
+                <div class="d-flex justify-content-between mb-2">
+                    <h2 class="title">Hình ảnh</h2>
+                    <button class="btn-green btn-custom-layout" mat-raised-button (click)="uploadImage()">
+                        <i class="fas fa-plus"></i> Ảnh mới
+                    </button>
+                </div>
+                <div *ngIf="listImage.length == 0" class="border" (click)="uploadImage()">
+                    <img src="../../../../assets/image/image.jpg" alt="Hình ảnh">
+                </div>
+                <div *ngFor="let image of listImage" class="border">
+                    <button class="close" title="Xóa ảnh" (click)="deleteImage(image)">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                    <img [src]="image.link" alt="Hình ảnh" (click)="openImage(image)">
+                </div>
+            </div>
+        </mat-card>
+        <div class="editor-container">
+            <app-editor></app-editor>
+        </div>
+    </div>
+</div>

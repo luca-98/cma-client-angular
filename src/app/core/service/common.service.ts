@@ -13,6 +13,8 @@ export class CommonService {
   private medicalExamUrl = environment.apiUrl + '/medical-examination/';
   private serviceUrl = environment.apiUrl + '/service/';
   private printTemplateUrl = environment.apiUrl + '/print-form/';
+  private serviceReportUrl = environment.apiUrl + '/service-report/';
+  private prescriptionUrl = environment.apiUrl + '/prescription/';
 
   constructor(
     private http: HttpClient
@@ -123,5 +125,49 @@ export class CommonService {
   savePrintTemplate(data: any) {
     const url = this.printTemplateUrl + data.id;
     return this.http.put(url, data);
+  }
+
+  getServiceById(serviceId: string): any {
+    const url = this.serviceUrl + 'get-service-by-id';
+    const params = new HttpParams().set('serviceId', serviceId);
+    return this.http.get(url, { params });
+  }
+
+  updateServiceReport(id: any, note: any, result: any, htmlReport: any) {
+    const url = this.serviceReportUrl + 'save-service-report';
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('note', note);
+    formData.append('result', result);
+    formData.append('htmlReport', htmlReport);
+    return this.http.put(url, formData);
+  }
+
+  getSubClinicaById(id: string) {
+    const url = this.serviceReportUrl + id;
+    return this.http.get(url);
+  }
+
+  getMedicalExamById(id: string) {
+    const url = this.medicalExamUrl + id;
+    return this.http.get(url);
+  }
+
+  getPrescriptionsyId(id: string) {
+    const url = this.prescriptionUrl + id;
+    return this.http.get(url);
+  }
+
+  updateServiceReportMakeDone(id: any, note: any, result: any, htmlReport: any, status: any) {
+    const url = this.serviceReportUrl + 'update-service-report-make-done';
+    const formData = new FormData();
+    if (id !== undefined) {
+      formData.append('id', id);
+    }
+    formData.append('note', note);
+    formData.append('result', result);
+    formData.append('htmlReport', htmlReport);
+    formData.append('status', status);
+    return this.http.post(url, formData);
   }
 }

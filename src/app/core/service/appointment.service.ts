@@ -88,4 +88,8 @@ export class AppointmentService {
         return this.http.put(url, formData);
     }
 
+    getReceiveByAppoint(id: any) {
+        const url = this.appointmentUrl + 'get-receive-by-appointmnet/' + id;
+        return this.http.get(url);
+    }
 }

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 
 @Component({
@@ -17,8 +19,22 @@ export class ManageTemplatePrintComponent implements OnInit {
     private sideMenuService: SideMenuService,
     private titleService: Title,
     private commonService: CommonService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý phiếu in');

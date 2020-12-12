@@ -2,7 +2,8 @@
     <div class="d-flex align-items-center justify-content-between">
         <h2 class="header m-0">Danh sách mẫu kết quả</h2>
         <div>
-            <button mat-raised-button class="btn-main-color" [matMenuTriggerFor]="menuAdd">
+            <button mat-raised-button class="btn-main-color" [matMenuTriggerFor]="menuAdd"
+                *ngIf="userPermissionCode.includes('D31')">
                 <i class="fas fa-plus"></i>
                 <span class="ml-1">
                     Thêm mới
@@ -19,7 +20,7 @@
             <tr>
                 <th>Tên mẫu kết quả</th>
                 <th class="last-updated">Lần sửa cuối cùng</th>
-                <th class="command">Chức năng</th>
+                <th class="command">Hành động</th>
             </tr>
         </thead>
         <tbody>
@@ -37,10 +38,12 @@
                 </td>
                 <td class="align-middle">{{ ele.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>
-                    <button class="btn btn-outline-secondary btn-sm ml-1" title="Sửa" (click)="editItem(ele.id)">
+                    <button class="btn btn-outline-secondary btn-sm ml-1" title="Sửa" (click)="editItem(ele.id)"
+                        *ngIf="userPermissionCode.includes('D32')">
                         <i title="Sửa" class="fas fa-pen"></i>
                     </button>
-                    <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa" (click)="deleteItem(ele.id)">
+                    <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa" (click)="deleteItem(ele.id)"
+                        *ngIf="userPermissionCode.includes('D33')">
                         <i title="Xóa" class="fas fa-trash"></i>
                     </button>
                 </td>

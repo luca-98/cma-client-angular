@@ -4,14 +4,15 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h2 class="header m-0">Thông tin bệnh nhân</h2>
             </div>
-            <form *ngIf="patientForm" [formGroup]="patientForm">
+            <form *ngIf="patientForm" [formGroup]="patientForm" (keydown.enter)="$event.preventDefault()">
                 <div class="row">
                     <div class="col-6 d-flex">
-                        <label class="label min-width-align">Mã bệnh nhân</label>
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <label class="label min-width-align">Mã BN <span class="required">*</span></label>
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
                                 (keyup)="generateAutoPatientByPatientCode($event)">
-                            <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
+                            <app-patient-autocomplete *ngIf="autoByPatientCode.length !== 0"
+                                [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
                                 [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
                             </app-patient-autocomplete>
                         </mat-form-field>
@@ -19,26 +20,27 @@
                 </div>
                 <div class="row mt-1">
                     <div class="col-6 d-flex">
-                        <label class="label min-width-align">Tên bệnh nhân</label>
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <label class="label min-width-align">Tên BN <span class="required">*</span></label>
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
                                 autocomplete="off" #inputName>
-                            <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
-                                [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                            <app-patient-autocomplete *ngIf="autoByName.length !== 0" [autocomplete]="inputName"
+                                [patients]="autoByName" [keySearch]="'patientName'"
+                                (selectedRow)="autoSelected($event)">
                             </app-patient-autocomplete>
                         </mat-form-field>
                     </div>
                     <div class="col-6 d-flex">
                         <label class="label min-width-align">Bác sĩ khám</label>
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput formControlName="staffName">
                         </mat-form-field>
                     </div>
                 </div>
                 <div class="row mt-1">
                     <div class="col-12 d-flex">
-                        <label class="label min-width-align">Tổng tiền</label>
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <label class="label min-width-align">Tổng tiền(đ)</label>
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput formControlName="total">
                         </mat-form-field>
                     </div>
@@ -46,7 +48,7 @@
                 <div class="row mt-1">
                     <div class="col-12 d-flex">
                         <label class="label min-width-align">Bằng chữ</label>
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput formControlName="totalText">
                         </mat-form-field>
                     </div>
@@ -62,13 +64,19 @@
                             Lưu
                         </span>
                     </button>
-                    <button mat-raised-button class="ml-2 btn-green ">
+                    <a mat-raised-button class="ml-2 btn-main-color" [disabled]="isDisabled"
+                        (click)="isDisabled?'':navigateConlectServiceFree()">
+                        <i class="fas fa-receipt"></i>
+                        <span class="ml-1"> Chuyển thanh toán</span>
+                    </a>
+                    <button mat-raised-button class="ml-2 btn-green " (click)="print()"
+                        [disabled]="!this.patientForm || !this.patientForm.get('id').value">
                         <i class="fas fa-print"></i>
                         <span class="ml-1">
-                            In hóa đơn
+                            In phiếu
                         </span>
                     </button>
-                    <button mat-raised-button class="ml-2 btn-orange ">
+                    <button mat-raised-button class="ml-2 btn-orange " (click)="resetInput()">
                         <i class="fas fa-sync-alt"></i>
                         <span class="ml-1">
                             Nhập lại
@@ -79,7 +87,7 @@
         </div>
         <div class="right-box pl-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h2 class="header m-0">List đơn thuốc</h2>
+                <h2 class="header m-0">Danh sách đơn thuốc</h2>
             </div>
             <div class="table-custom mt-3">
                 <ul class="table-header">
@@ -126,7 +134,7 @@
                     Tên thuốc
                 </li>
                 <li class="header-col width-10 text-left">
-                    Đơn vị
+                    Đơn vị tính
                 </li>
                 <li class="header-col width-auto text-left">
                     Ghi chú
@@ -137,10 +145,10 @@
                 <li class="header-col width-10 text-left">
                     Số thực lấy
                 </li>
-                <li class="header-col width-15 text-left">
+                <li class="header-col width-15 text-right">
                     Đơn giá
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-10 text-right">
                     Thành tiền
                 </li>
 
@@ -170,16 +178,16 @@
                         {{item.quantity}}
                     </li>
                     <li class="content-col width-10 text-left">
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput [(ngModel)]="item.realQuantity" type="number" min="0"
-                                max="{{item.quantity}}" (change)="validateQuantity(item)">
+                                max="{{item.quantity}}" (change)="validateQuantity(item)" pattern="[0-9.]+">
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-15 text-left">
-                        {{item.medicineByMedicineId.price}}
+                    <li class="content-col width-15 text-right">
+                        {{oneDot(item.medicineByMedicineId.price)}}đ
                     </li>
-                    <li class="content-col width-10 text-left">
-                        {{item.total}}
+                    <li class="content-col width-10 text-right">
+                        {{oneDot(item.total)}}đ
                     </li>
                 </ul>
             </div>
@@ -188,7 +196,7 @@
     </div>
     <div class="box-table mt-3">
         <div class="d-flex align-items-center justify-content-between">
-            <h2 class="header m-0">Thông tin không thuốc theo đơn</h2>
+            <h2 class="header m-0">Thông tin thuốc khác</h2>
         </div>
         <div class="table-custom mt-1 ">
             <ul class="table-header">
@@ -196,7 +204,7 @@
                     #
                 </li>
                 <li class="header-col width-25 text-left">
-                    Tên thuốc
+                    Tên thuốc <span class="required">*</span>
                 </li>
                 <li class="header-col width-15 text-left">
                     Đơn vị tính
@@ -205,10 +213,10 @@
                     Số lượng
                 </li>
 
-                <li class="header-col width-15 text-left">
+                <li class="header-col width-15 text-right">
                     Đơn giá
                 </li>
-                <li class="header-col width-auto text-left">
+                <li class="header-col width-auto text-right">
                     Thành tiền
                 </li>
                 <li class="header-col width-10 text-left">
@@ -226,7 +234,7 @@
                         {{i+1}}
                     </li>
                     <li class="content-col width-25 text-left">
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input [(ngModel)]="item.medicineName"
                                 (keyup)="generateByMedicineName($event,item.medicineName)"
                                 [matAutocomplete]="autoPatientName" matInput required>
@@ -243,16 +251,16 @@
                     </li>
                     <li class="content-col width-15 text-left">
 
-                        <mat-form-field appearance="outline" class="input-fixed">
+                        <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                             <input matInput [(ngModel)]="item.quantity" type="number" min="0" max="{{item.maxQuantity}}"
-                                (change)="validateQuantity2(item)">
+                                (change)="validateQuantity2(item)" pattern="[0-9.]+">
                         </mat-form-field>
                     </li>
-                    <li class="content-col width-15 text-left">
-                        {{item.price}}
+                    <li class="content-col width-15 text-right">
+                        {{oneDot(item.price)}}đ
                     </li>
-                    <li class="content-col width-auto text-left">
-                        {{item.total}}
+                    <li class="content-col width-auto text-right">
+                        {{oneDot(item.total)}}đ
                     </li>
                     <li class="content-col width-10 text-left">
                         <div class="d-flex justify-content-end">

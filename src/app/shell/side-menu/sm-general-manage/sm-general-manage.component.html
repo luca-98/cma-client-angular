@@ -1,12 +1,15 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 8.1" mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 8.1" mat-list-item routerLink="/general-manage/manage-user"
+        *ngIf="userPermissionCode.includes('G10')">
         Quản lý người dùng
     </a>
-    <a [class.item-active]="currentItem === 8.2" mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 8.2" mat-list-item routerLink="/general-manage/manage-user-group"
+        *ngIf="userPermissionCode.includes('G20')">
         Quản lý nhóm người dùng
     </a>
     <mat-divider></mat-divider>
-    <a [class.item-active]="currentItem === 8.3" mat-list-item routerLink="/general-manage/manage-template-report">
+    <a [class.item-active]="currentItem === 8.3" mat-list-item routerLink="/general-manage/manage-template-report"
+        *ngIf="userPermissionCode.includes('G30')">
         Quản lý phiếu in
     </a>
 </mat-nav-list>

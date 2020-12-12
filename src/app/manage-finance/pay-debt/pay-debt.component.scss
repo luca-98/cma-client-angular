@@ -1,0 +1,56 @@
+::ng-deep .input-fixed-collect-debt {
+    width: 100%;
+  
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+  
+    .mat-form-field-infix {
+      border-top: 0;
+      padding-top: 12px;
+      padding-bottom: 10px;
+      width: auto;
+    }
+  
+    .mat-form-field-label-wrapper {
+      display: none;
+    }
+  
+    .mat-select-arrow-wrapper {
+      padding-top: 10px;
+    }
+  
+    .mat-select-value {
+      color: #000;
+    }
+  }
+  
+  .label {
+    margin: auto 5px auto 0;
+  }
+  
+  .min-width-align {
+    min-width: 92px;
+  }
+  
+  input:disabled {
+    color: #000;
+  }
+  
+  ::ng-deep .collect-debt {
+    .mat-checkbox-layout {
+      margin: 0 !important;
+    }
+  }
+  
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: rgb(203 203 203);
+    margin-left: 10px;
+  }
+  @media only screen and (min-height: 700px) {
+    .caculate-height {
+      max-height: calc(100vh - 550px);
+    }
+  }

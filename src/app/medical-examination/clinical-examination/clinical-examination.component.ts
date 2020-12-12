@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
@@ -6,12 +6,13 @@ import { CommonService } from 'src/app/core/service/common.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { buildHighlightString, clearNullOfObject, convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { buildHighlightString, clearNullOfObject, convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 import * as moment from 'moment';
 import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { MedicalExaminationService } from 'src/app/core/service/medical-examination.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { MenuService } from 'src/app/core/service/menu.service';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -64,6 +65,8 @@ export class ClinicalExaminationComponent implements OnInit {
   isCountTime = true;
   today = moment(new Date());
 
+  userPermissionCode = [];
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
@@ -75,9 +78,25 @@ export class ClinicalExaminationComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private datePipe: DatePipe,
+    private menuService: MenuService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.route.queryParams.subscribe(params => {
       this.medicalExamId = params.medicalExamId;
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
     });
   }
 
@@ -119,7 +138,7 @@ export class ClinicalExaminationComponent implements OnInit {
       extraDiseaseCode: [''],
       extraDisease: [''],
       payingStatus: ['0']
-    });
+    }, { validator: phoneValidator });
 
     this.getClinicalExaminationPrice();
 
@@ -143,17 +162,17 @@ export class ClinicalExaminationComponent implements OnInit {
           this.fillData(data);
         }, () => { console.error('call api failed'); });
     }
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
 
-
   onPhoneInput() {
+    console.log('asdasd');
     if (this.examForm.hasError('phoneError')) {
       this.examForm.get('phone').setErrors([{ incorrect: true }]);
     } else {
       this.examForm.get('phone').setErrors(null);
     }
   }
-
 
   openNotifyDialog(title: string, content: string) {
     return this.dialog.open(NotifyDialogComponent, {
@@ -184,7 +203,7 @@ export class ClinicalExaminationComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.examForm.patchValue({
-            clinicalExamPrice: data.message.price
+            clinicalExamPrice: oneDot(data.message.price)
           });
         },
         () => {
@@ -198,13 +217,14 @@ export class ClinicalExaminationComponent implements OnInit {
     const date = moment(new Date(event.dateOfBirth));
     event = propValToString(event);
     this.examForm.patchValue({
+      patientId: event.id,
       patientName: event.patientName,
       patientCode: event.patientCode,
       dateOfBirth: date,
       gender: event.gender,
       address: event.address,
       phone: event.phone,
-      debt: event.debt
+      debt: oneDot(event.debt)
     });
     this.onBlurPatientCode();
   }
@@ -309,7 +329,10 @@ export class ClinicalExaminationComponent implements OnInit {
     this.examForm.get('patientCode').enable();
   }
 
-  resetInput() {
+  resetInput(event?: any) {
+    if (event) {
+      event.preventDefault();
+    }
     this.autoByPatientCode = [];
     this.autoByName = [];
     this.autoByPhone = [];
@@ -420,7 +443,7 @@ export class ClinicalExaminationComponent implements OnInit {
       gender: data.message.patient.gender,
       address: data.message.patient.address,
       phone: data.message.patient.phone,
-      debt: data.message.patient.debt
+      debt: oneDot(data.message.patient.debt)
     });
     if (data.message.id !== null) {
       this.medicalExaminationCode = data.message.medicalExaminationCode;
@@ -478,7 +501,7 @@ export class ClinicalExaminationComponent implements OnInit {
         mainDiseaseCode: data.message.mainDiseaseCode,
         extraDisease: data.message.extraDisease,
         extraDiseaseCode: data.message.extraDiseaseCode,
-        clinicalExamPrice: data.message.clinicalPrice,
+        clinicalExamPrice: oneDot(data.message.clinicalPrice),
         payingStatus: data.message.payingStatus,
       });
       this.enableFuncBtn = true;
@@ -563,7 +586,7 @@ export class ClinicalExaminationComponent implements OnInit {
     const dateOfBirth = convertDateToNormal(this.examForm.get('dateOfBirth').value);
     const gender = this.examForm.get('gender').value;
     const address = this.examForm.get('address').value.trim();
-    const debt = this.examForm.get('debt').value;
+    let debt = this.examForm.get('debt').value;
     const examinationReason = this.examForm.get('examinationReason').value.trim();
     const bloodVessel = this.examForm.get('bloodVessel').value.trim();
     const bloodPressure = this.examForm.get('bloodPressure').value.trim();
@@ -577,6 +600,8 @@ export class ClinicalExaminationComponent implements OnInit {
     const mainDiseaseCode = this.examForm.get('mainDiseaseCode').value.trim();
     const extraDisease = this.examForm.get('extraDisease').value.trim();
     const extraDiseaseCode = this.examForm.get('extraDiseaseCode').value.trim();
+
+    debt = parseInt(debt.replace(/,/gmi, ''), 10);
 
     if (patientName === '') {
       this.openNotifyDialog('Lỗi', 'Tên bệnh nhân không được để trống');
@@ -614,8 +639,16 @@ export class ClinicalExaminationComponent implements OnInit {
               patientCode: data.message.patient.patientCode
             });
             this.medicalExamId = data.message.id;
+            this.router.navigate(['/medical-examination/clinical-examination'], {
+              queryParams: {
+                medicalExamId: data.message.id
+              },
+              queryParamsHandling: 'merge',
+              skipLocationChange: true
+            });
             this.medicalExaminationCode = data.message.medicalExaminationCode;
             this.enableFuncBtn = true;
+            this.updateHtmlReport(this.medicalExamId);
           },
           () => {
             this.openNotifyDialog('Lỗi', 'Lỗi khi lưu phiếu khám');
@@ -636,9 +669,17 @@ export class ClinicalExaminationComponent implements OnInit {
                   patientCode: data.message.patient.patientCode
                 });
                 this.medicalExamId = data.message.id;
+                this.router.navigate(['/medical-examination/clinical-examination'], {
+                  queryParams: {
+                    medicalExamId: data.message.id
+                  },
+                  queryParamsHandling: 'merge',
+                  skipLocationChange: true
+                });
                 this.medicalExaminationCode = data.message.medicalExaminationCode;
                 this.enableFuncBtn = true;
                 this.openNotifyDialog('Thông báo', 'Lưu phiếu khám thành công');
+                this.updateHtmlReport(this.medicalExamId);
               },
               () => {
                 this.openNotifyDialog('Lỗi', 'Lỗi khi lưu phiếu khám');
@@ -682,6 +723,7 @@ export class ClinicalExaminationComponent implements OnInit {
         this.medicalExaminationService.changeStatus(this.medicalExamId, '5')
           .subscribe(
             () => {
+              this.updateHtmlReport(this.medicalExamId);
               const dialogRef2 = this.openNotifyDialog('Thông báo', 'Kết thúc khám thành công');
               dialogRef2.afterClosed().subscribe(() => {
                 this.router.navigate(['/medical-examination/manage-clinical-examination']);
@@ -693,27 +735,6 @@ export class ClinicalExaminationComponent implements OnInit {
           );
       }
     });
-  }
-
-  moveToAppoint() {
-    this.router.navigate(['/medical-examination/clinical-examination/appoint-subclinical'],
-      {
-        queryParams: {
-          medicalExamId: this.medicalExamId
-        }
-      }
-    );
-  }
-
-  moveToPrescriptions() {
-    this.router.navigate(['/medical-examination/clinical-examination/prescriptions'],
-      {
-        queryParams: {
-          medicalExamId: this.medicalExamId,
-          patientCode: this.examForm.get('patientCode').value.toUpperCase()
-        }
-      }
-    );
   }
 
   print() {
@@ -800,5 +821,96 @@ export class ClinicalExaminationComponent implements OnInit {
     }
 
     $(wrapper).printThis({ importCSS: false });
+  }
+
+  updateHtmlReport(id: any) {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'MEDICAL_EXAM') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const htmlTemplate = data2.message.templateHTML;
+                    const medicalExaminationCode = this.medicalExaminationCode;
+                    const patientCode = this.examForm.get('patientCode').value.trim();
+                    const patientName = this.examForm.get('patientName').value.trim();
+                    const gender = this.examForm.get('gender').value == 0 ? 'Nam' : 'Nữ';
+                    const phone = this.examForm.get('phone').value.trim();
+                    const dateOfBirth = this.datePipe.transform(this.examForm.get('dateOfBirth').value, 'dd/MM/yyyy');
+                    const address = this.examForm.get('address').value.trim();
+                    const bloodVessel = this.examForm.get('bloodVessel').value.trim();
+                    const bloodPressure = this.examForm.get('bloodPressure').value.trim();
+                    const breathing = this.examForm.get('breathing').value.trim();
+                    const temperature = this.examForm.get('temperature').value.trim();
+                    const height = this.examForm.get('height').value.trim();
+                    const weight = this.examForm.get('weight').value.trim();
+                    const symptom = this.examForm.get('symptom').value.trim();
+                    const mainDisease = this.examForm.get('mainDisease').value.trim();
+                    const extraDisease = this.examForm.get('extraDisease').value.trim();
+                    const summary = this.examForm.get('summary').value.trim();
+                    const day = this.datePipe.transform(this.examForm.get('createdAt').value, 'dd');
+                    const month = this.datePipe.transform(this.examForm.get('createdAt').value, 'MM');
+                    const year = this.datePipe.transform(this.examForm.get('createdAt').value, 'yyyy');
+                    const objPrint = {
+                      medicalExaminationCode,
+                      patientCode,
+                      patientName,
+                      gender,
+                      phone,
+                      dateOfBirth,
+                      address,
+                      bloodVessel,
+                      bloodPressure,
+                      breathing,
+                      temperature,
+                      height,
+                      weight,
+                      symptom,
+                      mainDisease,
+                      extraDisease,
+                      summary,
+                      day,
+                      month,
+                      year
+                    };
+                    const printDoc = document.implementation.createHTMLDocument('no-title');
+                    const wrapper = printDoc.createElement('div');
+                    wrapper.setAttribute('class', 'editor');
+                    printDoc.body.appendChild(wrapper);
+                    wrapper.innerHTML = htmlTemplate;
+
+                    const keySet = Object.keys(objPrint);
+                    for (const key of keySet) {
+                      const ele = printDoc.getElementById(key);
+                      if (ele !== null) {
+                        ele.innerHTML = objPrint[key];
+                      }
+                    }
+
+                    const htmlReportSave = wrapper.innerHTML;
+                    this.medicalExaminationService.updateHtmlReport(id, htmlReportSave)
+                      .subscribe(
+                        () => {
+                          console.log('update html report success');
+                        },
+                        () => {
+                          console.log('update html report error');
+                        }
+                      );
+                  },
+                  () => {
+                    console.log('update html report error');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          console.log('update html report error');
+        }
+      );
   }
 }

@@ -29,6 +29,7 @@
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "ngx-material-timepicker": "^5.5.3",
+    "number-to-text-vietnamese": "^1.0.9",
     "print-this": "^1.15.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

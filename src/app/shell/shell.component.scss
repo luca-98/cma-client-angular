@@ -43,7 +43,8 @@
     background-color: $cma-background;
     margin-top: 50px;
     overflow: auto;
-    max-height: calc(100vh - 50px)!important;
+    max-height: calc(100vh - 50px) !important;
+
     &::-webkit-scrollbar {
       width: 8px;
       height: 10px;
@@ -51,6 +52,7 @@
   }
 
   .nav-area {
+    text-decoration: none;
     height: 50px;
 
     .logo {
@@ -70,15 +72,17 @@
     height: 50px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 
-    mat-toolbar {
-      a {
-        text-decoration: none !important;
+    a {
+      text-decoration: none;
+
+      &:hover {
+        color: $main-color;
       }
     }
 
-    button {
-      &:hover {
-        color: $main-color;
+    mat-toolbar {
+      a {
+        text-decoration: none !important;
       }
     }
 
@@ -182,4 +186,12 @@
     z-index: 99;
     width: 100%;
   }
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+  background-color: $main-color;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+  background: #e4e8eb;
 }

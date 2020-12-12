@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
 import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { ManageClinicalExamService } from 'src/app/core/service/manage-clinical-exam.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { RoomService } from 'src/app/core/service/room.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { StaffService } from 'src/app/core/service/staff.service';
@@ -47,8 +48,21 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
     private router: Router,
     private staffService: StaffService,
     private roomService: RoomService,
-    private subclinicalService: SubclinicalService
-  ) { }
+    private subclinicalService: SubclinicalService,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Quản lý phiếu khám cận lâm sàng');
@@ -323,10 +337,5 @@ export class ManageSubclinicalExaminationComponent implements OnInit {
         }
       );
   }
-
-  moveToSubClinicalExam(medicalExamId: any) {
-    this.router.navigate(['/medical-examination/subclinical-examination'], { queryParams: { medicalExamId } });
-  }
-
 
 }

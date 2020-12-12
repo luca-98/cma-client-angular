@@ -1,10 +1,10 @@
 <h2 mat-dialog-title>Sửa thông tin bệnh nhân</h2>
 <mat-dialog-content>
     <div class="dialog-content">
-        <form *ngIf="patientForm" [formGroup]="patientForm ">
+        <form *ngIf="patientForm" [formGroup]="patientForm " (keydown.enter)="$event.preventDefault()">
             <div class="row">
                 <div class="col-6">
-                    <label class="label min-width-align">Mã bệnh nhân</label>
+                    <label class="label min-width-align">Mã bệnh nhân <span class="required">*</span></label>
                     <mat-form-field appearance="outline" class="input-fixed">
                         <input matInput formControlName="patientCode" disabled>
                     </mat-form-field>
@@ -18,30 +18,31 @@
             </div>
             <div class="row mt-1">
                 <div class="col-6">
-                    <label class="label min-width-align">Tên bệnh nhân</label>
+                    <label class="label min-width-align">Tên bệnh nhân <span class="required">*</span> </label>
                     <mat-form-field appearance="outline" class="input-fixed">
                         <input matInput formControlName="patientName" required>
                     </mat-form-field>
                 </div>
                 <div class="col-6">
-                    <label class="label min-width-align">Số điện thoại</label>
+                    <label class="label min-width-align">Số điện thoại <span class="required">*</span></label>
                     <mat-form-field appearance="outline" class="input-fixed">
-                        <input matInput formControlName="phone" required maxlength="10" minlength="10" (input)="onPhoneInput()">
+                        <input matInput formControlName="phone" required maxlength="10" minlength="10"
+                            (input)="onPhoneInput()">
                     </mat-form-field>
                 </div>
             </div>
             <div class="row mt-1">
                 <div class="col-6">
-                    <label class="label min-width-align">Ngày sinh</label>
+                    <label class="label min-width-align">Ngày sinh <span class="required">*</span></label>
                     <mat-form-field appearance="outline" class="input-fixed">
-                        <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth"
-                            [max]="today" (dateChange)="onDobChange()">
+                        <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today"
+                            (dateChange)="onDobChange()">
                         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                         <mat-datepicker #picker2 color="primary"></mat-datepicker>
                     </mat-form-field>
                 </div>
                 <div class="col-6">
-                    <label class="label min-width-align">Giới tính</label>
+                    <label class="label min-width-align">Giới tính <span class="required">*</span></label>
                     <mat-form-field appearance="outline" class="input-fixed">
                         <mat-select formControlName="gender" required>
                             <mat-option value="0" selected>Nam</mat-option>
@@ -52,7 +53,7 @@
             </div>
             <div class="row mt-1">
                 <div class="col-12">
-                    <label class="label min-width-align">Địa chỉ</label>
+                    <label class="label min-width-align">Địa chỉ <span class="required">*</span></label>
                     <mat-form-field appearance="outline" class="input-fixed">
                         <input matInput formControlName="address" required>
                     </mat-form-field>
@@ -60,10 +61,10 @@
             </div>
 
         </form>
-        
+
     </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="mb-0 pb-0">
     <button mat-button mat-dialog-close class="btn-orange">Hủy</button>
-    <button mat-button class="btn-main-color"(click)="save()">Lưu</button>
+    <button mat-button class="btn-main-color" (click)="save()">Lưu</button>
 </mat-dialog-actions>

@@ -15,6 +15,7 @@ export class PatientAutocompleteComponent implements OnInit {
   sourceList: PatientDTO[] = [];
   listPatient: PatientDTO[] = [];
   indexSelect = 0;
+  @Input() maxWidth;
   @Input() maxHeight = 200;
   @Input() isMini = false;
   @Input() autocomplete: any;

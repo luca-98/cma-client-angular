@@ -41,12 +41,10 @@
     background-color: #ececec;
   }
 
-  .table-mini {
-    td {
-      white-space: unset;
-    }
-  }
+
 }
+
+
 .table {
   border-radius: 5px;
   max-height: 300px;
@@ -93,4 +91,11 @@
     padding: 2px 10px;
   }
 
+}
+
+.table-mini {
+  th,td {
+    white-space: unset !important;
+  }
+ 
 }

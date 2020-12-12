@@ -6,13 +6,18 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/service/common.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { GroupMedicineService } from 'src/app/core/service/group-medicine.service';
+import { MedicalExaminationService } from 'src/app/core/service/medical-examination.service';
 import { MedicineService } from 'src/app/core/service/medicine.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { WebsocketService } from 'src/app/core/service/websocket.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { buildHighlightString, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+
+declare var $: any;
 
 @Component({
   selector: 'app-prescriptions',
@@ -33,6 +38,9 @@ export class PrescriptionsComponent implements OnInit {
   searchMedicineName = '';
   selectedGroupMedicine = '0';
   listUserMedicine = [];
+  medicalExaminationCode = null;
+  staffName = null;
+
   constructor(
     private titleService: Title,
     private dialog: MatDialog,
@@ -42,11 +50,26 @@ export class PrescriptionsComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private groupMedicineService: GroupMedicineService,
-    private medicineService: MedicineService
-
-  ) { }
+    private medicineService: MedicineService,
+    private sideMenuService: SideMenuService,
+    private medicalExaminationService: MedicalExaminationService,
+    private menuService: MenuService,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = activatedRoute.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
+    this.sideMenuService.changeItem(1.3);
     this.titleService.setTitle('Kê đơn thuốc');
     this.patientForm = this.formBuilder.group({
       id: [''],
@@ -58,14 +81,29 @@ export class PrescriptionsComponent implements OnInit {
       address: ['', [Validators.required]],
       phone: ['', [Validators.required, Validators.minLength(10)]],
     }, { validator: this.phoneValidator });
-    this.patientForm.get('patientCode').disable();
+    this.patientForm.disable();
+    this.patientForm.get('note').enable();
     this.activatedRoute.queryParams.subscribe(params => {
       this.patientCode = params.patientCode;
       this.medicalExamId = params.medicalExamId;
+      this.getMedicalExam(this.medicalExamId);
     });
     this.getListGroupMedicine();
     this.findAllMedicine();
     this.getPrescriptionByMedicalexamId(this.medicalExamId);
+  }
+
+  getMedicalExam(id: any) {
+    this.medicalExaminationService.getMedicalExam(id)
+      .subscribe(
+        (data: any) => {
+          this.medicalExaminationCode = data.message.medicalExaminationCode;
+          this.staffName = data.message.staff.fullName;
+        },
+        () => {
+          console.log('get data error');
+        }
+      );
   }
 
   getPatientInfo(patientCode) {
@@ -443,6 +481,7 @@ export class PrescriptionsComponent implements OnInit {
           if (data.message) {
             this.openNotifyDialog('Thông báo', 'Lưu thông tin đơn thuốc thành công.');
             this.getPrescriptionByMedicalexamId(this.medicalExamId);
+            this.updateHtmlReport(data.message);
           }
         },
         () => {
@@ -451,4 +490,252 @@ export class PrescriptionsComponent implements OnInit {
       );
   }
 
+  updateHtmlReport(id: any) {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'PRESCRIPTIONS') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const htmlTemplate = data2.message.templateHTML;
+                    const medicalExaminationCode = this.medicalExaminationCode;
+                    const patientCode = this.patientForm.get('patientCode').value.trim();
+                    const patientName = this.patientForm.get('patientName').value.trim();
+                    const gender = this.patientForm.get('gender').value == 0 ? 'Nam' : 'Nữ';
+                    const phone = this.patientForm.get('phone').value.trim();
+                    const dateOfBirth = this.datePipe.transform(this.patientForm.get('dateOfBirth').value, 'dd/MM/yyyy');
+                    const address = this.patientForm.get('address').value.trim();
+                    const note = this.patientForm.get('note').value.trim();
+                    const day = this.datePipe.transform(moment(new Date()), 'dd');
+                    const month = this.datePipe.transform(moment(new Date()), 'MM');
+                    const year = this.datePipe.transform(moment(new Date()), 'yyyy');
+                    const staffName = this.staffName;
+
+                    const listTrNode = [];
+                    let count = 0;
+                    for (const ele of this.listUserMedicine) {
+                      const tr = document.createElement('TR');
+
+                      const td1 = document.createElement('TD');
+                      td1.style.borderCollapse = 'collapse';
+                      td1.style.border = '1px dotted rgb(0, 0, 0)';
+                      td1.style.overflowWrap = 'break-word';
+                      td1.style.padding = '0px 6px';
+                      td1.innerHTML = ++count + '';
+                      tr.appendChild(td1);
+
+                      const td2 = document.createElement('TD');
+                      td2.style.borderCollapse = 'collapse';
+                      td2.style.border = '1px dotted rgb(0, 0, 0)';
+                      td2.style.overflowWrap = 'break-word';
+                      td2.style.padding = '0px 6px';
+                      td2.innerHTML = ele.medicineName;
+                      tr.appendChild(td2);
+
+                      const td3 = document.createElement('TD');
+                      td3.style.borderCollapse = 'collapse';
+                      td3.style.border = '1px dotted rgb(0, 0, 0)';
+                      td3.style.overflowWrap = 'break-word';
+                      td3.style.padding = '0px 6px';
+                      td3.innerHTML = ele.quantity + ' ' + ele.unitName;
+                      tr.appendChild(td3);
+
+                      const td4 = document.createElement('TD');
+                      td4.style.borderCollapse = 'collapse';
+                      td4.style.border = '1px dotted rgb(0, 0, 0)';
+                      td4.style.overflowWrap = 'break-word';
+                      td4.style.padding = '0px 6px';
+                      td4.innerHTML = ele.noteDetail;
+                      tr.appendChild(td4);
+
+                      listTrNode.push(tr);
+                    }
+
+                    const objPrint = {
+                      medicalExaminationCode,
+                      patientCode,
+                      patientName,
+                      gender,
+                      phone,
+                      dateOfBirth,
+                      address,
+                      note,
+                      day,
+                      month,
+                      year,
+                      staffName,
+                      data: listTrNode
+                    };
+
+                    const printDoc = document.implementation.createHTMLDocument('no-title');
+                    const wrapper = printDoc.createElement('div');
+                    wrapper.setAttribute('class', 'editor');
+                    printDoc.body.appendChild(wrapper);
+                    wrapper.innerHTML = htmlTemplate;
+
+                    const keySet = Object.keys(objPrint);
+                    for (const key of keySet) {
+                      if (key === 'data') {
+                        const tbodyAppoint = printDoc.getElementById('tbody-prescriptions');
+                        const dataTemp = printDoc.getElementById('data');
+                        for (const tr of objPrint.data) {
+                          tbodyAppoint.insertBefore(tr, dataTemp);
+                        }
+                        dataTemp.remove();
+                        continue;
+                      }
+                      const ele = printDoc.getElementById(key);
+                      if (ele !== null) {
+                        ele.innerHTML = objPrint[key];
+                      }
+                    }
+
+                    const htmlReportSave = wrapper.innerHTML;
+                    this.medicineService.updatePrintDataHtmlPrescriptions(id, htmlReportSave)
+                      .subscribe(
+                        () => {
+                          console.log('update html report success');
+                        },
+                        () => {
+                          console.log('update html report error');
+                        }
+                      );
+                  },
+                  () => {
+                    console.log('update html report error');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          console.log('update html report error');
+        }
+      );
+  }
+
+  print() {
+    this.commonService.getListPrintTemplate()
+      .subscribe(
+        (data: any) => {
+          for (const printT of data.message) {
+            if (printT.printCode === 'PRESCRIPTIONS') {
+              this.commonService.getOnePrintTemplate(printT.id)
+                .subscribe(
+                  (data2: any) => {
+                    const printTemplateHtml = data2.message.templateHTML;
+                    const medicalExaminationCode = this.medicalExaminationCode;
+                    const patientCode = this.patientForm.get('patientCode').value.trim();
+                    const patientName = this.patientForm.get('patientName').value.trim();
+                    const gender = this.patientForm.get('gender').value == 0 ? 'Nam' : 'Nữ';
+                    const phone = this.patientForm.get('phone').value.trim();
+                    const dateOfBirth = this.datePipe.transform(this.patientForm.get('dateOfBirth').value, 'dd/MM/yyyy');
+                    const address = this.patientForm.get('address').value.trim();
+                    const note = this.patientForm.get('note').value.trim();
+                    const day = this.datePipe.transform(moment(new Date()), 'dd');
+                    const month = this.datePipe.transform(moment(new Date()), 'MM');
+                    const year = this.datePipe.transform(moment(new Date()), 'yyyy');
+                    const staffName = this.staffName;
+
+                    const listTrNode = [];
+                    let count = 0;
+                    for (const ele of this.listUserMedicine) {
+                      const tr = document.createElement('TR');
+
+                      const td1 = document.createElement('TD');
+                      td1.style.borderCollapse = 'collapse';
+                      td1.style.border = '1px dotted rgb(0, 0, 0)';
+                      td1.style.overflowWrap = 'break-word';
+                      td1.style.padding = '0px 6px';
+                      td1.innerHTML = ++count + '';
+                      tr.appendChild(td1);
+
+                      const td2 = document.createElement('TD');
+                      td2.style.borderCollapse = 'collapse';
+                      td2.style.border = '1px dotted rgb(0, 0, 0)';
+                      td2.style.overflowWrap = 'break-word';
+                      td2.style.padding = '0px 6px';
+                      td2.innerHTML = ele.medicineName;
+                      tr.appendChild(td2);
+
+                      const td3 = document.createElement('TD');
+                      td3.style.borderCollapse = 'collapse';
+                      td3.style.border = '1px dotted rgb(0, 0, 0)';
+                      td3.style.overflowWrap = 'break-word';
+                      td3.style.padding = '0px 6px';
+                      td3.innerHTML = ele.quantity + ' ' + ele.unitName;
+                      tr.appendChild(td3);
+
+                      const td4 = document.createElement('TD');
+                      td4.style.borderCollapse = 'collapse';
+                      td4.style.border = '1px dotted rgb(0, 0, 0)';
+                      td4.style.overflowWrap = 'break-word';
+                      td4.style.padding = '0px 6px';
+                      td4.innerHTML = ele.noteDetail;
+                      tr.appendChild(td4);
+
+                      listTrNode.push(tr);
+                    }
+
+
+                    const objPrint = {
+                      medicalExaminationCode,
+                      patientCode,
+                      patientName,
+                      gender,
+                      phone,
+                      dateOfBirth,
+                      address,
+                      note,
+                      day,
+                      month,
+                      year,
+                      staffName,
+                      data: listTrNode
+                    };
+                    this.processDataPrint(objPrint, printTemplateHtml);
+                  },
+                  () => {
+                    this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+                  }
+                );
+              break;
+            }
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi máy chủ gặp sự cố, vui lòng thử lại');
+        }
+      );
+  }
+
+  processDataPrint(objectPrint: any, htmlTemplate: string) {
+    const printDoc = document.implementation.createHTMLDocument('no-title');
+    const wrapper = printDoc.createElement('div');
+    wrapper.setAttribute('class', 'editor');
+    printDoc.body.appendChild(wrapper);
+    wrapper.innerHTML = htmlTemplate;
+
+    const keySet = Object.keys(objectPrint);
+    for (const key of keySet) {
+      if (key === 'data') {
+        const tbodyAppoint = printDoc.getElementById('tbody-prescriptions');
+        const data = printDoc.getElementById('data');
+        for (const tr of objectPrint.data) {
+          tbodyAppoint.insertBefore(tr, data);
+        }
+        data.remove();
+        continue;
+      }
+      const ele = printDoc.getElementById(key);
+      if (ele !== null) {
+        ele.innerHTML = objectPrint[key];
+      }
+    }
+
+    $(wrapper).printThis({ importCSS: false });
+  }
 }

@@ -45,7 +45,11 @@ export class MedicineService {
         return this.http.delete(url, { params });
     }
 
-
-
-
+    updatePrintDataHtmlPrescriptions(id: any, htmlReport: any) {
+        const url = this.prescriptionUrl + 'update-html-report';
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('htmlReport', htmlReport);
+        return this.http.put(url, formData);
+    }
 }

@@ -1,12 +1,15 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 4.1" mat-list-item routerLink="/manage-service/service">
+    <a [class.item-active]="currentItem === 4.1" mat-list-item routerLink="/manage-service/service"
+        *ngIf="userPermissionCode.includes('D10')">
         Danh mục dịch vụ
     </a>
-    <a [class.item-active]="currentItem === 4.2" mat-list-item routerLink="/manage-service/group-service">
+    <a [class.item-active]="currentItem === 4.2" mat-list-item routerLink="/manage-service/group-service"
+        *ngIf="userPermissionCode.includes('D20')">
         Danh mục nhóm dịch vụ
     </a>
     <mat-divider></mat-divider>
-    <a [class.item-active]="currentItem === 4.3" mat-list-item routerLink="/manage-service/template-report">
+    <a [class.item-active]="currentItem === 4.3" mat-list-item routerLink="/manage-service/template-report"
+        *ngIf="userPermissionCode.includes('D30')">
         Mẫu kết quả dịch vụ
     </a>
 </mat-nav-list>

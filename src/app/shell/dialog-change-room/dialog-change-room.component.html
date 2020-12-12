@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Thay đổi phòng làm việc hiện tại</h1>
 <div mat-dialog-content>
-    <form *ngIf="formGroup" [formGroup]="formGroup">
+    <form *ngIf="formGroup" [formGroup]="formGroup" (keydown.enter)="$event.preventDefault()">
         <mat-form-field appearance="outline" class="full-width">
             <mat-select formControlName="room">
                 <mat-option *ngFor="let room of roomService" [value]="room.id">
@@ -11,8 +11,8 @@
     </form>
 </div>
 <div mat-dialog-actions>
-    <button class="btn-close-dialog" [mat-dialog-close]="false" mat-raised-button color="primary" mat-dialog-close
+    <button class="btn-close-dialog btn-orange" [mat-dialog-close]="false" mat-raised-button mat-dialog-close
         cdkFocusInitial>Hủy bỏ</button>
-    <button class="btn-close-dialog" mat-raised-button color="warn" mat-dialog-close (click)="changeRoom()" cdkFocusInitial
+    <button class="btn-close-dialog btn-main-color" mat-raised-button mat-dialog-close (click)="changeRoom()" cdkFocusInitial
         cdkFocusInitial>Xác nhận</button>
 </div>

@@ -5,7 +5,10 @@ import { AuthenticationService } from '../core/service/authentication.service';
 import { CommonService } from '../core/service/common.service';
 import { CredentialsService } from '../core/service/credentials.service';
 import { LoaderService } from '../core/service/loader.service';
+import { MenuService } from '../core/service/menu.service';
 import { SideMenuService } from '../core/service/side-menu.service';
+import { StaffService } from '../core/service/staff.service';
+import { WebsocketService } from '../core/service/websocket.service';
 import { SidebarItem } from '../enum/sidebar-item.enum';
 import { NotifyDialogComponent } from '../shared/dialogs/notify-dialog/notify-dialog.component';
 import { DialogChangeRoomComponent } from './dialog-change-room/dialog-change-room.component';
@@ -22,6 +25,7 @@ export class ShellComponent implements OnInit {
   showLoader = false;
   sidebarItem = SidebarItem;
   sidebarRightState: SidebarItem = SidebarItem.MedicalExamination;
+  listPermission = [];
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -32,9 +36,16 @@ export class ShellComponent implements OnInit {
     private dialog: MatDialog,
     private commonService: CommonService,
     private sideMenuService: SideMenuService,
+    private staffService: StaffService,
+    private menuService: MenuService,
+    private websocketService: WebsocketService
   ) {
     this.sideMenuService.changeItemSubject.subscribe((value: number) => {
       this.sidebarRightState = +value.toString().slice(0, 1);
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      this.listPermission = this.credentialsService.credentials.permissionCode;
       changeDetectorRef.detectChanges();
     });
     this.loaderService.loaderSubject.subscribe((value: boolean) => {
@@ -44,11 +55,30 @@ export class ShellComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getInfoShell();
+    this.listPermission = this.credentialsService.credentials.permissionCode;
+    this.getAuthenObj();
+    this.listenWebSocket();
   }
 
-  goHome() {
-    this.router.navigate(['']);
+  listenWebSocket() {
+    this.websocketService.onWsMessagePermission.subscribe((data: any) => {
+      this.getAuthenObj();
+    });
+  }
+
+  getAuthenObj() {
+    const staffId = this.credentialsService.credentials.staffId;
+    this.staffService.getAuthenObj(staffId)
+      .subscribe(
+        (data: any) => {
+          this.credentialsService.updateCredentials(data.message);
+          this.currentUserFullName = this.credentialsService.credentials.fullName;
+          this.currentRoomName = this.credentialsService.credentials.roomName;
+        },
+        () => {
+          console.error('error call api');
+        }
+      );
   }
 
   getInfoShell() {

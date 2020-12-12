@@ -1,0 +1,36 @@
+.btn-close-dialog {
+    margin-left: auto;
+}
+
+.grid-template-1 {
+    grid-column-gap: 20px;
+    grid-template-columns: auto auto auto;
+}
+
+.tab-content {
+    margin-top: 10px;
+}
+
+::ng-deep .add-edit-user {
+    .mat-tab-body-content {
+        height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+.add-edit-user {
+    .checkbox-container {
+        max-width: 500px;
+    }
+
+    .list-checkbox {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .item-checkbox {
+        display: flex;
+        align-items: center;
+        margin: 5px;
+    }
+}

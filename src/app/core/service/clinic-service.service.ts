@@ -27,6 +27,13 @@ export class ClinicServiceService {
         return this.http.get(url, { params });
     }
 
+    findServiceByStaff(serviceName: any) {
+        const url = this.clinicServiceUrl + 'find-service-by-staff';
+        const params = new HttpParams()
+            .set('serviceName', serviceName);
+        return this.http.get(url, { params });
+    }
+
     getAllService() {
         const url = this.clinicServiceUrl + 'get-all-service';
         return this.http.get(url);
@@ -70,7 +77,7 @@ export class ClinicServiceService {
         return this.http.post(url, dataPost);
     }
 
-    updateService(dataPost){
+    updateService(dataPost) {
         const url = this.clinicServiceUrl + 'edit-a-service';
         return this.http.post(url, dataPost);
     }

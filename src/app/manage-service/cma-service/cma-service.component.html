@@ -2,7 +2,8 @@
     <div class="info">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h2 class="header m-0">Tìm kiếm dịch vụ</h2>
-            <button mat-raised-button class="btn-main-color" (click)="openAddDialog()">
+            <button mat-raised-button class="btn-main-color" (click)="openAddDialog()"
+                *ngIf="userPermissionCode.includes('D11')">
                 <i class="fas fa-plus"></i>
                 <span class="ml-1">
                     Thêm mới dịch vụ
@@ -13,7 +14,7 @@
         <div class="row mt-3">
             <div class="col-6 d-flex">
                 <label class="label min-width-align">Tên dịch vụ</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-cma-service">
                     <input matInput [(ngModel)]="searchData.serviceName" (keyup)="generateAutoByNameService($event)"
                         [matAutocomplete]="autoService">
                     <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
@@ -25,7 +26,7 @@
             </div>
             <div class="col-6 d-flex">
                 <label class="label min-width-align">Nhóm dịch vụ</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-cma-service">
                     <mat-select [(ngModel)]="searchData.selectedGroupServiceId">
                         <mat-option value="0" (click)="searchAllServicePagging()">
                             Tất cả
@@ -44,7 +45,7 @@
                 <button mat-raised-button class="btn-main-color" (click)="searchAllServicePagging()">
                     <i class="fas fa-search"></i>
                     <span class="ml-1">
-                        Tìm
+                        Tìm kiếm
                     </span>
                 </button>
                 <button mat-raised-button class="ml-2 btn-orange " (click)=" reset()">
@@ -79,10 +80,11 @@
                     Nhóm dịch vụ
                 </li>
                 <li class="header-col width-auto text-left">
-                    Mãu báo cáo mặc định
+                    Mẫu báo cáo mặc định
                 </li>
-                <li class="header-col width-10 text-left">
-                    Chức năng
+                <li class="header-col width-10 text-left"
+                    *ngIf="userPermissionCode.includes('D12') || userPermissionCode.includes('D13')">
+                    Hành động
                 </li>
             </ul>
 
@@ -101,7 +103,7 @@
                         {{item.serviceName}}
                     </li>
                     <li class="content-col width-10 text-left">
-                        {{item.price}}
+                        {{oneDot(item.price)}}đ
                     </li>
                     <li class="content-col width-20 text-left">
                         {{item.groupServiceId.groupServiceName}}
@@ -109,17 +111,16 @@
                     <li class="content-col width-auto text-left">
                         {{item.templateReport.templateName}}
                     </li>
-                    <li class="content-col width-10 text-left">
+                    <li class="content-col width-10 text-left"
+                        *ngIf="userPermissionCode.includes('D12') || userPermissionCode.includes('D13')">
                         <div class="d-flex justify-content-end">
-
                             <button class="btn btn-outline-secondary btn-sm ml-1" (click)="editService(item)"
-                                title="Sửa thông tin dịch vụ"><i title="Sửa thông tin dịch vụ"
-                                    class="fas fa-pen"></i></button>
+                                *ngIf="userPermissionCode.includes('D12')" title="Sửa thông tin dịch vụ"><i
+                                    title="Sửa thông tin dịch vụ" class="fas fa-pen"></i></button>
                             <button class="btn btn-outline-secondary btn-sm ml-1" (click)="deleteService(item)"
-                                title="Xóa dịch vụ">
+                                *ngIf="userPermissionCode.includes('D13')" title="Xóa dịch vụ">
                                 <i title="Xóa dịch vụ" class="fas fa-trash"></i></button>
                         </div>
-
                     </li>
                 </ul>
             </div>

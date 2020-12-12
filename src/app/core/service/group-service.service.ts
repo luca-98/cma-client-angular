@@ -23,6 +23,11 @@ export class GroupServiceService {
         return this.http.get(url);
     }
 
+    getGroupServiceByStaffStaffId(id: any) {
+        const url = this.groupServiceUrl + 'get-all-group-service-by-staff-staff-id/' + id;
+        return this.http.get(url);
+    }
+
     addNewGroupService(data) {
         const url = this.groupServiceUrl + 'add-new-group-service';
         return this.http.post(url, data);

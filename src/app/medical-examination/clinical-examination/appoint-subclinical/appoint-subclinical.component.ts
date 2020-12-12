@@ -8,12 +8,16 @@ import { GroupServiceService } from 'src/app/core/service/group-service.service'
 import { RoomService } from 'src/app/core/service/room.service';
 import { StaffService } from 'src/app/core/service/staff.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { buildHighlightString, convertDateToNormal, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { buildHighlightString, convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } from 'src/app/shared/share-func';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubclinicalService } from 'src/app/core/service/subclinical.service';
 import { DatePipe } from '@angular/common';
+import { MedicalExaminationService } from 'src/app/core/service/medical-examination.service';
+import { SubclinicalReportDialogComponent } from 'src/app/shared/dialogs/subclinical-report-dialog/subclinical-report-dialog.component';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -58,6 +62,8 @@ export class AppointSubclinicalComponent implements OnInit {
 
   today = moment(new Date());
 
+  listMinReceive = [];
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
@@ -72,13 +78,31 @@ export class AppointSubclinicalComponent implements OnInit {
     private subclinicalService: SubclinicalService,
     private route: ActivatedRoute,
     private datePipe: DatePipe,
+    private medicalExaminationService: MedicalExaminationService,
+    private menuService: MenuService,
+    private credentialsService: CredentialsService,
   ) {
     this.route.queryParams.subscribe(params => {
       this.medicalExamId = params.medicalExamId;
     });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
+
+  oneDot(item) {
+    return oneDot(item);
   }
 
   ngOnInit(): void {
+    this.sideMenuService.changeItem(1.3);
     this.titleService.setTitle('Chỉ định dịch vụ cận lâm sàng');
     this.patientForm = this.formBuilder.group({
       patientName: ['', [Validators.required]],
@@ -88,7 +112,7 @@ export class AppointSubclinicalComponent implements OnInit {
       address: ['', [Validators.required]],
       phone: ['', [Validators.required, Validators.minLength(10)]]
     });
-    this.patientForm.get('patientCode').disable();
+    this.patientForm.disable();
     this.getAllGroupServiceAndService();
   }
 
@@ -140,8 +164,25 @@ export class AppointSubclinicalComponent implements OnInit {
                 }
               }
             }
+            service.serviceReportId = e.serviceReportId;
             service.status = e.status;
             this.listServiceSelected.push(service);
+          }
+          for (const e of this.listServiceSelected) {
+            if (e.status == 1) {
+              let finded = false;
+              for (const ele of this.listMinReceive) {
+                if (ele.groupServiceCode === e.groupServiceCode) {
+                  finded = true;
+                }
+              }
+              if (!finded) {
+                this.listMinReceive.push({
+                  groupServiceCode: e.groupServiceCode,
+                  doctorId: e.doctorSelected
+                });
+              }
+            }
           }
         },
         () => {
@@ -191,7 +232,7 @@ export class AppointSubclinicalComponent implements OnInit {
           ];
         },
         () => {
-          this.openNotifyDialog('Lỗi', 'Lỗi khi tải danh sách dịch vụ');
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
         }
       );
   }
@@ -209,7 +250,7 @@ export class AppointSubclinicalComponent implements OnInit {
           ];
         },
         () => {
-          this.openNotifyDialog('Lỗi', 'Lỗi khi tải danh sách dịch vụ');
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
         }
       );
   }
@@ -227,7 +268,7 @@ export class AppointSubclinicalComponent implements OnInit {
           ];
         },
         () => {
-          this.openNotifyDialog('Lỗi', 'Lỗi khi tải danh sách dịch vụ');
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
         }
       );
   }
@@ -243,22 +284,42 @@ export class AppointSubclinicalComponent implements OnInit {
 
   handleSelectService(event: any, service: any) {
     if (event.checked) {
-      this.subclinicalService.getStaffMinByService(service.id)
-        .subscribe(
-          (data: any) => {
-            service.doctorSelected = data.message.id;
-            for (const room of this.listRoom) {
-              for (const staffId of room.staffIdList) {
-                if (staffId === data.message.id) {
-                  service.roomSelected = room.id;
+      const findResult = this.listMinReceive.find(x => x.groupServiceCode === service.groupServiceCode);
+      if (findResult !== undefined) {
+        service.doctorSelected = findResult.doctorId;
+        for (const room of this.listRoom) {
+          // service.roomSelected = null;
+          for (const staffId of room.staffIdList) {
+            if (staffId === findResult.doctorId) {
+              service.roomSelected = room.id;
+            }
+          }
+        }
+      } else {
+        this.subclinicalService.getStaffMinByService(service.groupServiceCode)
+          .subscribe(
+            (data: any) => {
+              if (data.message.id !== null) {
+                this.listMinReceive.push({
+                  groupServiceCode: service.groupServiceCode,
+                  doctorId: data.message.id
+                });
+                service.doctorSelected = data.message.id;
+                for (const room of this.listRoom) {
+                  // service.roomSelected = null;
+                  for (const staffId of room.staffIdList) {
+                    if (staffId === data.message.id) {
+                      service.roomSelected = room.id;
+                    }
+                  }
                 }
               }
+            },
+            () => {
+              this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
             }
-          },
-          () => {
-            this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
-          }
-        );
+          );
+      }
       this.listServiceSelected.push(service);
     } else {
       const i = this.listServiceSelected.findIndex(x => x.id === service.id);
@@ -357,6 +418,8 @@ export class AppointSubclinicalComponent implements OnInit {
 
     const listAppoint = [];
 
+    let isDoneAll = true;
+
     for (const e of this.listServiceSelected) {
       if (e.checkBox) {
         if (e.doctorSelected === '') {
@@ -367,11 +430,26 @@ export class AppointSubclinicalComponent implements OnInit {
           this.openNotifyDialog('Lỗi', `Dịch vụ '${e.serviceName}' chưa được chỉ định phòng thực hiện`);
           return;
         }
+        if (e.status != 3) {
+          isDoneAll = false;
+        }
         listAppoint.push({
           serviceId: e.id,
           staffId: e.doctorSelected
         });
       }
+    }
+
+    if (!isDoneAll) {
+      this.medicalExaminationService.changeStatus(this.medicalExamId, '3')
+        .subscribe(
+          () => {
+            console.log('change status done');
+          },
+          () => {
+            console.log('change status error');
+          }
+        );
     }
 
     const objSave: any = {
@@ -600,5 +678,24 @@ export class AppointSubclinicalComponent implements OnInit {
     }
 
     $(wrapper).printThis({ importCSS: false });
+  }
+
+  openReport(serviceReportId: any) {
+    this.commonService.getSubClinicaById(serviceReportId)
+      .subscribe(
+        (data: any) => {
+          this.dialog.open(SubclinicalReportDialogComponent, {
+            width: '1000px',
+            height: '100%',
+            data: {
+              id: serviceReportId,
+              content: data.message.htmlReport
+            },
+          });
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
+        }
+      );
   }
 }

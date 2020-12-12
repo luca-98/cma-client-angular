@@ -15,7 +15,7 @@ export class SupplierAutocompleteComponent implements OnInit {
   sourceList: SupplierDTO[] = [];
   listSupplier: SupplierDTO[] = [];
   indexSelect = 0;
-
+  @Input() maxWidth;
   @Input() maxHeight = 200;
   @Input() isMini = false;
   @Input() autocomplete: any;
@@ -82,5 +82,6 @@ export class SupplierAutocompleteComponent implements OnInit {
       }
     }
   }
+
 
 }

@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { GroupMedicineService } from 'src/app/core/service/group-medicine.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { SupplierService } from 'src/app/core/service/supplier.service';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { propValToString } from 'src/app/shared/share-func';
+import { oneDot, propValToString } from 'src/app/shared/share-func';
 
 @Component({
   selector: 'app-import-medicine',
@@ -44,16 +46,30 @@ export class ImportMedicineComponent implements OnInit {
     private formBuilder: FormBuilder,
     private supplierService: SupplierService,
     private groupMedicineService: GroupMedicineService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+    private credentialsService: CredentialsService,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Nhập thuốc, vật tư');
+
     if ('/manage-medicine/import-medicine' === this.router.url) {
-      this.titleService.setTitle('Nhập thuốc');
       this.sideMenuService.changeItem(2.1);
     }
     if ('/manage-material/import-material' === this.router.url) {
-      this.titleService.setTitle('Nhập vật tư');
       this.sideMenuService.changeItem(3.1);
     }
     this.supplierForm = this.formBuilder.group({
@@ -61,7 +77,7 @@ export class ImportMedicineComponent implements OnInit {
       supplierName: ['', [Validators.required]],
       address: [''],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      email: ['', [Validators.required]],
+      email: [''],
       accountNumber: [''],
       debt: [0],
       totalAmount: [0],
@@ -81,14 +97,34 @@ export class ImportMedicineComponent implements OnInit {
     }, 1000);
   }
 
+  oneDot(item) {
+    return oneDot(item);
+  }
+
   resetInput() {
     this.autoByName = [];
     this.autoByPhone = [];
-    this.supplierForm.reset();
+    this.autoByReceiptName = [];
+    this.lstReceiptDetails = [];
+    this.supplierForm.patchValue({
+      id: '',
+      supplierName: '',
+      address: '',
+      phone: '',
+      email: '',
+      accountNumber: '',
+      debt: 0,
+      totalAmount: 0,
+      amountPaid: 0,
+      unpaiAmount: 0
+    }
+    );
+    this.caculateTotal();
   }
   autoSelected(event: any) {
     this.resetInput();
     event = propValToString(event);
+    event.debt = event.debt ? oneDot(event.debt) : 0;
     this.supplierForm.patchValue(event);
     this.caculateTotal();
   }
@@ -223,9 +259,15 @@ export class ImportMedicineComponent implements OnInit {
       this.lstReceiptDetails.forEach(element => {
         total += (element.quantityDetail * element.amountDetail);
       });
+      if (amountPaid < 0) {
+        amountPaid = 0;
+      }
+      if (amountPaid > total) {
+        amountPaid = total;
+      }
       this.supplierForm.patchValue({
-        totalAmount: total,
-        unpaiAmount: total - amountPaid,
+        totalAmount: oneDot(total),
+        unpaiAmount: oneDot(total - amountPaid),
         amountPaid
       });
     }, 300);
@@ -234,6 +276,45 @@ export class ImportMedicineComponent implements OnInit {
 
 
   save() {
+    const dataPost = {
+      supplierId: this.supplierForm.get('id').value.trim() ? this.supplierForm.get('id').value.trim() : null,
+      receiptId: null,
+      totalAmount: parseInt(this.supplierForm.get('totalAmount').value.replace(/,/gmi, ''), 10),
+      amountPaid: this.supplierForm.get('amountPaid').value,
+      supplierName: this.supplierForm.get('supplierName').value.trim(),
+      address: this.supplierForm.get('address').value.trim(),
+      phone: this.supplierForm.get('phone').value.trim(),
+      email: this.supplierForm.get('email').value.trim(),
+      accountNumber: this.supplierForm.get('accountNumber').value.trim(),
+      debt: this.supplierForm.get('debt').value,
+      lstReceiptDetails: null
+    };
+    if (!dataPost.totalAmount) {
+      dataPost.totalAmount = 0;
+    }
+    if (!dataPost.amountPaid) {
+      dataPost.amountPaid = 0;
+    }
+    if (!dataPost.debt) {
+      dataPost.debt = 0;
+    }
+    if (dataPost.supplierName === '') {
+      this.openNotifyDialog('Lỗi', 'Tên nhà cung cấp không được để trống');
+      return;
+    }
+    if (dataPost.phone === '') {
+      this.openNotifyDialog('Lỗi', 'Số điện thoại nhà cung cấp không được để trống');
+      return;
+    }
+    if (dataPost.phone.length !== 10 || !(/^\d+$/.test(dataPost.phone))) {
+      this.openNotifyDialog('Lỗi', 'Số điện thoại không đúng');
+      return;
+    }
+    if (dataPost.email !== '' && !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(dataPost.email))) {
+      this.openNotifyDialog('Lỗi', 'Email không đúng định dạng');
+      return;
+    }
+
     const listReceipt = JSON.parse(JSON.stringify(this.lstReceiptDetails));
     for (const iterator of listReceipt) {
       if (iterator.type === 1) {
@@ -249,49 +330,27 @@ export class ImportMedicineComponent implements OnInit {
         this.openNotifyDialog('Lỗi', 'Thuốc, vật tư có thể nhập tối đa là 10.000 đơn vị.');
         return;
       }
+      if (iterator.quantityDetail <= 0) {
+        this.openNotifyDialog('Lỗi', 'Thuốc, vật tư phải lớn hơn 0.');
+        return;
+      }
+      if (iterator.amountDetail < 0) {
+        this.openNotifyDialog('Lỗi', 'Giá nhập các thuốc/vật tư không thể nhỏ hơn 0.');
+        return;
+      }
+      if (iterator.price < 0) {
+        this.openNotifyDialog('Lỗi', 'Giá bán các thuốc/vật tư không thể nhỏ hơn 0.');
+        return;
+      }
       delete iterator.type;
     }
-    const dataPost = {
-      supplierId: this.supplierForm.get('id').value.trim(),
-      receiptId: null,
-      totalAmount: this.supplierForm.get('totalAmount').value,
-      amountPaid: this.supplierForm.get('amountPaid').value,
-      supplierName: this.supplierForm.get('supplierName').value.trim(),
-      address: this.supplierForm.get('address').value.trim(),
-      phone: this.supplierForm.get('phone').value.trim(),
-      email: this.supplierForm.get('email').value.trim(),
-      accountNumber: this.supplierForm.get('accountNumber').value.trim(),
-      debt: this.supplierForm.get('debt').value,
-      lstReceiptDetails: listReceipt
-    };
-    if (!dataPost.totalAmount) {
-      dataPost.totalAmount = 0;
-    }
-    if (!dataPost.amountPaid) {
-      dataPost.amountPaid = 0;
-    }
-    if (!dataPost.debt) {
-      dataPost.debt = 0;
-    }
-
-    if (dataPost.supplierName === '') {
-      this.openNotifyDialog('Lỗi', 'Tên nhà cung cấp không được để trống');
-      return;
-    }
-    if (dataPost.phone.length !== 10 || !(/^\d+$/.test(dataPost.phone))) {
-      this.openNotifyDialog('Lỗi', 'Số điện thoại không đúng');
-      return;
-    }
-    if (!(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(dataPost.email))) {
-      this.openNotifyDialog('Lỗi', 'Email không đúng định dạng');
-      return;
-    }
-
+    dataPost.lstReceiptDetails = listReceipt;
 
     if (dataPost.lstReceiptDetails.length === 0) {
       this.openNotifyDialog('Lỗi', 'Danh sách nhập thuốc vật tư đang không có dữ liệu.');
       return;
     }
+
     this.supplierService.updateReceipt(dataPost).subscribe(
       (data: any) => {
         if (data.message) {
@@ -308,5 +367,6 @@ export class ImportMedicineComponent implements OnInit {
 
   deleteItem(index) {
     this.lstReceiptDetails.splice(index, 1);
+    this.caculateTotal();
   }
 }

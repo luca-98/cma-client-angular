@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { ClinicServiceService } from 'src/app/core/service/clinic-service.service';
+import { CredentialsService } from 'src/app/core/service/credentials.service';
 import { GroupServiceService } from 'src/app/core/service/group-service.service';
+import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { AddServiceComponent } from 'src/app/shared/dialogs/add-service/add-service.component';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
-import { buildHighlightString, removeSignAndLowerCase } from 'src/app/shared/share-func';
+import { buildHighlightString, oneDot, removeSignAndLowerCase } from 'src/app/shared/share-func';
 
 @Component({
   selector: 'app-cma-service',
@@ -30,21 +33,47 @@ export class CmaServiceComponent implements OnInit {
   timer;
   listService = [];
 
+  userPermissionCode = [];
+
   constructor(
     private titleService: Title,
     private sideMenuService: SideMenuService,
     private groupService: GroupServiceService,
     private dialog: MatDialog,
-    private clinicServiceService: ClinicServiceService
-
-  ) { }
+    private clinicServiceService: ClinicServiceService,
+    private credentialsService: CredentialsService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private menuService: MenuService,
+    private route: ActivatedRoute,
+  ) {
+    this.menuService.reloadMenu.subscribe(() => {
+      this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+      changeDetectorRef.detectChanges();
+    });
+    this.menuService.reloadMenu.subscribe(() => {
+      const listPermission = route.snapshot.data.permissionCode;
+      const newListPermission = this.credentialsService.credentials.permissionCode;
+      for (const e of listPermission) {
+        const index = newListPermission.findIndex(x => x == e);
+        if (index == -1) {
+          location.reload();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Danh mục dịch vụ');
     this.sideMenuService.changeItem(4.1);
     this.getListGroupService();
     this.getAllServicePagging();
+    this.userPermissionCode = this.credentialsService.credentials.permissionCode;
   }
+
+  oneDot(item) {
+    return oneDot(item);
+  }
+
   openNotifyDialog(title: string, content: string) {
     return this.dialog.open(NotifyDialogComponent, {
       width: '350px',
@@ -153,7 +182,7 @@ export class CmaServiceComponent implements OnInit {
   searchAllServicePagging() {
     this.isLoading = true;
     const dataSearch = {
-      serviceName: this.searchData.serviceName,
+      serviceName: this.searchData.serviceName.trim(),
       groupServiceId: this.searchData.selectedGroupServiceId === '0' ? '' : this.searchData.selectedGroupServiceId
     };
     this.clinicServiceService.searchAllServicePagging(dataSearch, this.pageSize, this.pageIndex).subscribe(
@@ -177,6 +206,10 @@ export class CmaServiceComponent implements OnInit {
   }
 
   deleteService(item) {
+    if (item.groupServiceId.groupServiceCode === 'CLINICAL_EXAMINATION') {
+      this.openNotifyDialog('Thông báo', 'Bạn không thể xóa dịch vụ này.');
+      return;
+    }
     const dialogRef = this.openConfirmDialog('Thông báo', 'Bạn có muốn xóa dịch vụ "' + item.serviceName + '" không?');
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

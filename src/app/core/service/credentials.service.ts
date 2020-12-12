@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MenuService } from './menu.service';
 import { WebsocketService } from './websocket.service';
 
 export interface Credentials {
@@ -28,7 +29,8 @@ export class CredentialsService {
   private isRemember: boolean | null = null;
 
   constructor(
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private menuService: MenuService
   ) {
     const savedCredentials = sessionStorage.getItem(credentialsKey) || localStorage.getItem(credentialsKey);
     if (savedCredentials) {
@@ -69,7 +71,6 @@ export class CredentialsService {
       this.isRemember = remember;
       credentials.remember = remember;
       storage.setItem(credentialsKey, JSON.stringify(credentials));
-      this.websocketService.initSubcribe(this.credentialsVar.token);
     } else {
       sessionStorage.removeItem(credentialsKey);
       localStorage.removeItem(credentialsKey);
@@ -78,8 +79,12 @@ export class CredentialsService {
   }
 
   updateCredentials(credentials: Credentials) {
+    this.credentialsVar = credentials || null;
     const storage = this.isRemember ? localStorage : sessionStorage;
     storage.setItem(credentialsKey, JSON.stringify(credentials));
+    this.websocketService.unsubcribe();
+    this.websocketService.initSubcribe(this.credentialsVar.token);
+    this.menuService.reload();
   }
 
 }

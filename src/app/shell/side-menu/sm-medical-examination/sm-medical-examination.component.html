@@ -1,29 +1,36 @@
 <mat-nav-list class="list-sb">
-    <a [class.item-active]="currentItem === 1.1" mat-list-item routerLink="/medical-examination/list-patient">
+    <a [class.item-active]="currentItem === 1.1" mat-list-item routerLink="/medical-examination/list-patient"
+        *ngIf="userPermissionCode.includes('A10')">
         Danh sách bệnh nhân
     </a>
     <mat-divider></mat-divider>
-    <a [class.item-active]="currentItem === 1.2" mat-list-item routerLink="/medical-examination/receive-patient">
+    <a [class.item-active]="currentItem === 1.2" mat-list-item routerLink="/medical-examination/receive-patient"
+        *ngIf="userPermissionCode.includes('A20')">
         Tiếp đón bệnh nhân
     </a>
-    <a [class.item-active]="currentItem === 1.3" mat-list-item routerLink="/medical-examination/clinical-examination">
+    <a [class.item-active]="currentItem === 1.3" mat-list-item routerLink="/medical-examination/clinical-examination"
+        *ngIf="userPermissionCode.includes('A30')">
         Lập phiếu khám
     </a>
-    <a [class.item-active]="currentItem === 1.4" mat-list-item routerLink="/medical-examination/manage-clinical-examination">
+    <a [class.item-active]="currentItem === 1.4" mat-list-item
+        routerLink="/medical-examination/manage-clinical-examination" *ngIf="userPermissionCode.includes('A30')">
         Quản lý phiếu khám
     </a>
     <mat-divider></mat-divider>
-    <a [class.item-active]="currentItem === 1.5" mat-list-item routerLink="/medical-examination/subclinical-examination">
+    <a [class.item-active]="currentItem === 1.5" mat-list-item routerLink="/medical-examination/subclinical-examination"
+        *ngIf="userPermissionCode.includes('A40')">
         Lập phiếu cận lâm sàng
     </a>
-    <a [class.item-active]="currentItem === 1.6" mat-list-item routerLink="/medical-examination/manage-subclinical-examination">
+    <a [class.item-active]="currentItem === 1.6" mat-list-item
+        routerLink="/medical-examination/manage-subclinical-examination" *ngIf="userPermissionCode.includes('A40')">
         Quản lý phiếu cận lâm sàng
     </a>
     <mat-divider></mat-divider>
     <!-- <a [class.item-active]="currentItem === 1.7" mat-list-item routerLink="/medical-examination/appointment">
         Đăng ký hẹn khám
     </a> -->
-    <a [class.item-active]="currentItem === 1.8" mat-list-item routerLink="/medical-examination/manage-appointment">
+    <a [class.item-active]="currentItem === 1.8" mat-list-item routerLink="/medical-examination/manage-appointment"
+        *ngIf="userPermissionCode.includes('A50')">
         Hẹn khám
     </a>
 </mat-nav-list>

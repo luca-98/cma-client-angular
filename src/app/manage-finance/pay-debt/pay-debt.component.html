@@ -1,0 +1,171 @@
+<div class="card-custom collect-debt">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="header m-0">Thông tin nhà cung cấp</h2>
+    </div>
+    <form *ngIf="patientForm" [formGroup]="patientForm" (keydown.enter)="$event.preventDefault()">
+        <div class="row mb-1">
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Tên <span class="required">*</span></label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput formControlName="supplierName" (keyup)="generateByName($event)" autocomplete="off"
+                        #inputName>
+                    <app-supplier-autocomplete  *ngIf="autoBySupplierName.length !== 0" [isMini]="true" [autocomplete]="inputName"
+                        [supplier]="autoBySupplierName" [keySearch]="'supplierName'"
+                        (selectedRow)="autoSelected($event)" [maxHeight]="300">
+                    </app-supplier-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Số điện thoại <span class="required">*</span></label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput formControlName="supplierPhone" (keyup)="generateByPhone($event)" autocomplete="off"
+                        #inputName>
+                    <app-supplier-autocomplete *ngIf="autoBySupplierPhone.length !== 0" [isMini]="true" [autocomplete]="inputName"
+                        [supplier]="autoBySupplierPhone" [keySearch]="'supplierPhone'"
+                        (selectedRow)="autoSelected($event)" [maxHeight]="300">
+                    </app-supplier-autocomplete>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row mb-1">
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Ngày</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input disabled matInput [matDatepicker]="picker2" formControlName="date" [max]="today">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Số phiếu</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput value="{{numberVoucher}}" disabled>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Tổng nợ</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput value="{{oneDot(totalA)}}" disabled>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Tổng trả</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput value="{{oneDot(totalB)}}" disabled>
+                </mat-form-field>
+            </div>
+            <div class="col-4 d-flex">
+                <label class="label min-width-align">Nợ còn lại</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <input matInput value="{{oneDot(totalC)}}" disabled>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-12 d-flex">
+                <label class="label min-width-align">Note</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                    <textarea matInput rows="2" formControlName="note"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button mat-raised-button class="btn-main-color" (click)=" save()">
+                    <i class="fas fa-save"></i>
+                    <span class="ml-1">
+                        Lưu
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-orange " (click)="  resetInput()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="ml-1">
+                        Nhập lại
+                    </span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="box-table">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="header m-0">Danh sách dịch vụ đang nợ</h2>
+            <mat-paginator [length]="tableBottomLength" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions" (page)="onPageEvent($event)" showFirstLastButtons></mat-paginator>
+        </div>
+
+        <div class="table-custom mt-3 ">
+            <ul class="table-header">
+                <li class="header-col stt text-center">
+                    #
+                </li>
+                <li class="header-col width-auto text-left">
+                    Tên
+                </li>
+                <li class="header-col width-10 text-left">
+                    Ngày
+                </li>
+                <li class="header-col width-15 text-left">
+                    Thành tiền
+                </li>
+                <li class="header-col width-15 text-left">
+                    Đã trả
+                </li>
+                <li class="header-col width-15 text-left">
+                    Nợ phải trả
+                </li>
+                <li class="header-col width-15 text-left">
+                    Tiền trả
+                </li>
+                <li class="header-col width-10 text-right">
+                    Còn nợ
+                </li>
+            </ul>
+
+            <div class="table-content caculate-height ">
+                <ul class="content-row" *ngIf="invoiceDetailDebtList.length==0">
+                    <li class="content-col no-data">
+                        Không có dữ liệu
+                    </li>
+                </ul>
+                <app-loading *ngIf="isLoading"></app-loading>
+                <ul class="content-row " *ngFor="let item of invoiceDetailDebtList;let i = index">
+                    <li class="content-col stt text-center">
+                        {{i+1}}
+                    </li>
+                    <li class="content-col width-auto text-left">
+                        {{item.nameOfReceipt}}
+                    </li>
+                    <li class="content-col width-10 text-left">
+                        {{item.createdAt | date: 'dd/MM/yyyy'}}
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        {{oneDot(item.totalAmount)}}đ
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        {{oneDot(item.amountPaid)}}đ
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        {{oneDot(item.totalAmount - item.amountPaid )}}đ
+                    </li>
+                    <li class="content-col width-15 text-left">
+                        <mat-form-field appearance="outline" class="input-fixed-collect-debt">
+                            <input matInput [(ngModel)]="item.todayPay" type="number" min="0" step="1000"
+                                max="{{item.totalAmount - item.amountPaid}}" (change)="onInput(item)" 
+                                (keyup)="onInput(item)"
+                                disabled="{{(item.totalAmount - item.amountPaid)==0?true:false}}" pattern="[0-9.]+">
+                        </mat-form-field>
+                    </li>
+                    <li class="content-col width-10 text-right">
+                        {{oneDot(item.totalAmount - (item.amountPaid + item.todayPay))}}đ
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>

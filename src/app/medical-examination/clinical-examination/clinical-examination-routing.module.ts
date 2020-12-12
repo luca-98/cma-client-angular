@@ -6,8 +6,8 @@ import { PrescriptionsComponent } from './prescriptions/prescriptions.component'
 
 const routes: Routes = [
   { path: '', component: ClinicalExaminationComponent },
-  { path: 'appoint-subclinical', component: AppointSubclinicalComponent },
-  { path: 'prescriptions', component: PrescriptionsComponent }
+  { path: 'appoint-subclinical', component: AppointSubclinicalComponent, data: { permissionCode: ['A33'] } },
+  { path: 'prescriptions', component: PrescriptionsComponent, data: { permissionCode: ['A34'] } }
 ];
 
 @NgModule({

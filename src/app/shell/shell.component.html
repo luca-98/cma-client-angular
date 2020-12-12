@@ -1,9 +1,9 @@
 <mat-sidenav-container class="sidenav-container">
     <mat-sidenav mode="side" #snav opened [fixedInViewport]="true" class="side-nav">
         <!-- logo -->
-        <div class="nav-area">
-            <h2 class="logo" (click)="goHome()">CMA CLINIC</h2>
-        </div>
+        <a class="nav-area" routerLink="/">
+            <h2 class="logo">CMA CLINIC</h2>
+        </a>
 
         <!-- profile -->
         <div class="profile-usertitle">
@@ -45,8 +45,8 @@
             </app-sm-report>
 
             <!-- Thống kê -->
-            <app-sm-statistical [style.display]="sidebarRightState == sidebarItem.Statistical ? 'block': 'none'">
-            </app-sm-statistical>
+            <!-- <app-sm-statistical [style.display]="sidebarRightState == sidebarItem.Statistical ? 'block': 'none'">
+            </app-sm-statistical> -->
 
             <!-- Quản lý chung -->
             <app-sm-general-manage
@@ -66,38 +66,38 @@
                 <mat-icon>menu</mat-icon>
             </button>
 
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.MedicalExamination"
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.MedicalExamination" *ngIf="listPermission.includes('A00')"
                 (click)="changeSidebarRightState(sidebarItem.MedicalExamination)" routerLink="/medical-examination">
                 Quản lý khám bệnh
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Medicine"
+            </a>
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Medicine" *ngIf="listPermission.includes('B00')"
                 (click)="changeSidebarRightState(sidebarItem.Medicine)" routerLink="/manage-medicine">
                 Quản lý thuốc
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Materials"
+            </a>
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Materials" *ngIf="listPermission.includes('C00')"
                 (click)="changeSidebarRightState(sidebarItem.Materials)" routerLink="/manage-material">
                 Quản lý vật tư
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Service"
+            </a>
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Service" *ngIf="listPermission.includes('D00')"
                 (click)="changeSidebarRightState(sidebarItem.Service)" routerLink="/manage-service">
                 Quản lý dịch vụ
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Financial"
+            </a>
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Financial" *ngIf="listPermission.includes('E00')"
                 (click)="changeSidebarRightState(sidebarItem.Financial)" routerLink="/manage-finance">
                 Quản lý tài chính
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Report"
-                (click)="changeSidebarRightState(sidebarItem.Report)">
+            </a>
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Report" *ngIf="listPermission.includes('F00')"
+                (click)="changeSidebarRightState(sidebarItem.Report)" routerLink="/report">
                 Báo cáo
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Statistical"
+            </a>
+            <!-- <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.Statistical"
                 (click)="changeSidebarRightState(sidebarItem.Statistical)">
                 Thống kê
-            </button>
-            <button mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.GeneralManage"
+            </a> -->
+            <a mat-button [class.mat-flat-button]="sidebarRightState === sidebarItem.GeneralManage" *ngIf="listPermission.includes('G00')"
                 (click)="changeSidebarRightState(sidebarItem.GeneralManage)" routerLink="/general-manage">
                 Quản lý chung
-            </button>
+            </a>
 
             <span class="spacer"></span>
 
@@ -126,8 +126,7 @@
 
         </mat-toolbar>
         <div class="loader-area">
-            <div class="progress-area" *ngIf="!showLoader"></div>
-            <mat-progress-bar mode="indeterminate" *ngIf="showLoader"></mat-progress-bar>
+            <mat-progress-bar mode="indeterminate" [style.visibility]="showLoader ? 'visible' : 'hidden'"></mat-progress-bar>
         </div>
         <mat-sidenav-container class="sidenav-container">
             <mat-sidenav-content class="main-content">

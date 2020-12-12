@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-4 d-flex">
                 <label class="label min-width-align">Từ ngày</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                     <input matInput [matDatepicker]="picker1" [max]="today" [(ngModel)]="searchData.startDate">
                     <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                     <mat-datepicker #picker1 color="primary"></mat-datepicker>
@@ -14,7 +14,7 @@
             </div>
             <div class="col-4 d-flex">
                 <label class="label min-width-align">Đến ngày</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                     <input matInput [matDatepicker]="picker2" [max]="today" [(ngModel)]="searchData.endDate">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                     <mat-datepicker #picker2 color="primary"></mat-datepicker>
@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-4 d-flex">
                 <label class="label min-width-align">Mã bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                     <input matInput [(ngModel)]="searchData.patientCode" (keyup)="generateAutoPatientByCode($event)"
                         [matAutocomplete]="autoPatientCode">
                     <mat-autocomplete autoActiveFirstOption #autoPatientCode="matAutocomplete">
@@ -35,7 +35,7 @@
             </div>
             <div class="col-4 d-flex">
                 <label class="label min-width-align">Tên bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                     <input matInput [(ngModel)]="searchData.patientNameSearch"
                         (keyup)="generateAutoPatientByName($event)" [matAutocomplete]="autoPatientName">
                     <mat-autocomplete autoActiveFirstOption #autoPatientName="matAutocomplete">
@@ -46,7 +46,7 @@
             </div>
             <div class="col-4 d-flex">
                 <label class="label min-width-align">Người xuất</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-manage-medicine">
                     <input matInput [(ngModel)]="searchData.staffName" (keyup)="generateAutoStaff($event)"
                         [matAutocomplete]="autoStaffName">
                     <mat-autocomplete autoActiveFirstOption #autoStaffName="matAutocomplete">
@@ -86,7 +86,7 @@
                 <li class="header-col stt text-center">
                     #
                 </li>
-                <li class="header-col width-10 text-left">
+                <li class="header-col width-15 text-left">
                     Mã bệnh nhân
                 </li>
                 <li class="header-col width-20 text-left">
@@ -114,7 +114,7 @@
                     <li class="content-col stt text-center text-truncate">
                         {{i+1}}
                     </li>
-                    <li class="content-col width-10 text-left text-truncate">
+                    <li class="content-col width-15 text-left text-truncate">
                         {{item.patientEntity.patientCode}}
                     </li>
                     <li class="content-col width-20 text-left text-truncate">

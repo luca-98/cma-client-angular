@@ -9,14 +9,16 @@ export class SubclinicalService {
 
   private subclinicalUrl = environment.apiUrl + '/subclinical/';
   private serviceReportUrl = environment.apiUrl + '/service-report/';
+  private imageUrl = environment.apiUrl + '/image/';
+
   constructor(
     private http: HttpClient
   ) { }
 
-  getStaffMinByService(serviceId: any) {
+  getStaffMinByService(groupServiceCode: any) {
     const url = this.subclinicalUrl + 'get-staff-min-service';
     const params = new HttpParams()
-      .set('serviceId', serviceId);
+      .set('groupServiceCode', groupServiceCode);
     return this.http.get(url, { params });
   }
 
@@ -74,11 +76,30 @@ export class SubclinicalService {
       .set('medicalExamId', medicalExamId);
     return this.http.get(url, { params });
   }
+
   changeStatus(id, status) {
     const url = this.serviceReportUrl + 'change-status';
     const params = new HttpParams()
       .set('id', id)
       .set('status', status);
     return this.http.get(url, { params });
+  }
+
+  uploadImage(serviceReportId: string, file: any) {
+    const url = this.imageUrl;
+    const formData = new FormData();
+    formData.append('serviceReportId', serviceReportId);
+    formData.append('file', file);
+    return this.http.post(url, formData);
+  }
+
+  getAllImage(servicerReportId: string) {
+    const url = this.imageUrl + 'get-by-service-report/' + servicerReportId;
+    return this.http.get(url);
+  }
+
+  deleteImage(id: any) {
+    const url = this.imageUrl + id;
+    return this.http.delete(url);
   }
 }

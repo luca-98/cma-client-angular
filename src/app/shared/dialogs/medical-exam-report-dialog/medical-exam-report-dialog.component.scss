@@ -1,0 +1,72 @@
+@font-face {
+    font-family: "editor";
+    src: url("../../../../assets/fonts/editor.woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 6px 21px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.tool {
+    padding: 0;
+    margin-bottom: 0;
+    flex-wrap: inherit;
+    min-height: inherit;
+    align-items: inherit;
+
+    i.editor-icon {
+        /* use !important to prevent issues with browser extensions that change fonts */
+        font-family: "editor" !important;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-save:before {
+        content: "\e911";
+    }
+    .icon-print:before {
+        content: "\e912";
+    }
+
+    button {
+        border: 1px solid #d2d2d2;
+        height: 30px;
+        width: 30px;
+        font-size: 16px;
+        margin-right: 5px;
+        padding: 4px;
+
+        &:hover {
+            background-color: #c5c5c5;
+            border-color: #969696;
+            cursor: pointer;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &.btn-close-dialog {
+            margin-left: auto;
+
+            &:hover {
+                background-color: #dc3545;
+                color: #fff;
+                border-color: #969696;
+                cursor: pointer;
+            }
+        }
+    }
+}

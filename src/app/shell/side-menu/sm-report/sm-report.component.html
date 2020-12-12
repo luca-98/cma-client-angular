@@ -1,5 +1,6 @@
 <mat-nav-list class="list-sb">
-    <a mat-list-item routerLink="/">
+    <a [class.item-active]="currentItem === 6.1" mat-list-item routerLink="/report/revenue-report"
+        *ngIf="userPermissionCode.includes('F10')">
         Báo cáo doanh thu tổng hợp
     </a>
     <a mat-list-item routerLink="/" disabled>

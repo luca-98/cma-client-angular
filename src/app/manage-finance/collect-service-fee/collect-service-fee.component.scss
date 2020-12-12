@@ -1,4 +1,4 @@
-::ng-deep .input-fixed {
+::ng-deep .input-fixed-collect-service-fee {
   width: 100%;
 
   .mat-form-field-wrapper {
@@ -37,8 +37,13 @@ input:disabled {
   color: #000;
 }
 
-::ng-deep{
-  .mat-checkbox-layout{
-    margin: 0!important;
+::ng-deep .collect-service-fee {
+  .mat-checkbox-layout {
+    margin: 0 !important;
+  }
+}
+@media only screen and (min-height: 700px) {
+  .caculate-height {
+    max-height: calc(100vh - 490px);
   }
 }

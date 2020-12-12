@@ -1,22 +1,22 @@
-<div class="card-custom">
+<div class="card-custom collect-service-fee">
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="header m-0">Thông tin bệnh nhân</h2>
     </div>
-    <form *ngIf="patientForm" [formGroup]="patientForm">
+    <form *ngIf="patientForm" [formGroup]="patientForm" (keydown.enter)="$event.preventDefault()">
         <div class="row mb-1">
             <div class="col-6 d-flex">
-                <label class="label min-width-align">Mã bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed" (dblclick)="dbClick()">
+                <label class="label min-width-align">Mã BN <span class="required">*</span></label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <input matInput formControlName="patientCode" autocomplete="off" #inputPatientCode
                         (keyup)="generateAutoPatientByPatientCode($event)">
-                    <app-patient-autocomplete [autocomplete]="inputPatientCode" [patients]="autoByPatientCode"
-                        [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
+                    <app-patient-autocomplete *ngIf="autoByPatientCode.length !== 0" [autocomplete]="inputPatientCode"
+                        [patients]="autoByPatientCode" [keySearch]="'patientCode'" (selectedRow)="autoSelected($event)">
                     </app-patient-autocomplete>
                 </mat-form-field>
             </div>
             <div class="col-6 d-flex">
-                <label class="label min-width-align">Năm sinh</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <label class="label min-width-align">Ngày sinh</label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <input matInput [matDatepicker]="picker2" formControlName="dateOfBirth" [max]="today">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                     <mat-datepicker #picker2 color="primary"></mat-datepicker>
@@ -25,18 +25,18 @@
         </div>
         <div class="row mb-1">
             <div class="col-6 d-flex">
-                <label class="label min-width-align">Tên bệnh nhân</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <label class="label min-width-align">Tên BN <span class="required">*</span></label>
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <input matInput formControlName="patientName" (keyup)="generateAutoPatientByName($event)"
                         autocomplete="off" #inputName>
-                    <app-patient-autocomplete [autocomplete]="inputName" [patients]="autoByName"
-                        [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
+                    <app-patient-autocomplete *ngIf="autoByName.length !== 0" [autocomplete]="inputName"
+                        [patients]="autoByName" [keySearch]="'patientName'" (selectedRow)="autoSelected($event)">
                     </app-patient-autocomplete>
                 </mat-form-field>
             </div>
             <div class="col-6 d-flex">
                 <label class="label min-width-align">Giới tính</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <mat-select formControlName="gender">
                         <mat-option value="0">Nam</mat-option>
                         <mat-option value="1">Nữ</mat-option>
@@ -48,17 +48,17 @@
         <div class="row mb-1">
             <div class="col-6 d-flex">
                 <label class="label min-width-align">Số điện thoại</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <input matInput formControlName="phone" autocomplete="off" #inputPhone
                         (keyup)="generateAutoPatientByPhone($event)" maxlength="10">
-                    <app-patient-autocomplete [autocomplete]="inputPhone" [patients]="autoByPhone" [keySearch]="'phone'"
-                        (selectedRow)="autoSelected($event)">
+                    <app-patient-autocomplete *ngIf="autoByPhone.length !== 0" [autocomplete]="inputPhone"
+                        [patients]="autoByPhone" [keySearch]="'phone'" (selectedRow)="autoSelected($event)">
                     </app-patient-autocomplete>
                 </mat-form-field>
             </div>
             <div class="col-6 d-flex">
                 <label class="label min-width-align">Địa chỉ</label>
-                <mat-form-field appearance="outline" class="input-fixed">
+                <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                     <input matInput formControlName="address">
                 </mat-form-field>
             </div>
@@ -70,6 +70,12 @@
                     <i class="fas fa-dollar-sign"></i>
                     <span class="ml-1">
                         Thu tiền
+                    </span>
+                </button>
+                <button mat-raised-button class="ml-2 btn-main-color" (click)="print()">
+                    <i class="fas fa-print"></i>
+                    <span class="ml-1">
+                        In phiếu
                     </span>
                 </button>
                 <button mat-raised-button class="ml-2 btn-orange " (click)="  resetInput()">
@@ -86,26 +92,26 @@
     </div>
     <div class="row mb-1">
         <div class="col-4 d-flex">
-            <label class="label min-width-align">Tổng tiền</label>
-            <mat-form-field appearance="outline" class="input-fixed">
-                <input matInput disabled [(ngModel)]="total">
+            <label class="label min-width-align">Tổng tiền(đ)</label>
+            <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
+                <input matInput disabled [(ngModel)]="total" >
             </mat-form-field>
         </div>
         <div class="col-4 d-flex">
-            <label class="label min-width-align">Thực thu</label>
-            <mat-form-field appearance="outline" class="input-fixed">
+            <label class="label min-width-align">Thực thu(đ)</label>
+            <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                 <input matInput disabled [(ngModel)]="collected">
             </mat-form-field>
         </div>
         <div class="col-4 d-flex">
-            <label class="label min-width-align">Còn nợ</label>
-            <mat-form-field appearance="outline" class="input-fixed">
+            <label class="label min-width-align">Còn nợ(đ)</label>
+            <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                 <input matInput disabled [(ngModel)]="debt">
             </mat-form-field>
         </div>
     </div>
     <div class="row ">
-        <div class="col-5">
+        <div class="col-6">
             <div class="table-custom  ">
                 <ul class="table-header">
                     <li class="header-col stt text-center">
@@ -115,6 +121,9 @@
                     </li>
                     <li class="header-col width-auto text-left">
                         Dịch vụ/thuốc
+                    </li>
+                    <li class="header-col width-25 text-right">
+                        Tổng tiền
                     </li>
                     <li class="header-col width-25 text-right">
                         Còn nợ
@@ -134,19 +143,26 @@
                             {{i+1}}
                         </li>
                         <li class="content-col width-10 text-left">
-                            <mat-checkbox (click)="addService(item)"></mat-checkbox>
+                            <mat-checkbox (click)="addService(item)" *ngIf="(item.amount - item.amountPaid) > 0">
+                            </mat-checkbox>
                         </li>
-                        <li class="content-col width-auto text-left">
+                        <li *ngIf="item.serviceDto.id" class="content-col width-auto text-left">
                             {{item.serviceDto.serviceName}}
                         </li>
+                        <li *ngIf="item.medicineSaleDto.id" class="content-col width-auto text-left">
+                            {{item.medicineSaleDto.nameMedicineSale}}
+                        </li>
                         <li class="content-col width-25 text-right">
-                            {{item.amount - item.amountPaid}}đ
+                            {{oneDot(item.amount) }}đ
+                        </li>
+                        <li class="content-col width-25 text-right">
+                            {{oneDot(item.amount - item.amountPaid)}}đ
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="col-7">
+        <div class="col-6">
             <div class="table-custom ">
                 <ul class="table-header">
                     <li class="header-col stt text-center">
@@ -177,20 +193,23 @@
                         <li class="content-col stt text-center">
                             {{i+1}}
                         </li>
-                        <li class="content-col width-auto text-left">
+                        <li *ngIf="item.serviceDto.id" class="content-col width-auto text-left">
                             {{item.serviceDto.serviceName}}
                         </li>
+                        <li *ngIf="item.medicineSaleDto.id" class="content-col width-auto text-left">
+                            {{item.medicineSaleDto.nameMedicineSale}}
+                        </li>
                         <li class="content-col width-20 text-left">
-                            {{item.amount}}đ
+                            {{oneDot(item.totalDebt)}}đ
                         </li>
                         <li class="content-col width-25 text-left">
-                            <mat-form-field appearance="outline" class="input-fixed">
+                            <mat-form-field appearance="outline" class="input-fixed-collect-service-fee">
                                 <input matInput [(ngModel)]="item.amountPaid" (change)="onInput(item)" type="number"
-                                    min="0" step="1000" max="{{item.amount}}">
+                                    min="0" step="1000" max="{{item.totalDebt}}" pattern="[0-9.]+">
                             </mat-form-field>
                         </li>
                         <li class="content-col width-20 text-left">
-                            {{item.amount - item.amountPaid}}đ
+                            {{oneDot(item.totalDebt - item.amountPaid)}}đ
                         </li>
                     </ul>
                 </div>

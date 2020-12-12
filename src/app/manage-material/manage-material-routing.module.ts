@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { ManageMaterialComponent } from './manage-material.component';
 const routes: Routes = [
   {
     path: 'import-material',
-    loadChildren: () => import('../manage-medicine/import-medicine/import-medicine.module').then(m => m.ImportMedicineModule)
+    loadChildren: () => import('../manage-medicine/import-medicine/import-medicine.module').then(m => m.ImportMedicineModule),
+    data: { permissionCode: ['C10'] }
   },
-  { path: '**', redirectTo: 'import-material', pathMatch: 'full' }
+  { path: '**', component: ManageMaterialComponent }
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

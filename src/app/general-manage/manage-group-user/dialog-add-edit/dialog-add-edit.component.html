@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content>
+    <div class="dialog-content">
+        <form class="form-user-group" *ngIf="formGroup" [formGroup]="formGroup " (keydown.enter)="$event.preventDefault()">
+            <div class="row">
+                <div class="col-12">
+                    <label class="label min-width-align">Tên nhóm người dùng <span class="required">*</span></label>
+                    <mat-form-field appearance="outline" class="input-fixed">
+                        <input matInput formControlName="groupUserName">
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <h2 class="list-permission-title">Danh sách quyền</h2>
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
+            <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+                <li class="mat-tree-node">
+                    <button mat-icon-button disabled></button>
+                    <mat-checkbox class="checklist-leaf-node" (change)="todoItemSelectionToggle($event.checked,node)"
+                        [checked]="node.selected">{{node.name}}</mat-checkbox>
+                </li>
+            </mat-tree-node>
+            <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                <li>
+                    <div class="mat-tree-node">
+                        <button class="btn-toggle" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        <mat-checkbox class="custom-checkbox" [checked]="node.selected"
+                            [indeterminate]="node.indeterminate && !node.selected"
+                            (change)="todoItemSelectionToggle($event.checked,node)">{{node.name}}</mat-checkbox>
+                    </div>
+                    <ul [class.tree-invisible]="!treeControl.isExpanded(node)">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                    </ul>
+                </li>
+            </mat-nested-tree-node>
+        </mat-tree>
+    </div>
+</div>
+<div mat-dialog-actions class="mb-0 pb-0" align="end">
+    <button class="btn-close-dialog btn-orange" mat-raised-button mat-dialog-close cdkFocusInitial>Hủy bỏ</button>
+    <button class="btn-close-dialog btn-main-color" mat-raised-button cdkFocusInitial (click)="submit()">
+        Lưu
+    </button>
+</div>

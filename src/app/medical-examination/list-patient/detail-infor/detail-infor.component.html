@@ -2,7 +2,8 @@
     <div class="flex-container flex-content-between mb-2">
         <h2 class="header">Lịch sử khám bệnh</h2>
         <div>
-            <button mat-raised-button class="btn-green" (click)="moveToReceive()">Tiếp đón bệnh nhân này</button>
+            <a mat-raised-button class="btn-green" routerLink="/medical-examination/receive-patient"
+                [queryParams]="{ patientId: patientId }">Tiếp đón bệnh nhân này</a>
             <button mat-raised-button class="ml-2 btn-orange" (click)="back()">
                 <i class="fas fa-undo"></i>
                 <span class="ml-1">
@@ -12,7 +13,7 @@
         </div>
     </div>
     <hr>
-    <form *ngIf="detailForm" [formGroup]="detailForm">
+    <form *ngIf="detailForm" [formGroup]="detailForm" (keydown.enter)="$event.preventDefault()">
         <div class="grid-container grid-template-1 mb-2 mt-2">
             <div class="flex-container">
                 <label class="label min-width-align">Mã bệnh nhân</label>
@@ -76,9 +77,10 @@
         </div>
     </form>
     <div class="d-flex justify-content-end mb-3 mt-3">
-        <button mat-raised-button class="btn-main-color">
+        <a mat-raised-button class="btn-main-color" routerLink="/manage-finance/collect-debt"
+            *ngIf="userPermissionCode.includes('A16')" [queryParams]="{ patientId: patientId }">
             Lập phiếu thu nợ
-        </button>
+        </a>
     </div>
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
@@ -116,7 +118,7 @@
                     <td>{{e.staffName}}</td>
                     <td>
                         <!-- e.id, e.type -->
-                        <button class="btn btn-outline-secondary btn-sm">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="detailReport(e.id, e.type)">
                             Xem phiếu
                         </button>
                     </td>
