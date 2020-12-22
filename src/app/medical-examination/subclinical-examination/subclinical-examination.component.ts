@@ -892,26 +892,34 @@ export class SubclinicalExaminationComponent implements OnInit {
                 this.openNotifyDialog('Thông báo', 'Kết thúc khám thành công');
                 item.status = '3';
                 this.listChangeStatus.push(item.id);
-                this.medicalExaminationService.getMedicalExam(this.medicalExamId)
-                  .subscribe(
-                    (data2: any) => {
-                      this.medicalExamCode = data2.message.medicalExaminationCode;
-                      if (data2.status !== 5 && data2.status !== 6) {
-                        this.medicalExaminationService.changeStatus(this.medicalExamId, '4')
-                          .subscribe(
-                            () => {
-                              console.log('change status done');
-                            },
-                            () => {
-                              console.log('change status error');
-                            }
-                          );
+                let isDone = true;
+                for (const e of this.listPatientService) {
+                  if (e.status != 3) {
+                    isDone = false;
+                  }
+                }
+                if (isDone) {
+                  this.medicalExaminationService.getMedicalExam(this.medicalExamId)
+                    .subscribe(
+                      (data2: any) => {
+                        this.medicalExamCode = data2.message.medicalExaminationCode;
+                        if (data2.status !== 5 && data2.status !== 6) {
+                          this.medicalExaminationService.changeStatus(this.medicalExamId, '4')
+                            .subscribe(
+                              () => {
+                                console.log('change status done');
+                              },
+                              () => {
+                                console.log('change status error');
+                              }
+                            );
+                        }
+                      },
+                      () => {
+                        console.log('change status error');
                       }
-                    },
-                    () => {
-                      console.log('change status error');
-                    }
-                  );
+                    );
+                }
               }
             }, (err) => {
               this.openNotifyDialog('Lỗi', 'Kết thúc khám không thành công');

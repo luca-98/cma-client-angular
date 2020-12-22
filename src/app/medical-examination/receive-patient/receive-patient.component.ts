@@ -282,6 +282,7 @@ export class ReceivePatientComponent implements OnInit {
     this.commonService.getRoomMedicalExam()
       .subscribe(
         (data: any) => {
+          data.message.sort((a: any, b: any) => (a.roomName > b.roomName) ? 1 : ((b.roomName > a.roomName) ? -1 : 0));
           this.roomList = data.message;
         },
         () => {

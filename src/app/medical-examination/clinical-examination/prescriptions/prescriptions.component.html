@@ -118,7 +118,8 @@
                     </ul>
                     <ul class="content-row" *ngFor="let item of listMedicine">
                         <li class="content-col stt text-center">
-                            <mat-checkbox [(ngModel)]="item.checked" (click)="hanldeSelectMedicine(item,$event)">
+                            <mat-checkbox [(ngModel)]="item.checked" [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5"
+                                (click)="(medicalExamStatus == 0 || medicalExamStatus == 5) ?'': hanldeSelectMedicine(item,$event)">
                             </mat-checkbox>
                         </li>
                         <li class="content-col width-auto text-left ">
@@ -130,7 +131,7 @@
                     </ul>
                 </div>
             </div>
-           
+
         </div>
     </div>
     <div class="row mt-1">
@@ -154,7 +155,8 @@
                     In đơn thuốc
                 </span>
             </button>
-            <button mat-raised-button class="btn-main-color ml-2" (click)="saveData()">
+            <button mat-raised-button class="btn-main-color ml-2" (click)="saveData()"
+                [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5">
                 <i class="fas fa-save"></i>
                 <span class="ml-1">
                     Lưu
@@ -207,17 +209,20 @@
                     <li class="content-col width-15 text-left ">
                         <mat-form-field appearance="outline" class="input-fixed-prescriptions">
                             <input matInput [(ngModel)]="item.quantity" min="1" type="number"
+                                [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5"
                                 (keyup)="validateQuantity(item)" pattern="[0-9.]+">
                         </mat-form-field>
                     </li>
                     <li class="content-col width-auto text-left ">
                         <mat-form-field appearance="outline" class="input-fixed-prescriptions">
-                            <input matInput [(ngModel)]="item.noteDetail">
+                            <input matInput [(ngModel)]="item.noteDetail"
+                                [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5">
                         </mat-form-field>
                     </li>
                     <li class="header-col width-5 text-left">
                         <div style="display: flex; justify-content: flex-end;">
                             <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa thuốc này"
+                                [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5"
                                 (click)="deleteMedicine(item.medicineId,true)">
                                 <i class="fas fa-trash"></i>
                             </button>

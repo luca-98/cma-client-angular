@@ -87,6 +87,7 @@ export class ManageUserComponent implements OnInit {
           const index = data.message.findIndex(x => x.userGroupCode == 'ROLE_MANAGER');
           const manager = data.message.find(x => x.userGroupCode == 'ROLE_MANAGER');
           data.message.splice(index, 1);
+          data.message.sort((a: any, b: any) => (a.userGroupName > b.userGroupName) ? 1 : ((b.userGroupName > a.userGroupName) ? -1 : 0));
           this.listUser.push(manager);
           this.listUser = [
             ...this.listUser,

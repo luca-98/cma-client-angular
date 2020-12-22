@@ -10,6 +10,7 @@ import { SideMenuService } from '../core/service/side-menu.service';
 import { StaffService } from '../core/service/staff.service';
 import { WebsocketService } from '../core/service/websocket.service';
 import { SidebarItem } from '../enum/sidebar-item.enum';
+import { ChangePasswordDialogComponent } from '../shared/dialogs/change-password-dialog/change-password-dialog.component';
 import { NotifyDialogComponent } from '../shared/dialogs/notify-dialog/notify-dialog.component';
 import { DialogChangeRoomComponent } from './dialog-change-room/dialog-change-room.component';
 
@@ -160,5 +161,14 @@ export class ShellComponent implements OnInit {
           console.error('error call api');
         }
       );
+  }
+
+  changePassword() {
+    this.dialog.open(ChangePasswordDialogComponent, {
+      width: '500px',
+      disableClose: true,
+      autoFocus: false,
+      position: { top: '70px' }
+    });
   }
 }

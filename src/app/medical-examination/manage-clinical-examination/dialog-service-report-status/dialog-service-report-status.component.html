@@ -9,6 +9,11 @@
             </tr>
         </thead>
         <tbody>
+            <tr *ngIf="dataDisplay.length == 0">
+                <td colspan="3">
+                    Không có dịch vụ được chỉ định
+                </td>
+            </tr>
             <tr *ngFor="let ele of dataDisplay; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ ele.name }}</td>

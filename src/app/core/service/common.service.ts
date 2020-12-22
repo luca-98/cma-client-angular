@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CommonService {
 
+  private changePasswordUrl = environment.apiUrl + '/auth/change-password/';
   private patientUrl = environment.apiUrl + '/patient/';
   private roomServiceUrl = environment.apiUrl + '/room-service/';
   private staffUrl = environment.apiUrl + '/staff/';
@@ -20,6 +21,12 @@ export class CommonService {
     private http: HttpClient
   ) { }
 
+  changePassword(oldPassword: string, newPassword: string) {
+    const formData = new FormData();
+    formData.append('oldPassword', oldPassword);
+    formData.append('newPassword', newPassword);
+    return this.http.post(this.changePasswordUrl, formData);
+  }
 
   getAllDoctor(): any {
     const url = this.staffUrl + 'get-all-clinical-exam-staff';

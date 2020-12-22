@@ -35,6 +35,7 @@ export class CollectServiceFeeComponent implements OnInit {
   lstInvoiceDetailsSelected = [];
   invoiceId;
   patientId;
+  lastSave = [];
 
   constructor(
     private titleService: Title,
@@ -180,6 +181,7 @@ export class CollectServiceFeeComponent implements OnInit {
   }
 
   resetInput() {
+    this.lastSave = [];
     this.autoByName = [];
     this.autoByPatientCode = [];
     this.autoByPhone = [];
@@ -274,7 +276,7 @@ export class CollectServiceFeeComponent implements OnInit {
 
   save() {
     const dataPost = [];
-
+    this.lastSave = JSON.parse(JSON.stringify(this.lstInvoiceDetailsSelected));
     for (const iterator of this.lstInvoiceDetailsSelected) {
       let index = dataPost.findIndex(e => e.invoiceId == iterator.invoiceId);
       if (index === -1) {
@@ -296,10 +298,10 @@ export class CollectServiceFeeComponent implements OnInit {
     }
 
     this.invoiceService.updateInvoice({ lstInvoidDetailListInvoiceSave: dataPost }).subscribe(
-      (data: any) => {
+      async (data: any) => {
         this.openNotifyDialog('Thông báo', 'Lưu thông tin thu tiền dịch vụ thành công.');
+        this.print();
         this.getInvoiceByPatientId(this.patientId);
-
       },
       (error) => {
         this.openNotifyDialog('Lỗi', 'Lưu thông tin thu tiền dịch vụ thất bại.');
@@ -322,6 +324,8 @@ export class CollectServiceFeeComponent implements OnInit {
 
     }
     this.caculate();
+    this.lastSave = JSON.parse(JSON.stringify(this.lstInvoiceDetailsSelected));
+
 
   }
 
@@ -348,8 +352,8 @@ export class CollectServiceFeeComponent implements OnInit {
     this.caculate();
   }
 
-  print() {
-    this.commonService.getListPrintTemplate()
+  async print() {
+    await this.commonService.getListPrintTemplate()
       .subscribe(
         (data: any) => {
           for (const printT of data.message) {
@@ -370,7 +374,7 @@ export class CollectServiceFeeComponent implements OnInit {
                     let totalAmount = 0;
                     let totalPaid = 0;
                     let totalDebt = 0;
-                    for (const ele of this.lstInvoiceDetailsSelected) {
+                    for (const ele of this.lastSave) {
                       const tr = document.createElement('TR');
 
                       const td1 = document.createElement('TD');

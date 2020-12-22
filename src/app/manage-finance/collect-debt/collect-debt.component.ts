@@ -21,7 +21,7 @@ import { convertDateToNormal, oneDot, propValToString, removeSignAndLowerCase } 
 export class CollectDebtComponent implements OnInit {
 
   tableBottomLength = 0;
-  pageSize = 25;
+  pageSize = 999;
   pageIndex = 0;
   pageSizeOptions: number[] = [25, 50, 100, 200];
   isLoading = false;

@@ -122,6 +122,7 @@ export class AddGroupServiceComponent implements OnInit {
     this.staffService.getAllStaff().subscribe(
       (res: any) => {
         if (res.message) {
+          res.message.sort((a: any, b: any) => (a.fullName > b.fullName) ? 1 : ((b.fullName > a.fullName) ? -1 : 0));
           this.listStaff = res.message;
           for (const iterator of this.listStaff) {
             iterator.checked = false;

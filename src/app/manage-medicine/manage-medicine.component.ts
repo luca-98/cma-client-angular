@@ -16,14 +16,14 @@ export class ManageMedicineComponent implements OnInit {
 
   ngOnInit(): void {
     const userPermissionCode = this.credentialsService.credentials.permissionCode;
-    let index = userPermissionCode.findIndex(x => x == 'B10');
-    if (index != -1) {
-      this.router.navigate(['/manage-medicine/import-medicine']);
-      return;
-    }
-    index = userPermissionCode.findIndex(x => x == 'B20');
+    let index = userPermissionCode.findIndex(x => x == 'B20');
     if (index != -1) {
       this.router.navigate(['/manage-medicine/export-medicine']);
+      return;
+    }
+    index = userPermissionCode.findIndex(x => x == 'B10');
+    if (index != -1) {
+      this.router.navigate(['/manage-medicine/import-medicine']);
       return;
     }
     index = userPermissionCode.findIndex(x => x == 'B30');

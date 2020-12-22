@@ -192,7 +192,21 @@ export class CmaServiceComponent implements OnInit {
         this.tableBottomLength = data.message.totalRecord;
         this.pageSize = data.message.pageSize;
         this.pageIndex = data.message.pageIndex;
-
+        if (this.listService.length === 0 && this.pageIndex != 0) {
+          this.clinicServiceService.searchAllServicePagging(dataSearch, 25, 0).subscribe(
+            (data2: any) => {
+              this.listService = data2.message.serviceTableList;
+              this.isLoading = false;
+              this.tableBottomLength = data2.message.totalRecord;
+              this.pageSize = data2.message.pageSize;
+              this.pageIndex = data2.message.pageIndex;
+            },
+            (err) => {
+              this.isLoading = false;
+              this.openNotifyDialog('Lỗi', 'Lỗi trong quá trình lấy danh sách dịch vụ');
+            }
+          );
+        }
       },
       (err) => {
         this.isLoading = false;

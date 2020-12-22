@@ -29,4 +29,26 @@ export class RoomService {
         const url = this.roomUrl + 'get-current-room-by-staff/' + id;
         return this.http.get(url);
     }
+
+    addRoomService(roomServiceName: any) {
+        const url = this.roomUrl;
+        const room = {
+            roomName: roomServiceName
+        };
+        return this.http.post(url, room);
+    }
+
+    updateRoomService(id: any, roomServiceName: any) {
+        const url = this.roomUrl;
+        const room = {
+            id,
+            roomName: roomServiceName
+        };
+        return this.http.put(url, room);
+    }
+
+    deleteRoomService(id: any) {
+        const url = this.roomUrl + id;
+        return this.http.delete(url);
+    }
 }

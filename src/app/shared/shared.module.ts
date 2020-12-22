@@ -31,6 +31,7 @@ import { ViewDebtComponent } from './dialogs/view-debt/view-debt.component';
 import { MedicalExamReportDialogComponent } from './dialogs/medical-exam-report-dialog/medical-exam-report-dialog.component';
 import { PrescriptionReportDialogComponent } from './dialogs/prescription-report-dialog/prescription-report-dialog.component';
 import { CollectPayCashComponent } from './dialogs/collect-pay-cash/collect-pay-cash.component';
+import { ChangePasswordDialogComponent } from './dialogs/change-password-dialog/change-password-dialog.component';
 
 
 @NgModule({
@@ -42,7 +43,7 @@ import { CollectPayCashComponent } from './dialogs/collect-pay-cash/collect-pay-
     EditAppointmentComponent, AddServiceComponent,
     AddGroupServiceComponent,
     CollectPayCashComponent, SubclinicalReportDialogComponent,
-    ViewDebtComponent, MedicalExamReportDialogComponent, PrescriptionReportDialogComponent],
+    ViewDebtComponent, MedicalExamReportDialogComponent, PrescriptionReportDialogComponent, ChangePasswordDialogComponent],
   imports: [
     CommonModule,
     MatSnackBarModule,

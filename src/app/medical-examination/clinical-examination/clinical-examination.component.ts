@@ -52,6 +52,7 @@ export class ClinicalExaminationComponent implements OnInit {
   medicalExamId = null;
   enableFuncBtn = false;
   medicalExaminationCode = null;
+  medicalExamStatus: any;
 
   room = {
     name: '',
@@ -353,6 +354,7 @@ export class ClinicalExaminationComponent implements OnInit {
       name: this.credentialsService.credentials.fullName,
       id: this.credentialsService.credentials.staffId
     };
+    this.examForm.enable();
     this.examForm.patchValue({
       patientId: '',
       patientName: '',
@@ -433,6 +435,10 @@ export class ClinicalExaminationComponent implements OnInit {
   // }
 
   fillData(data: any) {
+    this.medicalExamStatus = data.message.status;
+    if (this.medicalExamStatus == 0 || this.medicalExamStatus == 5) {
+      this.examForm.disable();
+    }
     const date = moment(new Date(data.message.patient.dateOfBirth));
     data.message.patient = propValToString(data.message.patient);
     this.examForm.patchValue({
@@ -468,6 +474,11 @@ export class ClinicalExaminationComponent implements OnInit {
               name: this.credentialsService.credentials.fullName,
               id: this.credentialsService.credentials.staffId,
             };
+
+            this.examForm.patchValue({
+              room: this.credentialsService.credentials.roomName,
+              doctor: this.credentialsService.credentials.fullName
+            });
           } else {
             this.resetInput();
             return;
@@ -643,8 +654,7 @@ export class ClinicalExaminationComponent implements OnInit {
               queryParams: {
                 medicalExamId: data.message.id
               },
-              queryParamsHandling: 'merge',
-              skipLocationChange: true
+              queryParamsHandling: 'merge'
             });
             this.medicalExaminationCode = data.message.medicalExaminationCode;
             this.enableFuncBtn = true;
@@ -673,8 +683,7 @@ export class ClinicalExaminationComponent implements OnInit {
                   queryParams: {
                     medicalExamId: data.message.id
                   },
-                  queryParamsHandling: 'merge',
-                  skipLocationChange: true
+                  queryParamsHandling: 'merge'
                 });
                 this.medicalExaminationCode = data.message.medicalExaminationCode;
                 this.enableFuncBtn = true;
@@ -723,6 +732,8 @@ export class ClinicalExaminationComponent implements OnInit {
         this.medicalExaminationService.changeStatus(this.medicalExamId, '5')
           .subscribe(
             () => {
+              this.medicalExamStatus = 5;
+              this.examForm.disable();
               this.updateHtmlReport(this.medicalExamId);
               const dialogRef2 = this.openNotifyDialog('Thông báo', 'Kết thúc khám thành công');
               dialogRef2.afterClosed().subscribe(() => {

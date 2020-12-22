@@ -75,7 +75,15 @@ export class ManageGroupUserComponent implements OnInit {
     this.groupUserService.getAllGroupUser()
       .subscribe(
         (data: any) => {
-          this.listGroupUser = data.message;
+          const index = data.message.findIndex(x => x.userGroupCode == 'ROLE_MANAGER');
+          const manager = data.message.find(x => x.userGroupCode == 'ROLE_MANAGER');
+          data.message.splice(index, 1);
+          data.message.sort((a: any, b: any) => (a.userGroupName > b.userGroupName) ? 1 : ((b.userGroupName > a.userGroupName) ? -1 : 0));
+          this.listGroupUser.push(manager);
+          this.listGroupUser = [
+            ...this.listGroupUser,
+            ...data.message
+          ];
         },
         () => {
           this.openNotifyDialog('Lỗi', 'Máy chủ gặp sự cố, vui lòng thử lại');

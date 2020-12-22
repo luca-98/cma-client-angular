@@ -72,7 +72,8 @@
                         In phiếu chỉ định
                     </span>
                 </button>
-                <button mat-raised-button class="btn-main-color ml-2" (click)="save()">
+                <button mat-raised-button class="btn-main-color ml-2" (click)="save()"
+                    [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5">
                     <i class="fas fa-save"></i> <span class="ml-1">
                         Lưu
                     </span>
@@ -134,7 +135,8 @@
                             *ngIf="i.isSearchResult || selectedGroupServiceCode == '0' || i.groupServiceCode == selectedGroupServiceCode">
                             <li class="content-col stt text-center">
                                 <mat-checkbox [(ngModel)]="i.checkBox" (change)="handleSelectService($event, i)"
-                                    [disabled]="checkDisableService(i)"></mat-checkbox>
+                                    [disabled]="checkDisableService(i) || medicalExamStatus == 0 || medicalExamStatus == 5">
+                                </mat-checkbox>
                             </li>
                             <li class="content-col width-auto text-left ">
                                 {{i.serviceName}}
@@ -193,7 +195,8 @@
                         </li>
                         <li class="content-col width-15 text-left">
                             <mat-form-field appearance="outline" class="input-fixed">
-                                <mat-select [(value)]="service.doctorSelected" [disabled]="service.status != 1"
+                                <mat-select [(value)]="service.doctorSelected"
+                                    [disabled]="service.status != 1 || medicalExamStatus == 0 || medicalExamStatus == 5"
                                     (selectionChange)="onChangeDoctor(service)">
                                     <ng-container *ngFor="let doctor of listDoctor">
                                         <mat-option [value]="doctor.id"
@@ -207,7 +210,7 @@
                         <li class="content-col width-15 text-left ">
                             <mat-form-field appearance="outline" class="input-fixed">
                                 <mat-select [(value)]="service.roomSelected" (selectionChange)="onChangeRoom(service)"
-                                    [disabled]="service.status != 1">
+                                    [disabled]="service.status != 1 || medicalExamStatus == 0 || medicalExamStatus == 5">
                                     <ng-container *ngFor="let room of listRoom">
                                         <mat-option [value]="room.id"
                                             *ngIf="room.groupServiceCode == service.groupServiceCode">
@@ -227,7 +230,7 @@
                                     <i class="fas fa-file"></i>
                                 </button>
                                 <button class="btn btn-outline-secondary btn-sm ml-1" title="Xóa dịch vụ"
-                                    [disabled]="service.status != 1 && service.status != 2"
+                                    [disabled]="(service.status != 1 && service.status != 2) || medicalExamStatus == 0 || medicalExamStatus == 5"
                                     (click)="removeService(service)">
                                     <i class="fas fa-trash"></i>
                                 </button>

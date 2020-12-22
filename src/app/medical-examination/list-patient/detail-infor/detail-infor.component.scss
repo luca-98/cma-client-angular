@@ -14,10 +14,17 @@
     margin: 3px 0;
 }
 
+table {
+    width: 100%;
+}
+
 th,
 td {
-    white-space: nowrap;
     vertical-align: middle;
+}
+
+th, button {
+    white-space: nowrap;
 }
 
 th {

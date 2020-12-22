@@ -186,7 +186,7 @@
                             [queryParams]="{ medicalExamId: m.id }" title="Chuyển đến lập phiếu khám">
                             <i class="fas fa-file"></i>
                         </a>
-                        <button class="btn btn-outline-secondary btn-sm ml-1" [disabled]="m.status != '3'"
+                        <button class="btn btn-outline-secondary btn-sm ml-1" [disabled]="m.status == '0' || m.status == '1'"
                             (click)="serviceReport(m.id)" title="Xem trạng thái kết quả CLS">
                             <i class="fas fa-list"></i>
                         </button>

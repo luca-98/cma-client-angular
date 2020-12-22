@@ -26,6 +26,8 @@ declare var $: any;
 })
 
 export class PrescriptionsComponent implements OnInit {
+
+  medicalExamStatus: any;
   patientForm: FormGroup;
   time = new Date();
   today = moment(new Date());
@@ -97,6 +99,10 @@ export class PrescriptionsComponent implements OnInit {
     this.medicalExaminationService.getMedicalExam(id)
       .subscribe(
         (data: any) => {
+          this.medicalExamStatus = data.message.status;
+          if (this.medicalExamStatus == 0 || this.medicalExamStatus == 5) {
+            this.patientForm.disable();
+          }
           this.medicalExaminationCode = data.message.medicalExaminationCode;
           this.staffName = data.message.staff.fullName;
         },

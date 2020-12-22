@@ -46,6 +46,7 @@ declare var $: any;
 })
 export class AppointSubclinicalComponent implements OnInit {
 
+  medicalExamStatus: any;
   medicalExamId = null;
   medicalExaminationCode = null;
   patientForm: FormGroup;
@@ -135,6 +136,7 @@ export class AppointSubclinicalComponent implements OnInit {
           if (data.message.patientCode === null) {
             this.router.navigate(['/medical-examination/clinical-examination']);
           }
+          this.medicalExamStatus = data.message.medicalExamStatus;
 
           this.medicalExaminationCode = data.message.medicalExaminationCode;
           const date = moment(new Date(data.message.dateOfBirth));

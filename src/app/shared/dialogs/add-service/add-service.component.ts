@@ -120,6 +120,7 @@ export class AddServiceComponent implements OnInit {
     this.templateReportService.getAllTemplateReport().subscribe(
       (res: any) => {
         if (res.message) {
+          res.message.sort((a: any, b: any) => (a.templateName > b.templateName) ? 1 : ((b.templateName > a.templateName) ? -1 : 0));
           if (this.isAdd) {
             this.dataPost.templateReportservice = res.message[0].templateReportId;
           }
@@ -135,6 +136,9 @@ export class AddServiceComponent implements OnInit {
     this.groupService.getAllGroupService().subscribe(
       (res: any) => {
         if (res.message) {
+          res.message.sort(
+            (a: any, b: any) => (a.groupServiceName > b.groupServiceName) ? 1 : ((b.groupServiceName > a.groupServiceName) ? -1 : 0)
+          );
           if (this.isAdd) {
             this.dataPost.groupServiceId = res.message[0].id;
           }
@@ -150,6 +154,7 @@ export class AddServiceComponent implements OnInit {
     this.roomService.getListRoomService().subscribe(
       (res: any) => {
         if (res.message) {
+          res.message.sort((a: any, b: any) => (a.roomName > b.roomName) ? 1 : ((b.roomName > a.roomName) ? -1 : 0));
           this.listRoomService = res.message;
           for (const iterator of this.listRoomService) {
             iterator.checked = false;

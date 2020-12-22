@@ -47,6 +47,7 @@ export class ManageTemplatePrintComponent implements OnInit {
     this.commonService.getListPrintTemplate()
       .subscribe(
         (data: any) => {
+          data.message.sort((a: any, b: any) => (a.printName > b.printName) ? 1 : ((b.printName > a.printName) ? -1 : 0));
           this.listTemplatePrint = data.message;
         },
         () => {

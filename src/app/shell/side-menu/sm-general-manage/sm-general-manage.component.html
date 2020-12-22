@@ -8,6 +8,11 @@
         Quản lý nhóm người dùng
     </a>
     <mat-divider></mat-divider>
+    <a [class.item-active]="currentItem === 8.4" mat-list-item routerLink="/general-manage/manage-room-service"
+        *ngIf="userPermissionCode.includes('G40')">
+        Quản lý phòng làm việc
+    </a>
+    <mat-divider></mat-divider>
     <a [class.item-active]="currentItem === 8.3" mat-list-item routerLink="/general-manage/manage-template-report"
         *ngIf="userPermissionCode.includes('G30')">
         Quản lý phiếu in

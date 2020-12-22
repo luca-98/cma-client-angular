@@ -105,6 +105,9 @@ export class CmaGroupServiceComponent implements OnInit {
     this.groupService.getAllGroupService().subscribe(
       (data: any) => {
         if (data.message) {
+          data.message.sort((a: any, b: any) => (
+            a.groupServiceName > b.groupServiceName) ? 1 : ((b.groupServiceName > a.groupServiceName) ? -1 : 0)
+          );
           this.listGroupService = data.message;
         }
       }, (error) => {

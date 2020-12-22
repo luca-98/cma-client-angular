@@ -604,6 +604,53 @@ export class ExportMedicineComponent implements OnInit {
                             listTrNode.push(tr);
                           }
 
+                          for (const ele of this.listMedicine2) {
+                            const tr = document.createElement('TR');
+
+                            const td1 = document.createElement('TD');
+                            td1.style.borderCollapse = 'collapse';
+                            td1.style.border = '1px dotted rgb(0, 0, 0)';
+                            td1.style.overflowWrap = 'break-word';
+                            td1.style.padding = '0px 6px';
+                            td1.innerHTML = '' + count++;
+                            tr.appendChild(td1);
+
+                            const td2 = document.createElement('TD');
+                            td2.style.borderCollapse = 'collapse';
+                            td2.style.border = '1px dotted rgb(0, 0, 0)';
+                            td2.style.overflowWrap = 'break-word';
+                            td2.style.padding = '0px 6px';
+                            td2.innerHTML = ele.medicineName;
+                            tr.appendChild(td2);
+
+                            const td3 = document.createElement('TD');
+                            td3.style.borderCollapse = 'collapse';
+                            td3.style.border = '1px dotted rgb(0, 0, 0)';
+                            td3.style.overflowWrap = 'break-word';
+                            td3.style.padding = '0px 6px';
+                            td3.innerHTML = ele.quantity;
+                            tr.appendChild(td3);
+
+                            const td4 = document.createElement('TD');
+                            td4.style.borderCollapse = 'collapse';
+                            td4.style.border = '1px dotted rgb(0, 0, 0)';
+                            td4.style.overflowWrap = 'break-word';
+                            td4.style.padding = '0px 6px';
+                            td4.innerHTML = ele.price;
+                            tr.appendChild(td4);
+
+                            const td5 = document.createElement('TD');
+                            td5.style.borderCollapse = 'collapse';
+                            td5.style.border = '1px dotted rgb(0, 0, 0)';
+                            td5.style.overflowWrap = 'break-word';
+                            td5.style.padding = '0px 6px';
+                            td5.innerHTML = ele.total;
+                            totalAmount += ele.total;
+                            tr.appendChild(td5);
+
+                            listTrNode.push(tr);
+                          }
+
                           const today = new Date();
                           const day = this.datePipe.transform(today, 'dd');
                           const month = this.datePipe.transform(today, 'MM');

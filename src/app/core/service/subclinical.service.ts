@@ -63,6 +63,7 @@ export class SubclinicalService {
       .set('patientCode', patientCode);
     return this.http.get(url, { params });
   }
+
   initInfoSubclinical(medicalExamId) {
     const url = this.subclinicalUrl + 'init-info-subclinical';
     const params = new HttpParams()

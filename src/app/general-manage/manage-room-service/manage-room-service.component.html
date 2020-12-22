@@ -1,0 +1,37 @@
+<div class="mb-1">
+    <div class="card-custom">
+        <div class="mb-2 d-flex align-items-center justify-content-between">
+            <h2 class="header">Danh sách phòng làm việc</h2>
+            <button mat-raised-button class="btn-main-color" (click)="add()">
+                <i class="fas fa-plus"></i>
+                <span class="ml-1">
+                    Thêm mới
+                </span>
+            </button>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tên phòng làm việc</th>
+                    <th>Lần sửa cuối cùng</th>
+                    <th>Chỉnh sửa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="listRoom.length === 0">
+                    <td colspan="4">Không có kết quả</td>
+                </tr>
+                <tr *ngFor="let e of listRoom; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{e.roomName}}</td>
+                    <td>{{e.updatedAt | date: 'dd/MM/yyyy HH:mm'}}</td>
+                    <td>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="edit(e)">Chi tiết</button>
+                        <button class="btn btn-outline-danger btn-sm ml-2" (click)="deleteRoom(e.id)">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

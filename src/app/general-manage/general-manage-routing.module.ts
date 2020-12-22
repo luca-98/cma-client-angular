@@ -18,6 +18,11 @@ const routes: Routes = [
     loadChildren: () => import('./manage-template-print/manage-template-print.module').then(m => m.ManageTemplatePrintModule),
     data: { permissionCode: ['G30'] }
   },
+  {
+    path: 'manage-room-service',
+    loadChildren: () => import('./manage-room-service/manage-room-service.module').then(m => m.ManageRoomServiceModule),
+    data: { permissionCode: ['G40'] }
+  },
   { path: '**', component: GeneralManageComponent }
 ];
 

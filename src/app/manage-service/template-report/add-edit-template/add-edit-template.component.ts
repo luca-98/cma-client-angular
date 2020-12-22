@@ -19,6 +19,7 @@ declare var $: any;
 })
 export class AddEditTemplateComponent implements OnInit, AfterViewInit {
 
+  listTemplate = [];
   title = '';
   editor: any;
   currentId: string;
@@ -86,9 +87,25 @@ export class AddEditTemplateComponent implements OnInit, AfterViewInit {
   async initData() {
     this.buildDragDropItem();
     await this.getAllGroupTemplateReport();
+    await this.getAllTemplateReport();
     if (this.currentId !== undefined) {
       await this.getTemplateReport();
     }
+  }
+
+  async getAllTemplateReport() {
+    await this.templateReportService.getAllTemplateReport()
+      .toPromise()
+      .then(
+        (data: any) => {
+          if (data.message) {
+            this.listTemplate = data.message;
+          }
+        },
+        () => {
+          this.openNotifyDialog('Lỗi', 'Lỗi khi tải dữ liệu');
+        }
+      );
   }
 
   buildDragDropItem() {
@@ -210,10 +227,17 @@ export class AddEditTemplateComponent implements OnInit, AfterViewInit {
 
   save() {
     const id = this.currentId === undefined ? null : this.currentId;
-    const templateName = this.reportName;
-    if (templateName === undefined || templateName === '') {
+    let templateName = this.reportName;
+    if (templateName === undefined || templateName.trim() === '') {
       this.openNotifyDialog('Lỗi', 'Tên của mẫu kết quả dịch vụ không được để trống');
       return;
+    }
+    templateName = templateName.trim();
+    for (const e of this.listTemplate) {
+      if (templateName == e.templateName && e.templateReportId != id) {
+        this.openNotifyDialog('Lỗi', 'Tên của mẫu kết quả dịch vụ đã tồn tại');
+        return;
+      }
     }
     const groupId = this.parentGroupId === '0' ? null : this.parentGroupId;
 

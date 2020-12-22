@@ -275,13 +275,13 @@
                 </div>
 
                 <div>
-                    <button mat-raised-button class="btn-orange" [disabled]="!enableFuncBtn"
+                    <button mat-raised-button class="btn-orange" [disabled]="!enableFuncBtn || medicalExamStatus == 0 || medicalExamStatus == 5"
                         *ngIf="userPermissionCode.includes('A32')" (click)="cancelMedicalExam()">Hủy khám</button>
-                    <button mat-raised-button class="btn-main-color" (click)="save(true)" type="submit">
+                    <button mat-raised-button class="btn-main-color" (click)="save(true)" type="submit" [disabled]="medicalExamStatus == 0 || medicalExamStatus == 5">
                         <i class="fas fa-save"></i>
                         <span class="ml-1">Lưu</span>
                     </button>
-                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn"
+                    <button mat-raised-button class="btn-main-color" [disabled]="!enableFuncBtn || medicalExamStatus == 0 || medicalExamStatus == 5"
                         (click)="medicalExamDone()">Kết thúc khám</button>
                 </div>
             </div>
