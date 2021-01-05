@@ -180,11 +180,15 @@ export class CollectServiceFeeComponent implements OnInit {
     }, 300);
   }
 
-  resetInput() {
+  resetInput(event?: any) {
+    if (event) {
+      event.preventDefault();
+    }
     this.lastSave = [];
     this.autoByName = [];
     this.autoByPatientCode = [];
     this.autoByPhone = [];
+    this.patientForm.reset();
     this.patientForm.patchValue(
       {
         patientName: '',
@@ -196,6 +200,7 @@ export class CollectServiceFeeComponent implements OnInit {
         id: ''
       }
     );
+
     this.lstInvoiceDetails = [];
     this.lstInvoiceDetailsSelected = [];
     this.invoiceId = null;
@@ -203,6 +208,9 @@ export class CollectServiceFeeComponent implements OnInit {
     this.collected = 0;
     this.debt = 0;
     this.patientForm.enable();
+    this.patientForm.get('dateOfBirth').disable();
+    this.patientForm.get('gender').disable();
+    this.patientForm.get('address').disable();
   }
 
   autoSelected(event: any) {

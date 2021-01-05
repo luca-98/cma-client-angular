@@ -13,6 +13,7 @@ import { MedicalExaminationService } from 'src/app/core/service/medical-examinat
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MenuService } from 'src/app/core/service/menu.service';
+import { WebsocketService } from 'src/app/core/service/websocket.service';
 
 const phoneValidator: ValidatorFn = (formGroup: FormGroup): ValidationErrors | null => {
   let phone = formGroup.get('phone').value;
@@ -81,6 +82,7 @@ export class ClinicalExaminationComponent implements OnInit {
     private datePipe: DatePipe,
     private menuService: MenuService,
     private changeDetectorRef: ChangeDetectorRef,
+    private websocketService: WebsocketService,
   ) {
     this.route.queryParams.subscribe(params => {
       this.medicalExamId = params.medicalExamId;
@@ -164,6 +166,24 @@ export class ClinicalExaminationComponent implements OnInit {
         }, () => { console.error('call api failed'); });
     }
     this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+    this.listenWebsocket();
+  }
+
+  listenWebsocket() {
+    this.websocketService.onWsUpdatePaymentStatus.subscribe((data: any) => {
+      if (this.medicalExamId) {
+        this.medicalExaminationService.getMedicalExam(this.medicalExamId)
+          .subscribe((data: any) => {
+            this.fillDataPaymentStatus(data);
+          }, () => { console.error('call api failed'); });
+      }
+    });
+  }
+
+  fillDataPaymentStatus(data: any) {
+    this.examForm.patchValue({
+      payingStatus: data.message.payingStatus,
+    });
   }
 
   onPhoneInput() {

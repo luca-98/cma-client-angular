@@ -174,10 +174,14 @@ export class CollectDebtComponent implements OnInit {
     }, 300);
   }
 
-  resetInput() {
+  resetInput(event?: any) {
+    if (event) {
+      event.preventDefault();
+    }
     this.autoByName = [];
     this.autoByPatientCode = [];
     this.autoByPhone = [];
+    this.patientForm.reset();
     this.patientForm.patchValue({
       patientId: '',
       patientName: '',
@@ -185,6 +189,7 @@ export class CollectDebtComponent implements OnInit {
       date: this.today,
       note: ''
     });
+    this.patientForm.get('date').disable();
     this.totalA = 0;
     this.totalB = 0;
     this.totalC = 0;

@@ -13,6 +13,7 @@ import { MedicalExaminationService } from 'src/app/core/service/medical-examinat
 import { MenuService } from 'src/app/core/service/menu.service';
 import { SideMenuService } from 'src/app/core/service/side-menu.service';
 import { SubclinicalService } from 'src/app/core/service/subclinical.service';
+import { WebsocketService } from 'src/app/core/service/websocket.service';
 import { ConfirmDialogComponent } from 'src/app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { NotifyDialogComponent } from 'src/app/shared/dialogs/notify-dialog/notify-dialog.component';
 import { SubclinicalReportDialogComponent } from 'src/app/shared/dialogs/subclinical-report-dialog/subclinical-report-dialog.component';
@@ -86,6 +87,7 @@ export class SubclinicalExaminationComponent implements OnInit {
     private credentialsService: CredentialsService,
     private changeDetectorRef: ChangeDetectorRef,
     private menuService: MenuService,
+    private websocketService: WebsocketService,
   ) {
     this.route.queryParams.subscribe(params => {
       const isNew = params.isNew;
@@ -161,6 +163,15 @@ export class SubclinicalExaminationComponent implements OnInit {
 
     this.getListGroupService();
     this.userPermissionCode = this.credentialsService.credentials.permissionCode;
+    this.listenWebsocket();
+  }
+
+  listenWebsocket() {
+    this.websocketService.onWsUpdatePaymentStatus.subscribe((data: any) => {
+      if (this.medicalExamId) {
+        this.getStatusPayingSubclinical();
+      }
+    });
   }
 
   dbClick() {

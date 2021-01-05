@@ -176,6 +176,10 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
           this.templateReportService.getOneTemplateReport(result.template.templateReportId)
             .subscribe(
               (data: any) => {
+                this.currentService = {
+                  templateName: result.template.templateName,
+                  templateReportId: result.template.templateReportId
+                };
                 this.editorComponent.setContentEditor(data.message.htmlReport);
                 this.processDataReport();
               },

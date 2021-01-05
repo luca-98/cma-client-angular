@@ -11,6 +11,7 @@ export class WebsocketService {
   onWsMessageRoomService: Subject<string> = new Subject();
   onWsMessageOrdinalNumber: Subject<string> = new Subject();
   onWsMessagePermission: Subject<string> = new Subject();
+  onWsUpdatePaymentStatus: Subject<string> = new Subject();
   lstTopicSubscription = [];
 
   constructor(
@@ -56,6 +57,14 @@ export class WebsocketService {
       const obj = JSON.parse(message.body);
       console.log('On WS message: ', obj);
       this.onWsMessagePermission.next(obj);
+    }));
+
+    // update payment status
+    const queueUpdatePaymentStatus = '/topic/payment-status';
+    this.lstTopicSubscription.push(this.rxStompService.watch(queueUpdatePaymentStatus).subscribe((message: any) => {
+      const obj = JSON.parse(message.body);
+      console.log('On WS message: ', obj);
+      this.onWsUpdatePaymentStatus.next(obj);
     }));
   }
 
